@@ -21,10 +21,13 @@ Use this if you want to work on the code.
 2. `poetry install`
 
 ##### Lib/Cli Install
+
 `python -m pip install civ4save`
 
 ##### Command line Tool
 Output is JSON.
+
+`python -m civ4save <options> <save_file>`
 
 ```
 usage: civ4save [-h] [--max-players MAX_PLAYERS]

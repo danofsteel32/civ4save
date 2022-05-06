@@ -5,6 +5,12 @@ description = "Extract data from a .CivBeyondSwordSave file"
 license = 'GPL-3.0-only'
 authors = ["Dan Davis <dan@dandavis.dev>"]
 readme = 'README.md'
+repository = "https://github.com/danofsteel32/civ4save"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Natural Language :: English",
+    "Topic :: Games/Entertainment :: Turn Based Strategy",
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
