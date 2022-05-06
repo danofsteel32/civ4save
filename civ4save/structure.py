@@ -359,130 +359,141 @@ SaveFormat = C.Struct(
     'bonus_counts_on_land' / INT[get_enum_length(cv.BonusType)],
 )
 
+Plot = C.Struct(
+    'ui_flag' / UINT,
+    'x' / SHORT,
+    'y' / SHORT,
+    'area_id' / INT,
+
+    'feature_variety' / SHORT,
+    'ownership_duration' / SHORT,
+    'improvement_duration' / SHORT,
+    'upgrade_progress' / SHORT,
+    'force_unowned_timer' / SHORT,
+    'city_radius_count' / SHORT,
+    'river_id' / INT,
+    'min_original_start_distance' / SHORT,
+    'recon_count' / SHORT,
+    'river_crossing_count' / SHORT,
+
+    'starting_plot' / C.Flag,
+    'hills' / C.Flag,
+    'north_of_river' / C.Flag,
+    'west_of_river' / C.Flag,
+    'irrigated' / C.Flag,
+    'potential_city_work' / C.Flag,
+
+    'owner' / CHAR,
+    'plot_type' / C.Enum(SHORT, cv.PlotType),
+    'terrain_type' / C.Enum(SHORT, cv.TerrainType),
+    'feature_type' / C.Enum(SHORT, cv.FeatureType),
+    'bonus_type' / C.Enum(SHORT, cv.BonusType),
+    'improvement_type' / C.Enum(SHORT, cv.ImprovementType),
+
+    'route_type' / SHORT,
+    'river_north_south' / CHAR,
+    'river_east_west' / CHAR,
+
+    'plot_city_owner' / INT,
+    'plot_city_id' / INT,
+    'working_city_owner' / INT,
+    'working_city_id' / INT,
+    'working_city_override_owner' / INT,
+    'working_city_override_id' / INT,
+
+    'yields' / SHORT[NUM_YIELD_TYPES],
+
+    'sz_culture' / CHAR,
+    'culture' / INT[C.this.sz_culture],
+
+    'sz_found_value' / CHAR,
+    'found_value' / SHORT[C.this.sz_found_value],
+
+    'sz_player_city_radius' / CHAR,
+    'player_city_radius' / CHAR[C.this.sz_player_city_radius],
+
+    'sz_plot_group' / CHAR,
+    'plot_group' / INT[C.this.sz_plot_group],
+
+    'sz_visibility' / CHAR,
+    'visibility' / SHORT[C.this.sz_visibility],
+
+    'sz_stolen_visibility' / CHAR,
+    'stolen_visibility' / SHORT[C.this.sz_stolen_visibility],
+
+    'sz_blockaded' / CHAR,
+    'blockaded' / SHORT[C.this.sz_blockaded],
+
+    'sz_revealed_owner' / CHAR,
+    'revealed_owner' / CHAR[C.this.sz_revealed_owner],
+
+    'sz_direction_types' / CHAR,
+    'river_crossings' / C.Flag[C.this.sz_direction_types],
+
+    'sz_revealed' / CHAR,
+    'revealed' / C.Flag[C.this.sz_revealed],
+
+    'sz_revealed_improvement_type' / CHAR,
+    'revealed_improvement_type' / SHORT[C.this.sz_revealed_improvement_type],
+
+    'sz_revealed_route_type' / CHAR,
+    'revealed_route_type' / SHORT[C.this.sz_revealed_route_type],
+
+    # 'sz_script_data2' / CHAR[4],
+    'sz_script_data2' / INT,
+
+    'script_offset' / C.Tell,
+    'script_data' / C.PaddedString(C.this.sz_script_data2, 'utf_8'),
+
+    'sz_build_progress' / INT,
+    'build_progress' / SHORT[C.this.sz_build_progress],
+
+    'sz_culture_range_cities' / CHAR,
+
+    'culture_range_cities' / C.Array(
+        C.this.sz_culture_range_cities,
+        C.Struct(
+            'crc_sz' / INT,
+            'crc' / CHAR[C.this.crc_sz],
+        ),
+    ),
+
+    'sz_invisible_visibility' / CHAR,
+    'invisible_visibles' / C.Array(
+        C.this.sz_invisible_visibility,
+        C.Struct(
+            'inv_sz' / INT,
+            'inv_vis' / SHORT[C.this.inv_sz],
+        ),
+    ),
+
+    'sz_units' / INT,
+    'units' / C.Array(
+        C.this.sz_units,
+        C.Struct(
+            'owner' / INT,
+            'id' / INT
+        ),
+    ),
+    'offset' / C.Tell,
+)
+
 # Buggy, does not work consistently
 # See CvPlot.{cpp,h}
 CvPlots = C.Struct(
     'plots' / C.Array(
         C.this.grid_width * C.this.grid_height,
-        C.Struct(
-            'ui_flag' / UINT,
-            'x' / SHORT,
-            'y' / SHORT,
-            'area_id' / INT,
+        Plot
+    ),
+)
 
-            'feature_variety' / SHORT,
-            'ownership_duration' / SHORT,
-            'improvement_duration' / SHORT,
-            'upgrade_progress' / SHORT,
-            'force_unowned_timer' / SHORT,
-            'city_radius_count' / SHORT,
-            'river_id' / INT,
-            'min_original_start_distance' / SHORT,
-            'recon_count' / SHORT,
-            'river_crossing_count' / SHORT,
-
-            'starting_plot' / C.Flag,
-            'hills' / C.Flag,
-            'north_of_river' / C.Flag,
-            'west_of_river' / C.Flag,
-            'irrigated' / C.Flag,
-            'potential_city_work' / C.Flag,
-
-            'owner' / CHAR,
-            'plot_type' / C.Enum(SHORT, cv.PlotType),
-            'terrain_type' / C.Enum(SHORT, cv.TerrainType),
-            'feature_type' / C.Enum(SHORT, cv.FeatureType),
-            'bonus_type' / C.Enum(SHORT, cv.BonusType),
-            'improvement_type' / C.Enum(SHORT, cv.ImprovementType),
-
-            'route_type' / SHORT,
-            'river_north_south' / CHAR,
-            'river_east_west' / CHAR,
-
-            'plot_city_owner' / INT,
-            'plot_city_id' / INT,
-            'working_city_owner' / INT,
-            'working_city_id' / INT,
-            'working_city_override_owner' / INT,
-            'working_city_override_id' / INT,
-
-            'yields' / SHORT[NUM_YIELD_TYPES],
-
-            'sz_culture' / CHAR,
-            'culture' / INT[C.this.sz_culture],
-
-            'sz_found_value' / CHAR,
-            'found_value' / SHORT[C.this.sz_found_value],
-
-            'sz_player_city_radius' / CHAR,
-            'player_city_radius' / CHAR[C.this.sz_player_city_radius],
-
-            'sz_plot_group' / CHAR,
-            'plot_group' / INT[C.this.sz_plot_group],
-
-            'sz_visibility' / CHAR,
-            'visibility' / SHORT[C.this.sz_visibility],
-
-            'sz_stolen_visibility' / CHAR,
-            'stolen_visibility' / SHORT[C.this.sz_stolen_visibility],
-
-            'sz_blockaded' / CHAR,
-            'blockaded' / SHORT[C.this.sz_blockaded],
-
-            'sz_revealed_owner' / CHAR,
-            'revealed_owner' / CHAR[C.this.sz_revealed_owner],
-
-            'sz_direction_types' / CHAR,
-            'river_crossings' / C.Flag[C.this.sz_direction_types],
-
-            'sz_revealed' / CHAR,
-            'revealed' / C.Flag[C.this.sz_revealed],
-
-            'sz_revealed_improvement_type' / CHAR,
-            'revealed_improvement_type' / SHORT[C.this.sz_revealed_improvement_type],
-
-            'sz_revealed_route_type' / CHAR,
-            'revealed_route_type' / SHORT[C.this.sz_revealed_route_type],
-
-            # 'sz_script_data2' / CHAR[4],
-            'sz_script_data2' / INT,
-
-            'script_offset' / C.Tell,
-            'script_data' / C.PaddedString(C.this.sz_script_data2, 'utf_8'),
-
-            'sz_build_progress' / INT,
-            'build_progress' / SHORT[C.this.sz_build_progress],
-
-            'sz_culture_range_cities' / CHAR,
-
-            'culture_range_cities' / C.Array(
-                C.this.sz_culture_range_cities,
-                C.Struct(
-                    'crc_sz' / INT,
-                    'crc' / CHAR[C.this.crc_sz],
-                ),
-            ),
-
-            'sz_invisible_visibility' / CHAR,
-            'invisible_visibles' / C.Array(
-                C.this.sz_invisible_visibility,
-                C.Struct(
-                    'inv_sz' / INT,
-                    'inv_vis' / SHORT[C.this.inv_sz],
-                ),
-            ),
-
-            'sz_units' / INT,
-            'units' / C.Array(
-                C.this.sz_units,
-                C.Struct(
-                    'owner' / INT,
-                    'id' / INT
-                ),
-            ),
-            'offset' / C.Tell,
-        ),
+DebugPlot = Plot + C.Struct(C.Probe())
+DebugPlots = C.Struct(
+    'plots' / C.Array(
+        C.this.grid_width * C.this.grid_height,
+        DebugPlot
     ),
 )
 
 WithPlots = SaveFormat + CvPlots
+DebugPlots = SaveFormat + DebugPlots

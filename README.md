@@ -14,17 +14,14 @@ the Civ4 BTS source. Wouldn't have been possible to make this without it.
 
 ### Usage
 
-##### Developement Install
-Use this if you want to work on the code.
+If you just want to test on one of your save files without installing anything
+go [here](https://civ4save.dandavis.dev)
 
-1. clone the repo
-2. `poetry install`
-
-##### Lib/Cli Install
+#### Lib/Cli Install
 
 `python -m pip install civ4save`
 
-##### Command line Tool
+#### Command line Tool
 Output is JSON.
 
 `python -m civ4save <options> <save_file>`
@@ -50,7 +47,7 @@ options:
   --list-players        List all player idx, name, leader, civ in the game
 ```
 
-##### As a Libray
+#### As a Libray
 
 ```python
 from civ4save import save_file
@@ -72,8 +69,8 @@ Games are saved in a binary format that kind of looks like a sandwich
 with most of the data in the compressed middle part. See `save_file.py` to understand
 how the file is uncompressed.
 
-Then using the [construct](https://github.com/construct/construct) library the binary format
-is declaratively defined in `structure.py`.
+The [construct](https://github.com/construct/construct) library makes it easy to declaratively
+define the binary format in `structure.py` and this gives us parsing/writing for free.
 
 From there the functions in `organize.py` sort and cleanup the parsed data.
 
@@ -85,6 +82,12 @@ XML files using `xml_to_enum.py`. To run this yourself you'll need to install th
 
 Right now the paths to the XML files in `xml_to_enum.py` are hardcoded so you'll have to edit
 them to match your system.
+
+
+#### Developement / Contributing
+* at least python3.10 (I'll have to change type hints to support 3.6 - 3.9)
+* [poetry](https://python-poetry.org/docs/)
+* If you open an issue please attach the save file you had the issue with
 
 
 #### Write Order
@@ -101,3 +104,5 @@ But there's issues consistently parsing `CvPlot` so only up to CvMap is parsed b
 I haven't drilled down the exact cause but it seems to have something to do with the size
 of the save file. Files under 136K (largest test save I have that works) parse fine but
 anything larger only makes it through ~30-80% of plots before failing.
+
+`poetry run python -m civ4save.plots_bug.py` will demonstrate the bug and prints out debug info.
