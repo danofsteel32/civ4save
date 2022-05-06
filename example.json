@@ -1,0 +1,1616 @@
+{
+    "settings": {
+        "name": "steamuser's Game",
+        "type": "GAME_SP_LOAD",
+        "speed": "GAMESPEED_NORMAL",
+        "map_script": "Tectonics",
+        "world_size": "WORLDSIZE_STANDARD",
+        "climate": "CLIMATE_TEMPERATE",
+        "sea_level": "SEALEVEL_MEDIUM",
+        "start_turn": 0,
+        "start_year": -4000,
+        "start_era": "ERA_ANCIENT",
+        "options": [
+            [
+                "Advanced Start",
+                false
+            ],
+            [
+                "No City Razing",
+                false
+            ],
+            [
+                "No City Flipping",
+                false
+            ],
+            [
+                "Flipping After Conquest",
+                false
+            ],
+            [
+                "No Barbarians",
+                false
+            ],
+            [
+                "Raging Barbarians",
+                false
+            ],
+            [
+                "Aggressive Ai",
+                false
+            ],
+            [
+                "Lead Any Civ",
+                false
+            ],
+            [
+                "Random Personalities",
+                false
+            ],
+            [
+                "Pick Religion",
+                true
+            ],
+            [
+                "No Tech Trading",
+                true
+            ],
+            [
+                "No Tech Brokering",
+                true
+            ],
+            [
+                "Permanent Alliances",
+                false
+            ],
+            [
+                "Always War",
+                false
+            ],
+            [
+                "Always Peace",
+                false
+            ],
+            [
+                "One City Challenge",
+                false
+            ],
+            [
+                "No Changing War Peace",
+                false
+            ],
+            [
+                "New Random Seed",
+                false
+            ],
+            [
+                "Lock Mods",
+                false
+            ],
+            [
+                "Complete Kills",
+                false
+            ],
+            [
+                "No Vassal States",
+                true
+            ],
+            [
+                "No Goody Huts",
+                false
+            ],
+            [
+                "No Events",
+                true
+            ],
+            [
+                "No Espionage",
+                false
+            ]
+        ],
+        "mp_options": [
+            [
+                "Simultaneous Turns",
+                false
+            ],
+            [
+                "Takeover Ai",
+                false
+            ],
+            [
+                "Shuffle Teams",
+                false
+            ],
+            [
+                "Anonymous",
+                false
+            ],
+            [
+                "Turn Timer",
+                false
+            ]
+        ],
+        "map_random_seed": 4106300601,
+        "soren_random_seed": 2826374084,
+        "grid_width": 84,
+        "grid_height": 52,
+        "wrap_x": true,
+        "wrap_y": false,
+        "land_plots": 1460,
+        "culture_victory_level": "CULTURELEVEL_LEGENDARY",
+        "culture_victory_cities": 3,
+        "victories_enabled": [
+            "Score",
+            "Time",
+            "Conquest",
+            "Domination",
+            "Cultural",
+            "Space Race"
+        ]
+    },
+    "game_state": {
+        "state": "GAMESTATE_ON",
+        "turn": 177,
+        "victory": "NO_VICTORY",
+        "winner": -1,
+        "owned_plots": 1433,
+        "circumnavigated": false,
+        "nukes_buildable": false,
+        "total_cities": 68,
+        "total_population": 517,
+        "total_units": [
+            [
+                "Lion",
+                29
+            ],
+            [
+                "Bear",
+                13
+            ],
+            [
+                "Panther",
+                2
+            ],
+            [
+                "Wolf",
+                41
+            ],
+            [
+                "Settler",
+                71
+            ],
+            [
+                "Worker",
+                65
+            ],
+            [
+                "Indian Fast Worker",
+                8
+            ],
+            [
+                "Scout",
+                44
+            ],
+            [
+                "Spy",
+                4
+            ],
+            [
+                "Christian Missionary",
+                3
+            ],
+            [
+                "Islamic Missionary",
+                4
+            ],
+            [
+                "Hindu Missionary",
+                8
+            ],
+            [
+                "Buddhist Missionary",
+                1
+            ],
+            [
+                "Confucian Missionary",
+                9
+            ],
+            [
+                "Taoist Missionary",
+                4
+            ],
+            [
+                "Warrior",
+                79
+            ],
+            [
+                "Swordsman",
+                58
+            ],
+            [
+                "Rome Praetorian",
+                14
+            ],
+            [
+                "Axeman",
+                60
+            ],
+            [
+                "Greek Phalanx",
+                14
+            ],
+            [
+                "Maceman",
+                22
+            ],
+            [
+                "Spearman",
+                49
+            ],
+            [
+                "Pikeman",
+                12
+            ],
+            [
+                "Archer",
+                206
+            ],
+            [
+                "Longbowman",
+                68
+            ],
+            [
+                "Crossbowman",
+                15
+            ],
+            [
+                "Chariot",
+                34
+            ],
+            [
+                "Horse Archer",
+                16
+            ],
+            [
+                "Carthage Numidian Cavalry",
+                26
+            ],
+            [
+                "Mongol Keshik",
+                25
+            ],
+            [
+                "Knight",
+                4
+            ],
+            [
+                "War Elephant",
+                9
+            ],
+            [
+                "Catapult",
+                70
+            ],
+            [
+                "Korean Hwacha",
+                6
+            ],
+            [
+                "Trebuchet",
+                18
+            ],
+            [
+                "Workboat",
+                38
+            ],
+            [
+                "Galley",
+                48
+            ],
+            [
+                "Trireme",
+                21
+            ],
+            [
+                "Prophet",
+                4
+            ],
+            [
+                "Artist",
+                1
+            ],
+            [
+                "Scientist",
+                10
+            ],
+            [
+                "Merchant",
+                3
+            ],
+            [
+                "Engineer",
+                1
+            ],
+            [
+                "Great General",
+                10
+            ],
+            [
+                "Great Spy",
+                1
+            ]
+        ],
+        "total_buildings": [
+            [
+                "Palace",
+                11
+            ],
+            [
+                "Great Palace",
+                1
+            ],
+            [
+                "Walls",
+                29
+            ],
+            [
+                "Castle",
+                16
+            ],
+            [
+                "Barracks",
+                53
+            ],
+            [
+                "Stable",
+                25
+            ],
+            [
+                "Granary",
+                60
+            ],
+            [
+                "Aqueduct",
+                16
+            ],
+            [
+                "Lighthouse",
+                29
+            ],
+            [
+                "Harbor",
+                1
+            ],
+            [
+                "Forge",
+                28
+            ],
+            [
+                "Obelisk",
+                43
+            ],
+            [
+                "Academy",
+                6
+            ],
+            [
+                "Library",
+                30
+            ],
+            [
+                "Theatre",
+                5
+            ],
+            [
+                "Colosseum",
+                16
+            ],
+            [
+                "Market",
+                14
+            ],
+            [
+                "Courthouse",
+                13
+            ],
+            [
+                "Christian Temple",
+                6
+            ],
+            [
+                "Christian Monastery",
+                2
+            ],
+            [
+                "Islamic Temple",
+                1
+            ],
+            [
+                "Islamic Monastery",
+                2
+            ],
+            [
+                "Hindu Temple",
+                5
+            ],
+            [
+                "Hindu Monastery",
+                2
+            ],
+            [
+                "Hindu Shrine",
+                1
+            ],
+            [
+                "Buddhist Temple",
+                1
+            ],
+            [
+                "Confucian Temple",
+                5
+            ],
+            [
+                "Confucian Monastery",
+                2
+            ],
+            [
+                "Taoist Temple",
+                3
+            ],
+            [
+                "Taoist Cathedral",
+                1
+            ],
+            [
+                "Taoist Shrine",
+                1
+            ],
+            [
+                "Heroic Epic",
+                2
+            ],
+            [
+                "National Epic",
+                1
+            ],
+            [
+                "Scotland Yard",
+                1
+            ],
+            [
+                "Pyramid",
+                1
+            ],
+            [
+                "Stonehenge",
+                1
+            ],
+            [
+                "Great Library",
+                1
+            ],
+            [
+                "Great Lighthouse",
+                1
+            ],
+            [
+                "Hanging Garden",
+                1
+            ],
+            [
+                "Colossus",
+                1
+            ],
+            [
+                "Oracle",
+                1
+            ],
+            [
+                "Parthenon",
+                1
+            ],
+            [
+                "Chichen Itza",
+                1
+            ],
+            [
+                "Notre Dame",
+                1
+            ],
+            [
+                "Artemis",
+                1
+            ],
+            [
+                "Great Wall",
+                1
+            ],
+            [
+                "Statue Of Zeus",
+                1
+            ],
+            [
+                "Mausoleum Of Maussollos",
+                1
+            ],
+            [
+                "Shwedagon Paya",
+                1
+            ],
+            [
+                "Moai Statues",
+                3
+            ]
+        ]
+    },
+    "players": {
+        "0": {
+            "idx": 0,
+            "name": "duke",
+            "desc": "",
+            "short_desc": "",
+            "adjective": "",
+            "team": 0,
+            "handicap": "Emperor",
+            "leader": "Julius Caesar",
+            "civ": "Rome",
+            "score": 996,
+            "owned_plots": 220,
+            "great_people": [
+                "Arminius (Great General)",
+                "Rosalind Franklin (Great Scientist)",
+                "Guglielmo Marconi (Great Engineer)",
+                "Gustavus II Adolphus (Great General)",
+                "Plato (Great Scientist)",
+                "Zhuge Liang (Great General)"
+            ],
+            "cities": [
+                {
+                    "name": "Rome",
+                    "x": 14,
+                    "y": 44,
+                    "turn_founded": 0,
+                    "wonders": [
+                        "Notre Dame"
+                    ]
+                },
+                {
+                    "name": "Blocked-Ya",
+                    "x": 21,
+                    "y": 41,
+                    "turn_founded": 33,
+                    "wonders": [
+                        "Stonehenge",
+                        "The Pyramids"
+                    ]
+                },
+                {
+                    "name": "Antium",
+                    "x": 17,
+                    "y": 41,
+                    "turn_founded": 55,
+                    "wonders": []
+                },
+                {
+                    "name": "God Coast",
+                    "x": 13,
+                    "y": 47,
+                    "turn_founded": 66,
+                    "wonders": []
+                },
+                {
+                    "name": "Fishville",
+                    "x": 21,
+                    "y": 38,
+                    "turn_founded": 82,
+                    "wonders": []
+                },
+                {
+                    "name": "Madrid",
+                    "x": 26,
+                    "y": 43,
+                    "turn_founded": 0,
+                    "wonders": [
+                        "The Great Lighthouse"
+                    ]
+                },
+                {
+                    "name": "Barcelona",
+                    "x": 28,
+                    "y": 46,
+                    "turn_founded": 49,
+                    "wonders": []
+                },
+                {
+                    "name": "Cow Bay",
+                    "x": 25,
+                    "y": 40,
+                    "turn_founded": 102,
+                    "wonders": []
+                },
+                {
+                    "name": "Cumae",
+                    "x": 33,
+                    "y": 47,
+                    "turn_founded": 117,
+                    "wonders": []
+                }
+            ],
+            "religion": "Christianity",
+            "civics": {
+                "government": "Representation",
+                "legal": "Bureaucracy",
+                "labor": "Slavery",
+                "economy": "Decentralization",
+                "religion": "Organized Religion"
+            },
+            "trades": [
+                {
+                    "first_player": 0,
+                    "second_player": 5,
+                    "initial_turn": 164,
+                    "first_trades": [
+                        {
+                            "item": "Sheep",
+                            "amount": 1
+                        },
+                        {
+                            "item": "Crab",
+                            "amount": 1
+                        },
+                        {
+                            "item": "Copper",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "Wine",
+                            "amount": 1
+                        },
+                        {
+                            "item": "Sugar",
+                            "amount": 1
+                        },
+                        {
+                            "item": "Spices",
+                            "amount": 1
+                        },
+                        {
+                            "item": "Wheat",
+                            "amount": 1
+                        },
+                        {
+                            "item": "TRADE_GOLD_PER_TURN",
+                            "amount": 5
+                        }
+                    ]
+                },
+                {
+                    "first_player": 0,
+                    "second_player": 2,
+                    "initial_turn": 153,
+                    "first_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ]
+                },
+                {
+                    "first_player": 0,
+                    "second_player": 5,
+                    "initial_turn": 164,
+                    "first_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "1": {
+            "idx": 1,
+            "name": "",
+            "desc": "",
+            "short_desc": "",
+            "adjective": "",
+            "team": 1,
+            "handicap": "Noble",
+            "leader": "Gandhi",
+            "civ": "India",
+            "score": 503,
+            "owned_plots": 109,
+            "great_people": [
+                "Kobo-Daishi (Great Prophet)",
+                "Cao Cao (Great General)",
+                "Ramakrishna (Great Prophet)",
+                "Du Fu (Great Artist)",
+                "Albert Einstein (Great Scientist)",
+                "Gaius Marius (Great General)",
+                "Shankara (Great Prophet)",
+                "Scipio Africanus (Great General)"
+            ],
+            "cities": [
+                {
+                    "name": "Vijayanagara",
+                    "x": 54,
+                    "y": 11,
+                    "turn_founded": 61,
+                    "wonders": []
+                },
+                {
+                    "name": "Varanasi",
+                    "x": 53,
+                    "y": 5,
+                    "turn_founded": 84,
+                    "wonders": []
+                },
+                {
+                    "name": "Calcutta",
+                    "x": 50,
+                    "y": 13,
+                    "turn_founded": 103,
+                    "wonders": []
+                }
+            ],
+            "religion": "Hinduism",
+            "civics": {
+                "government": "Hereditary Rule",
+                "legal": "Barbarism",
+                "labor": "Slavery",
+                "economy": "Decentralization",
+                "religion": "Pacifism"
+            },
+            "trades": [
+                {
+                    "first_player": 1,
+                    "second_player": 5,
+                    "initial_turn": 160,
+                    "first_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "2": {
+            "idx": 2,
+            "name": "",
+            "desc": "",
+            "short_desc": "",
+            "adjective": "",
+            "team": 2,
+            "handicap": "Noble",
+            "leader": "Hannibal",
+            "civ": "Carthage",
+            "score": 1017,
+            "owned_plots": 224,
+            "great_people": [
+                "Narak (Great Prophet)",
+                "Nolan Buonarroti (Great Spy)",
+                "Chandragupta Maurya (Great General)",
+                "Hamilcar Barca (Great General)",
+                "Enrico Fermi (Great Scientist)"
+            ],
+            "cities": [
+                {
+                    "name": "Carthage",
+                    "x": 30,
+                    "y": 9,
+                    "turn_founded": 0,
+                    "wonders": [
+                        "The Great Wall",
+                        "The Oracle"
+                    ]
+                },
+                {
+                    "name": "Utica",
+                    "x": 26,
+                    "y": 9,
+                    "turn_founded": 36,
+                    "wonders": []
+                },
+                {
+                    "name": "Hadrumetum",
+                    "x": 35,
+                    "y": 10,
+                    "turn_founded": 53,
+                    "wonders": [
+                        "The Hanging Gardens"
+                    ]
+                },
+                {
+                    "name": "Hippo",
+                    "x": 32,
+                    "y": 6,
+                    "turn_founded": 79,
+                    "wonders": []
+                },
+                {
+                    "name": "Kerkouane",
+                    "x": 38,
+                    "y": 15,
+                    "turn_founded": 93,
+                    "wonders": []
+                },
+                {
+                    "name": "Leptis",
+                    "x": 39,
+                    "y": 7,
+                    "turn_founded": 97,
+                    "wonders": []
+                },
+                {
+                    "name": "Thapsus",
+                    "x": 41,
+                    "y": 10,
+                    "turn_founded": 111,
+                    "wonders": []
+                },
+                {
+                    "name": "Pataliputra",
+                    "x": 45,
+                    "y": 8,
+                    "turn_founded": 74,
+                    "wonders": []
+                },
+                {
+                    "name": "Agra",
+                    "x": 43,
+                    "y": 14,
+                    "turn_founded": 99,
+                    "wonders": []
+                },
+                {
+                    "name": "Bombay",
+                    "x": 47,
+                    "y": 13,
+                    "turn_founded": 31,
+                    "wonders": [
+                        "The Great Library",
+                        "The Dai Miao"
+                    ]
+                },
+                {
+                    "name": "Delhi",
+                    "x": 50,
+                    "y": 10,
+                    "turn_founded": 0,
+                    "wonders": [
+                        "The Temple of Artemis",
+                        "The Kashi Vishwanath",
+                        "The Parthenon"
+                    ]
+                }
+            ],
+            "religion": "Islam",
+            "civics": {
+                "government": "Hereditary Rule",
+                "legal": "Vassalage",
+                "labor": "Slavery",
+                "economy": "Decentralization",
+                "religion": "Organized Religion"
+            },
+            "trades": [
+                {
+                    "first_player": 2,
+                    "second_player": 6,
+                    "initial_turn": 108,
+                    "first_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ]
+                },
+                {
+                    "first_player": 2,
+                    "second_player": 6,
+                    "initial_turn": 161,
+                    "first_trades": [
+                        {
+                            "item": "Silk",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "Cow",
+                            "amount": 1
+                        }
+                    ]
+                },
+                {
+                    "first_player": 2,
+                    "second_player": 3,
+                    "initial_turn": 140,
+                    "first_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ]
+                },
+                {
+                    "first_player": 2,
+                    "second_player": 6,
+                    "initial_turn": 162,
+                    "first_trades": [
+                        {
+                            "item": "Crab",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "Fish",
+                            "amount": 1
+                        }
+                    ]
+                },
+                {
+                    "first_player": 2,
+                    "second_player": 4,
+                    "initial_turn": 165,
+                    "first_trades": [
+                        {
+                            "item": "Deer",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "Spices",
+                            "amount": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "3": {
+            "idx": 3,
+            "name": "",
+            "desc": "",
+            "short_desc": "",
+            "adjective": "",
+            "team": 3,
+            "handicap": "Noble",
+            "leader": "Genghis Khan",
+            "civ": "Mongol",
+            "score": 488,
+            "owned_plots": 85,
+            "great_people": [
+                "Charles Darwin (Great Scientist)",
+                "Horatio Nelson (Great General)"
+            ],
+            "cities": [
+                {
+                    "name": "Karakorum",
+                    "x": 20,
+                    "y": 8,
+                    "turn_founded": 0,
+                    "wonders": []
+                },
+                {
+                    "name": "Beshbalik",
+                    "x": 23,
+                    "y": 9,
+                    "turn_founded": 46,
+                    "wonders": []
+                },
+                {
+                    "name": "Turfan",
+                    "x": 22,
+                    "y": 5,
+                    "turn_founded": 61,
+                    "wonders": []
+                },
+                {
+                    "name": "Ning-hsia",
+                    "x": 26,
+                    "y": 5,
+                    "turn_founded": 76,
+                    "wonders": []
+                }
+            ],
+            "religion": "Hinduism",
+            "civics": {
+                "government": "Hereditary Rule",
+                "legal": "Vassalage",
+                "labor": "Slavery",
+                "economy": "Decentralization",
+                "religion": "Organized Religion"
+            },
+            "trades": [
+                {
+                    "first_player": 3,
+                    "second_player": 4,
+                    "initial_turn": 161,
+                    "first_trades": [
+                        {
+                            "item": "Crab",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "Cow",
+                            "amount": 1
+                        }
+                    ]
+                },
+                {
+                    "first_player": 3,
+                    "second_player": 4,
+                    "initial_turn": 173,
+                    "first_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "4": {
+            "idx": 4,
+            "name": "",
+            "desc": "",
+            "short_desc": "",
+            "adjective": "",
+            "team": 4,
+            "handicap": "Noble",
+            "leader": "Alexander",
+            "civ": "Greece",
+            "score": 807,
+            "owned_plots": 262,
+            "great_people": [
+                "Tycho Brahe (Great Scientist)",
+                "Marie Curie (Great Scientist)"
+            ],
+            "cities": [
+                {
+                    "name": "Athens",
+                    "x": 68,
+                    "y": 27,
+                    "turn_founded": 0,
+                    "wonders": []
+                },
+                {
+                    "name": "Sparta",
+                    "x": 64,
+                    "y": 29,
+                    "turn_founded": 36,
+                    "wonders": []
+                },
+                {
+                    "name": "Corinth",
+                    "x": 65,
+                    "y": 23,
+                    "turn_founded": 51,
+                    "wonders": []
+                },
+                {
+                    "name": "Thebes",
+                    "x": 65,
+                    "y": 26,
+                    "turn_founded": 79,
+                    "wonders": []
+                },
+                {
+                    "name": "Argos",
+                    "x": 61,
+                    "y": 23,
+                    "turn_founded": 94,
+                    "wonders": []
+                },
+                {
+                    "name": "Knossos",
+                    "x": 71,
+                    "y": 16,
+                    "turn_founded": 103,
+                    "wonders": []
+                },
+                {
+                    "name": "Mycenae",
+                    "x": 59,
+                    "y": 29,
+                    "turn_founded": 123,
+                    "wonders": []
+                },
+                {
+                    "name": "Pharsalos",
+                    "x": 69,
+                    "y": 13,
+                    "turn_founded": 132,
+                    "wonders": []
+                },
+                {
+                    "name": "Gepid",
+                    "x": 55,
+                    "y": 23,
+                    "turn_founded": 115,
+                    "wonders": []
+                },
+                {
+                    "name": "Gaul",
+                    "x": 48,
+                    "y": 24,
+                    "turn_founded": 124,
+                    "wonders": []
+                },
+                {
+                    "name": "Cimmerian",
+                    "x": 42,
+                    "y": 22,
+                    "turn_founded": 87,
+                    "wonders": []
+                },
+                {
+                    "name": "Ephesus",
+                    "x": 55,
+                    "y": 29,
+                    "turn_founded": 161,
+                    "wonders": []
+                },
+                {
+                    "name": "Halicarnassus",
+                    "x": 51,
+                    "y": 22,
+                    "turn_founded": 164,
+                    "wonders": []
+                }
+            ],
+            "religion": "No Religion",
+            "civics": {
+                "government": "Hereditary Rule",
+                "legal": "Barbarism",
+                "labor": "Slavery",
+                "economy": "Decentralization",
+                "religion": "Paganism"
+            },
+            "trades": [
+                {
+                    "first_player": 4,
+                    "second_player": 6,
+                    "initial_turn": 75,
+                    "first_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ]
+                },
+                {
+                    "first_player": 4,
+                    "second_player": 2,
+                    "initial_turn": 89,
+                    "first_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "5": {
+            "idx": 5,
+            "name": "",
+            "desc": "",
+            "short_desc": "",
+            "adjective": "",
+            "team": 5,
+            "handicap": "Noble",
+            "leader": "Wangkon",
+            "civ": "Korea",
+            "score": 1067,
+            "owned_plots": 228,
+            "great_people": [
+                "Isaac Newton (Great Scientist)",
+                "Ibn Battuta (Great Merchant)",
+                "James Cook (Great Merchant)",
+                "Marco Polo (Great Merchant)"
+            ],
+            "cities": [
+                {
+                    "name": "Seoul",
+                    "x": 28,
+                    "y": 28,
+                    "turn_founded": 0,
+                    "wonders": [
+                        "Mausoleum of Maussollos",
+                        "Shwedagon Paya"
+                    ]
+                },
+                {
+                    "name": "P'yongyang",
+                    "x": 31,
+                    "y": 25,
+                    "turn_founded": 35,
+                    "wonders": []
+                },
+                {
+                    "name": "Wonsan",
+                    "x": 27,
+                    "y": 24,
+                    "turn_founded": 58,
+                    "wonders": []
+                },
+                {
+                    "name": "Pusan",
+                    "x": 26,
+                    "y": 31,
+                    "turn_founded": 67,
+                    "wonders": [
+                        "Chichen Itza"
+                    ]
+                },
+                {
+                    "name": "Namp'o",
+                    "x": 31,
+                    "y": 32,
+                    "turn_founded": 78,
+                    "wonders": []
+                },
+                {
+                    "name": "Cheju",
+                    "x": 33,
+                    "y": 28,
+                    "turn_founded": 90,
+                    "wonders": [
+                        "The Statue of Zeus"
+                    ]
+                },
+                {
+                    "name": "Hyangsan",
+                    "x": 33,
+                    "y": 22,
+                    "turn_founded": 103,
+                    "wonders": []
+                },
+                {
+                    "name": "Ulsan",
+                    "x": 37,
+                    "y": 20,
+                    "turn_founded": 116,
+                    "wonders": []
+                },
+                {
+                    "name": "Inch'on",
+                    "x": 35,
+                    "y": 33,
+                    "turn_founded": 124,
+                    "wonders": []
+                },
+                {
+                    "name": "P'yongsong",
+                    "x": 37,
+                    "y": 26,
+                    "turn_founded": 141,
+                    "wonders": []
+                },
+                {
+                    "name": "Taejon",
+                    "x": 39,
+                    "y": 33,
+                    "turn_founded": 145,
+                    "wonders": []
+                }
+            ],
+            "religion": "Islam",
+            "civics": {
+                "government": "Hereditary Rule",
+                "legal": "Bureaucracy",
+                "labor": "Caste System",
+                "economy": "Decentralization",
+                "religion": "Organized Religion"
+            },
+            "trades": [
+                {
+                    "first_player": 5,
+                    "second_player": 2,
+                    "initial_turn": 83,
+                    "first_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ]
+                },
+                {
+                    "first_player": 5,
+                    "second_player": 6,
+                    "initial_turn": 92,
+                    "first_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "TRADE_OPEN_BORDERS",
+                            "amount": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "6": {
+            "idx": 6,
+            "name": "",
+            "desc": "",
+            "short_desc": "",
+            "adjective": "",
+            "team": 6,
+            "handicap": "Noble",
+            "leader": "Joao",
+            "civ": "Portugal",
+            "score": 1021,
+            "owned_plots": 242,
+            "great_people": [
+                "Euclid (Great Scientist)",
+                "Hypatia (Great Scientist)",
+                "Geronimo (Great General)"
+            ],
+            "cities": [
+                {
+                    "name": "Lisbon",
+                    "x": 44,
+                    "y": 43,
+                    "turn_founded": 0,
+                    "wonders": []
+                },
+                {
+                    "name": "Oporto",
+                    "x": 48,
+                    "y": 44,
+                    "turn_founded": 28,
+                    "wonders": []
+                },
+                {
+                    "name": "Guimar\u00e3es",
+                    "x": 41,
+                    "y": 45,
+                    "turn_founded": 50,
+                    "wonders": []
+                },
+                {
+                    "name": "Coimbra",
+                    "x": 44,
+                    "y": 40,
+                    "turn_founded": 74,
+                    "wonders": [
+                        "The Colossus"
+                    ]
+                },
+                {
+                    "name": "\u00c9vora",
+                    "x": 37,
+                    "y": 41,
+                    "turn_founded": 88,
+                    "wonders": []
+                },
+                {
+                    "name": "Lagos",
+                    "x": 43,
+                    "y": 36,
+                    "turn_founded": 98,
+                    "wonders": []
+                },
+                {
+                    "name": "Braga",
+                    "x": 38,
+                    "y": 37,
+                    "turn_founded": 104,
+                    "wonders": []
+                },
+                {
+                    "name": "Leiria",
+                    "x": 34,
+                    "y": 38,
+                    "turn_founded": 107,
+                    "wonders": []
+                },
+                {
+                    "name": "Faro",
+                    "x": 33,
+                    "y": 44,
+                    "turn_founded": 114,
+                    "wonders": []
+                },
+                {
+                    "name": "Santar\u00e9m",
+                    "x": 41,
+                    "y": 28,
+                    "turn_founded": 142,
+                    "wonders": []
+                }
+            ],
+            "religion": "Confucianism",
+            "civics": {
+                "government": "Hereditary Rule",
+                "legal": "Vassalage",
+                "labor": "Slavery",
+                "economy": "Decentralization",
+                "religion": "Organized Religion"
+            },
+            "trades": [
+                {
+                    "first_player": 6,
+                    "second_player": 4,
+                    "initial_turn": 160,
+                    "first_trades": [
+                        {
+                            "item": "Gold",
+                            "amount": 1
+                        }
+                    ],
+                    "second_trades": [
+                        {
+                            "item": "Spices",
+                            "amount": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "7": {
+            "idx": 7,
+            "name": "",
+            "desc": "",
+            "short_desc": "",
+            "adjective": "",
+            "team": 7,
+            "handicap": "Noble",
+            "leader": "Isabella",
+            "civ": "Spain",
+            "score": 0,
+            "owned_plots": 0,
+            "great_people": [],
+            "cities": [],
+            "religion": "Confucianism",
+            "civics": {
+                "government": "Despotism",
+                "legal": "Barbarism",
+                "labor": "Slavery",
+                "economy": "Decentralization",
+                "religion": "Organized Religion"
+            },
+            "trades": []
+        },
+        "18": {
+            "idx": 18,
+            "name": "",
+            "desc": "",
+            "short_desc": "",
+            "adjective": "",
+            "team": 18,
+            "handicap": "Chieftain",
+            "leader": "Barbarian",
+            "civ": "Barbarian",
+            "score": 0,
+            "owned_plots": 63,
+            "great_people": [],
+            "cities": [
+                {
+                    "name": "Teoihuacan",
+                    "x": 9,
+                    "y": 8,
+                    "turn_founded": 130,
+                    "wonders": []
+                },
+                {
+                    "name": "Polynesian",
+                    "x": 10,
+                    "y": 12,
+                    "turn_founded": 139,
+                    "wonders": []
+                },
+                {
+                    "name": "Tartar",
+                    "x": 58,
+                    "y": 33,
+                    "turn_founded": 141,
+                    "wonders": []
+                },
+                {
+                    "name": "Uzbek",
+                    "x": 51,
+                    "y": 28,
+                    "turn_founded": 151,
+                    "wonders": []
+                },
+                {
+                    "name": "Chinook",
+                    "x": 70,
+                    "y": 38,
+                    "turn_founded": 157,
+                    "wonders": []
+                },
+                {
+                    "name": "Magyar",
+                    "x": 77,
+                    "y": 40,
+                    "turn_founded": 165,
+                    "wonders": []
+                },
+                {
+                    "name": "Hun",
+                    "x": 70,
+                    "y": 45,
+                    "turn_founded": 175,
+                    "wonders": []
+                }
+            ],
+            "religion": "No Religion",
+            "civics": {
+                "government": "Despotism",
+                "legal": "Barbarism",
+                "labor": "Tribalism",
+                "economy": "Decentralization",
+                "religion": "Paganism"
+            },
+            "trades": []
+        }
+    }
+}

@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "civ4save"
+version = "0.1.0"
+description = "Extract data from a .CivBeyondSwordSave file"
+license = 'GPL-3.0-only'
+authors = ["Dan Davis <dan@dandavis.dev>"]
+readme = 'README.md'
+
+[tool.poetry.dependencies]
+python = "^3.10"
+construct = "^2.10.68"
+Jinja2 = {version = "^3.1.2", optional = true}
+xmltodict = {version = "^0.12.0", optional = true}
+
+[tool.poetry.dev-dependencies]
+pytest = ">5.2"
+mypy = "^0.950"
+flake8 = "^4.0.1"
+
+[tool.poetry.extras]
+xml = ["Jinja2", "xmltodict"]
+
+[tool.poetry.scripts]
+civ4save = 'civ4save.cli:run'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
