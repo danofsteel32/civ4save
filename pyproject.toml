@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "civ4save"
-version = "0.1.0"
+version = "0.2.0"
 description = "Extract data from a .CivBeyondSwordSave file"
 license = 'GPL-3.0-only'
 authors = ["Dan Davis <dan@dandavis.dev>"]

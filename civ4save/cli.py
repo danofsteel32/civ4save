@@ -6,7 +6,7 @@ from enum import Enum
 
 from . import organize
 from . import save_file
-from .structure import SaveFormat, WithPlots
+from .structure import get_format
 
 
 def unenumify(e) -> str:
@@ -72,6 +72,20 @@ def parse_args(args):
         default=False,
         help='List all player idx, name, leader, civ in the game'
     )
+    parser.add_argument(
+        '--ai-survivor',
+        dest='ai_survivor',
+        action='store_true',
+        default=False,
+        help='Use XML settings from AI Survivor series',
+    )
+    parser.add_argument(
+        '--debug',
+        dest='debug',
+        action='store_true',
+        default=False,
+        help='Print debug info',
+    )
     parser.add_argument('file', type=str, help='Target save file')
     return parser.parse_args(args)
 
@@ -80,16 +94,14 @@ def run():
     args = parse_args(sys.argv[1:])
 
     save_bytes = save_file.read(args.file)
-    if args.with_plots:
-        try:
-            data = WithPlots.parse(save_bytes, max_players=args.max_players)
-        except Exception:
-            print('ERROR could not parse plot data')
-    else:
-        try:
-            data = SaveFormat.parse(save_bytes, max_players=args.max_players)
-        except Exception:
-            print('This does not appear to be a .CivBeyondSwordSave file')
+    fmt = get_format(args.ai_survivor, args.with_plots, args.debug)
+
+    try:
+        data = fmt.parse(save_bytes, max_players=args.max_players)
+    except Exception as e:
+        print(e)
+        if args.with_plots:
+            print('Probably the plots bug')
 
     out: dict | list[dict]
     if args.just_settings:

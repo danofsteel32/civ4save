@@ -22,6 +22,10 @@ VANILLA_XML = GAME_DIR / 'Assets' / 'XML'
 WARLORDS_XML = GAME_DIR / 'Warlords' / 'Assets' / 'XML'
 BTS_XML = GAME_DIR / 'Beyond the Sword' / 'Assets' / 'XML'
 
+CUSTOM_XML_DIR = Path('../custom_xml')
+if not CUSTOM_XML_DIR.exists():
+    CUSTOM_XML_DIR = Path('custom_xml')
+
 
 @dataclass
 class XMLFile:
@@ -177,6 +181,11 @@ building_files = [
         path=BTS_XML / 'Buildings/CIV4SpecialBuildingInfos.xml',
         defaults=[('NO_SPECIALBUILDING', -1)]
     ),
+    XMLFile(
+        name='AiSurvivorBuildingType',
+        path=CUSTOM_XML_DIR / 'AiSurvivorBuildingInfos.xml',
+        defaults=[('NO_BUILDING', -1)]
+    )
 ]
 
 civilization_files = [
@@ -402,4 +411,5 @@ def write_all_enums():
 
 
 if __name__ == '__main__':
-    write_all_enums()
+    write_out_enum(building_files[-1].to_enum())
+    # write_all_enums()

@@ -21,6 +21,20 @@ def get_enum_length(e):
     return len([m for m in e.__members__ if e[m].value >= 0])
 
 
+def get_format(ai_survivor: bool = False, with_plots: bool = False, debug: bool = False):
+    if ai_survivor:
+        fmt = SaveFormat + AiSurvivorBuildingType + Tail
+    else:
+        fmt = SaveFormat + VanillaBuildingType + Tail
+
+    if with_plots:
+        fmt = fmt + CvPlots
+
+    if debug:
+        fmt = fmt + C.Struct(C.Probe())
+    return fmt
+
+
 TradeData = C.Struct(
     'item' / C.Enum(INT, cv.TradeableItem),
     'extra_data' / INT,  # BonusType sometimes applicable
@@ -41,6 +55,7 @@ VoteOption = C.Struct(
 
 
 SaveFormat = C.Struct(
+    # C.Probe(C.this._params),
     'save_flag' / INT,
     'save_bits' / C.Array(8, INT),
     'bytes_to_zlib_magic_number' / INT,
@@ -108,17 +123,20 @@ SaveFormat = C.Struct(
         C.this._params.max_players,
         C.Struct(
             'sz' / UINT,
-            'email' / C.PaddedString(C.this.sz*2, 'utf_16_le'),
+            'email' / C.PaddedString(C.this.sz, 'utf8'),
+            # 'email' / C.PaddedString(C.this.sz*2, 'utf_16_le'),
         ),
     ),
     'smtp_hosts' / C.Array(
         C.this._params.max_players,
         C.Struct(
             'sz' / UINT,
-            'smtp_host' / C.PaddedString(C.this.sz*2, 'utf_16_le'),
+            'smtp_host' / C.PaddedString(C.this.sz, 'utf8'),
+            # 'smtp_host' / C.PaddedString(C.this.sz*2, 'utf_16_le'),
         ),
     ),
     'white_flags' / C.Flag[C.this._params.max_players],
+    'mystery?' / INT[C.this._params.max_players],  # TODO: What is this?
     'flag_decals' / C.Array(
         C.this._params.max_players,
         C.Struct(
@@ -126,7 +144,6 @@ SaveFormat = C.Struct(
             'flag_decal' / C.PaddedString(C.this.sz*2, 'utf_16_le'),
         ),
     ),
-    'mystery?' / INT[C.this._params.max_players],  # TODO: What is this?
     'civs' / C.Array(
         C.this._params.max_players,
         C.Enum(INT, cv.CivilizationType),
@@ -335,12 +352,27 @@ SaveFormat = C.Struct(
         C.this.sz_inactive_triggers,
         C.Enum(INT, cv.EventTriggerType),
     ),
+)
+
+VanillaBuildingType = C.Struct(
     'shrine_building_count' / INT,
     'shrine_buildings' / C.Array(
         get_enum_length(cv.BuildingType),
         C.Enum(INT, cv.BuildingType),
     ),
     'shrine_religion' / INT[get_enum_length(cv.BuildingType)],  # idk
+)
+
+AiSurvivorBuildingType = C.Struct(
+    'shrine_building_count' / INT,
+    'shrine_buildings' / C.Array(
+        get_enum_length(cv.AiSurvivorBuildingType),
+        C.Enum(INT, cv.AiSurvivorBuildingType),
+    ),
+    'shrine_religion' / INT[get_enum_length(cv.AiSurvivorBuildingType)],  # idk
+)
+
+Tail = C.Struct(
     'num_culture_victory_cities' / INT,
     'culture_victory_level' / C.Enum(INT, cv.CultureLevelType),
     # Start CvMap
@@ -494,6 +526,3 @@ DebugPlots = C.Struct(
         DebugPlot
     ),
 )
-
-WithPlots = SaveFormat + CvPlots
-DebugPlots = SaveFormat + DebugPlots
