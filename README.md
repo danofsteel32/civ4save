@@ -11,6 +11,14 @@ Thanks to [this repo](https://github.com/dguenms/beyond-the-sword-sdk) for hosti
 the Civ4 BTS source. Wouldn't have been possible to make this without it.
 
 
+## TODO
+- parse and rank starting locations of S6 ai survivor
+    - rank resources (gold/gems best -> plantations worst)
+    - closeness to strategic resources
+    - capital ranking food/prod/comm/forests
+    - n-tile radius around capital
+
+
 ### Usage
 
 #### Install
