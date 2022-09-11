@@ -3,11 +3,10 @@ organize.py
 
 A rough
 """
-from dataclasses import dataclass, field, asdict
 import re
+from dataclasses import asdict, dataclass, field
 
-from . import cv_enums as cv
-
+from civ4save.enums import vanilla as e
 
 # TODO: Add NO_PLAYER to players dict {-1: {idx: -1, name: NO_PLAYER}}
 
@@ -23,11 +22,11 @@ class City:
 
 @dataclass
 class Civics:
-    government: cv.CivicType = cv.CivicType.CIVIC_DESPOTISM
-    legal: cv.CivicType = cv.CivicType.CIVIC_BARBARISM
-    labor: cv.CivicType = cv.CivicType.CIVIC_TRIBALISM
-    economy: cv.CivicType = cv.CivicType.CIVIC_DECENTRALIZATION
-    religion: cv.CivicType = cv.CivicType.CIVIC_PAGANISM
+    government: e.CivicType = e.CivicType.CIVIC_DESPOTISM
+    legal: e.CivicType = e.CivicType.CIVIC_BARBARISM
+    labor: e.CivicType = e.CivicType.CIVIC_TRIBALISM
+    economy: e.CivicType = e.CivicType.CIVIC_DECENTRALIZATION
+    religion: e.CivicType = e.CivicType.CIVIC_PAGANISM
 
 
 @dataclass
@@ -53,19 +52,19 @@ class Player:
     short_desc: str
     adjective: str
     team: int
-    handicap: cv.HandicapType
-    leader: cv.LeaderHeadType
-    civ: cv.CivilizationType
+    handicap: e.HandicapType
+    leader: e.LeaderHeadType
+    civ: e.CivilizationType
     score: int
     owned_plots: int = 0
     great_people: list[str] = field(default_factory=list)
     cities: list[City] = field(default_factory=list)
-    religion: cv.ReligionType = cv.ReligionType.NO_RELIGION
+    religion: e.ReligionType = e.ReligionType.NO_RELIGION
     civics: Civics = field(default_factory=Civics)
     trades: list[TradeDeal] = field(default_factory=list)
     projects: list[str] = field(default_factory=list)
 
-    def adopt_civic(self, new_civic: cv.CivicType):
+    def adopt_civic(self, new_civic: e.CivicType):
         v = new_civic.value
         if v < 5:
             self.civics.government = new_civic
@@ -82,13 +81,13 @@ class Player:
         for n, city in enumerate(self.cities):
             if city.name == city_name:
                 return self.cities.pop(n)
-        raise ValueError(f'player {self.idx} has no city named {city_name}')
+        raise ValueError(f"player {self.idx} has no city named {city_name}")
 
     def city_from_xy(self, x: int, y: int):
         for city in self.cities:
             if (city.x, city.y) == (x, y):
                 return city
-        raise ValueError(f'player {self.idx} has no city @ ({x}, {y})')
+        raise ValueError(f"player {self.idx} has no city @ ({x}, {y})")
 
 
 @dataclass
@@ -97,9 +96,9 @@ class GameSettings:
     type: str
     speed: str
     map_script: str
-    world_size: cv.WorldSizeType
-    climate: cv.ClimateType
-    sea_level: cv.SeaLevelType
+    world_size: e.WorldSizeType
+    climate: e.ClimateType
+    sea_level: e.SeaLevelType
     start_turn: int
     start_year: int
     start_era: str
@@ -119,9 +118,9 @@ class GameSettings:
 
 @dataclass
 class GameState:
-    state: cv.GameStateType
+    state: e.GameStateType
     turn: int
-    victory: cv.VictoryType
+    victory: e.VictoryType
     winner: int
     owned_plots: int
     circumnavigated: bool
@@ -141,16 +140,16 @@ class Plot:
     irrigated: bool
     yields: list[int]
     owner_idx: int
-    plot_type: cv.PlotType
-    terrain_type: cv.TerrainType
-    feature_type: cv.FeatureType
-    bonus_type: cv.BonusType
-    improvement_type: cv.ImprovementType
+    plot_type: e.PlotType
+    terrain_type: e.TerrainType
+    feature_type: e.FeatureType
+    bonus_type: e.BonusType
+    improvement_type: e.ImprovementType
 
 
 def init_plots(data) -> list[Plot]:
     plots = []
-    for p in data['plots']:
+    for p in data["plots"]:
         plots.append(
             Plot(
                 p.x,
@@ -163,7 +162,7 @@ def init_plots(data) -> list[Plot]:
                 p.terrain_type,
                 p.feature_type,
                 p.bonus_type,
-                p.improvement_type
+                p.improvement_type,
             )
         )
     return plots
@@ -173,13 +172,13 @@ def init_game_state(data) -> GameState:
 
     total_units = []
     for n, count in enumerate(data.unit_created_counts):
-        unit = cv.UnitType(n)
+        unit = e.UnitType(n)
         if count > 0:
             total_units.append((unit, count))
 
     total_buildings = []
     for n, count in enumerate(data.building_class_created_counts):
-        building = cv.BuildingClassType(n)
+        building = e.BuildingClassType(n)
         if count > 0:
             total_buildings.append((building, count))
 
@@ -202,18 +201,18 @@ def init_game_state(data) -> GameState:
 def init_game_settings(data) -> GameSettings:
     options = []
     for n, opt in enumerate(data.game_options):
-        option = cv.GameOptionType(n)
+        option = e.GameOptionType(n)
         options.append((option, opt))
 
     mp_options = []
     for n, mp_opt in enumerate(data.mp_game_options):
-        mp_option = cv.MultiplayerOptionType(n)
+        mp_option = e.MultiplayerOptionType(n)
         mp_options.append((mp_option, mp_opt))
 
     victories_enabled = []
     for n, v in enumerate(data.victories):
         if v:
-            victory = cv.VictoryType(n)
+            victory = e.VictoryType(n)
             victories_enabled.append(victory)
 
     settings = GameSettings(
@@ -244,16 +243,15 @@ def init_game_settings(data) -> GameSettings:
 
 
 def set_player_trade_deals(deals, players) -> dict[int, Player]:
-
     def process_trades(trades) -> list[Trade]:
         player_trades = []
         for trade in trades:
             item = trade.item
             amount = 1
-            if trade.item in {'TRADE_GOLD', 'TRADE_GOLD_PER_TURN'}:
+            if trade.item in {"TRADE_GOLD", "TRADE_GOLD_PER_TURN"}:
                 amount = trade.extra_data
-            elif trade.item == 'TRADE_RESOURCES':
-                item = cv.BonusType(trade.extra_data)
+            elif trade.item == "TRADE_RESOURCES":
+                item = e.BonusType(trade.extra_data)
             player_trades.append(Trade(item, amount))
         return player_trades
 
@@ -273,7 +271,7 @@ def init_players(data, max_players: int) -> dict[int, Player]:
     players = {}
     for p_idx in range(max_players):
         civ = data.civs[p_idx]
-        if civ == 'NO_CIVILIZATION':
+        if civ == "NO_CIVILIZATION":
             continue
         player = Player(
             p_idx,
@@ -282,9 +280,9 @@ def init_players(data, max_players: int) -> dict[int, Player]:
             short_desc=data.civ_short_descriptions[p_idx].short_description,
             adjective=data.civ_adjectives[p_idx].adjective,
             team=data.teams[p_idx],
-            handicap=cv.HandicapType[str(data.handicaps[p_idx])],
-            leader=cv.LeaderHeadType[str(data.leaders[p_idx])],
-            civ=cv.CivilizationType[str(data.civs[p_idx])],
+            handicap=e.HandicapType[str(data.handicaps[p_idx])],
+            leader=e.LeaderHeadType[str(data.leaders[p_idx])],
+            civ=e.CivilizationType[str(data.civs[p_idx])],
             score=data.ai_player_score[p_idx],
         )
         players[p_idx] = player
@@ -302,57 +300,57 @@ def set_player_data(replay_messages, players):
     plots: dict[str, int] = {}
 
     def text_to_enum_name(text: str):
-        rm_leading = re.sub('.*color=[0-9]+,[0-9]+,[0-9]+,[0-9]+>', '', text)
-        rm_trailing = rm_leading.replace('</color>!', '')
-        return rm_trailing.replace(' ', '_').upper()
+        rm_leading = re.sub(".*color=[0-9]+,[0-9]+,[0-9]+,[0-9]+>", "", text)
+        rm_trailing = rm_leading.replace("</color>!", "")
+        return rm_trailing.replace(" ", "_").upper()
 
     for msg in replay_messages:
         p_idx = msg.player
 
-        if msg.type == 'CITY_FOUNDED':
-            city_name = msg.text.split(' is founded')[0]
+        if msg.type == "CITY_FOUNDED":
+            city_name = msg.text.split(" is founded")[0]
             city = City(city_name, msg.plot_x, msg.plot_y, msg.turn)
             players[p_idx].cities.append(city)
             cities[city_name] = p_idx
 
-        elif msg.type == 'MAJOR_EVENT':
-            if 'captured' in msg.text:
-                city_and_owner = msg.text.split(' was captured')[0]
-                city_name = city_and_owner.split('(')[0].strip()
+        elif msg.type == "MAJOR_EVENT":
+            if "captured" in msg.text:
+                city_and_owner = msg.text.split(" was captured")[0]
+                city_name = city_and_owner.split("(")[0].strip()
                 prev_owner = cities[city_name]
                 city = players[prev_owner].pop_city(city_name)
                 players[p_idx].cities.append(city)
                 cities[city_name] = p_idx
-            elif 'razed' in msg.text:
-                city_name = msg.text.split(' is razed')[0]
+            elif "razed" in msg.text:
+                city_name = msg.text.split(" is razed")[0]
                 prev_owner = cities[city_name]
                 players[prev_owner].pop_city(city_name)
                 del cities[city_name]
-            elif 'completes' in msg.text:
-                wonder = msg.text.split(' completes ')[-1]
+            elif "completes" in msg.text:
+                wonder = msg.text.split(" completes ")[-1]
                 if (msg.plot_x, msg.plot_y) == (-1, -1):  # global wonder (ie apollo)
                     players[p_idx].projects.append(wonder)
                     continue
                 city = players[p_idx].city_from_xy(msg.plot_x, msg.plot_y)
                 city.wonders.append(wonder)
-            elif 'born' in msg.text:
-                gp = msg.text.split(' has been born')[0]
+            elif "born" in msg.text:
+                gp = msg.text.split(" has been born")[0]
                 players[p_idx].great_people.append(gp)
-            elif 'converts' in msg.text:
+            elif "converts" in msg.text:
                 relig_text = text_to_enum_name(msg.text)
-                religion = cv.ReligionType[f'RELIGION_{relig_text}']
+                religion = e.ReligionType[f"RELIGION_{relig_text}"]
                 players[p_idx].religion = religion
-            elif 'adopts' in msg.text:
+            elif "adopts" in msg.text:
                 civic_text = text_to_enum_name(msg.text)
-                civic = cv.CivicType[f'CIVIC_{civic_text}']
+                civic = e.CivicType[f"CIVIC_{civic_text}"]
                 players[p_idx].adopt_civic(civic)
             else:
                 # potentially handle war decs and peace signings
                 # print(msg.player, msg.text)
                 pass
 
-        elif msg.type == 'PLOT_OWNER_CHANGE':
-            plot_key = f'{msg.plot_x}-{msg.plot_y}'
+        elif msg.type == "PLOT_OWNER_CHANGE":
+            plot_key = f"{msg.plot_x}-{msg.plot_y}"
             try:
                 prev_owner = plots[plot_key]
             except KeyError:
@@ -373,6 +371,23 @@ def set_player_data(replay_messages, players):
     return players
 
 
+def fix_potential_duplicate_cities(players):
+    """If capital founded but then map regenerated on turn 0 there will be
+       duplicate capital founding messages for the player."""
+    for p_idx in players:
+        cities = players[p_idx].cities
+
+        new_start_idx = 0
+        names = set()
+        for n, city in enumerate(cities):
+            if city.name in names:
+                new_start_idx = n
+            else:
+                names.add(city.name)
+        players[p_idx].cities = cities[new_start_idx:]
+    return players
+
+
 def default(data, max_players) -> dict:
     settings = init_game_settings(data)
     game_state = init_game_state(data)
@@ -386,22 +401,15 @@ def just_settings(data) -> dict:
     return asdict(init_game_settings(data))
 
 
-def just_players(data, max_players) -> dict:
-    players = init_players(data, max_players)
-    players = set_player_data(data.replay_messages, players)
-    players = set_player_trade_deals(data.deals, players)
-    return players
-
-
 def player_list(data, max_players) -> list[dict]:
     # idx, name, leader, civ
     players = init_players(data, max_players)
     return [
         {
-            'idx': players[p].idx,
-            'name': players[p].name,
-            'civ': players[p].civ,
-            'leader': players[p].leader
+            "idx": players[p].idx,
+            "name": players[p].name,
+            "civ": players[p].civ,
+            "leader": players[p].leader,
         }
         for p in players
     ]
@@ -409,11 +417,14 @@ def player_list(data, max_players) -> list[dict]:
 
 def player(data, max_players, player_idx: int) -> dict:
     players = init_players(data, max_players)
+    players = set_player_data(data.replay_messages, players)
+    players = set_player_trade_deals(data.deals, players)
+    players = fix_potential_duplicate_cities(players)
     return asdict(players[player_idx])
 
 
 def with_plots(data, max_players) -> dict:
     out = default(data, max_players)
     plots = init_plots(data)
-    out['plots'] = plots
+    out["plots"] = plots
     return out

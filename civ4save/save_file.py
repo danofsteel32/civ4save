@@ -2,10 +2,13 @@ from pathlib import Path
 import zlib
 
 
+class NotASaveFile(Exception):
+    pass
+
+
 def uncompress_bytes(data: bytes) -> bytes:
     """
-    Uncompresses the bytes in .CivBeyondSwordSave file and returns
-    the uncompressed bytes.
+    Uncompresses a .CivBeyondSwordSave file and returns the uncompressed bytes.
 
     There is uncompressed game data leading up to z_start and
     after z_end so it looks like this:
@@ -28,9 +31,9 @@ def uncompress_bytes(data: bytes) -> bytes:
 
     def find_zlib_end(z_start: int) -> int:
         """
-        Binary search to find btye index where incomplete data stream
-        becomes incorrect data stream. I'm not sure if the guess_limit
-        makes sense but I do want some check to prevent infinite looping.
+        Binary search to find byte index where incomplete data stream becomes
+        incorrect data stream. I'm not sure if the guess_limit makes sense but
+        I do want some check to an infinite loop / hang.
 
         https://forums.civfanatics.com/threads/need-a-little-help-with-editing-civ4-save-files.452707/
         """
@@ -58,7 +61,8 @@ def uncompress_bytes(data: bytes) -> bytes:
     z_start = find_zlib_start()
     z_end = find_zlib_end(z_start)
     if z_start < 0 or z_end < 0:
-        raise Exception('This is not a .CivBeyondSwordSave file')
+        # TODO better exception / error msg
+        raise NotASaveFile('This is not a .CivBeyondSwordSave file')
 
     decomp_obj = zlib.decompressobj()
     uncompressed_data = decomp_obj.decompress(data[z_start:z_end])
