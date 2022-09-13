@@ -12,9 +12,11 @@ Wouldn't have been possible to make this without it.
 
 
 ### TODO
+- support text or json output
 - `contrib` module/package for ananlysis (ex. comparing starting locations in ai survivor)
 - diffing tools to tell what changed between autosaves
 - support for windows paths
+- Browse `Saves/` using TUI
 
 
 ### Usage

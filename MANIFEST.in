@@ -1,0 +1,4 @@
+# MANIFEST.in
+
+include COPYING
+include custom_xml/*.xml

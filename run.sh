@@ -21,6 +21,10 @@ make-venv() {
 }
 
 
+reset-venv() {
+    rm -rf "${VENVPATH}"
+}
+
 wrapped-python() {
     "${VENVPATH}"/bin/python "$@"
 }

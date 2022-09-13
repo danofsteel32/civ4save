@@ -1,6 +1,41 @@
 [build-system]
 requires = [
-    "setuptools>=42.0",
+    "setuptools>=61.0.0",
     "wheel"
 ]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "civ4save"
+version = "0.3.1"
+description = "Extract data from a .CivBeyondSwordSave file"
+readme = "README.md"
+authors = [{name = "Dan Davis", email = "dan@dandavis.dev"}]
+license = { file = "COPYING" }
+classifiers = [
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Topic :: Games/Entertainment :: Turn Based Strategy",
+]
+keywords = ["civ", "civilization", "savefile"]
+dependencies = [
+    "construct >= 2.10.68",
+    "Jinja2 >= 3.1.2",
+    "xmltodict >= 0.12.0",
+]
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+dev = ["black", "flake8", "flake8-isort", "mypy", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/danofsteel32/civ4save"
+
+[project.scripts]
+civ4save = "civ4save.__main__:main"
+
+[tool.isort]
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
