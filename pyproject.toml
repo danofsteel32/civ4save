@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "civ4save"
-version = "0.3.1"
+version = "0.4.0"
 description = "Extract data from a .CivBeyondSwordSave file"
 readme = "README.md"
 authors = [{name = "Dan Davis", email = "dan@dandavis.dev"}]
@@ -20,6 +20,7 @@ keywords = ["civ", "civilization", "savefile"]
 dependencies = [
     "construct >= 2.10.68",
     "Jinja2 >= 3.1.2",
+    "simple-term-menu >= 1.5.0",
     "xmltodict >= 0.12.0",
 ]
 requires-python = ">=3.10"

@@ -30,12 +30,11 @@ Wouldn't have been possible to make this without it.
 
 #### Command line Tool
 
-`python -m civ4save <options> <save_file>`
+`civ4save <options> <save_file>`
 
 ```
-usage: __main__.py [-h] [--max-players MAX_PLAYERS]
-                   [--gen-enums | --gamefiles | --plots | --settings | --player PLAYER | --list-players]
-                   [--ai-survivor] [--debug]
+usage: __main__.py [-h] [--max-players MAX_PLAYERS] [--gamefiles | --browse [BROWSE] | --gen-enums | --plots |
+                   --settings | --player PLAYER | --list-players | --version] [--ai-survivor] [--debug]
                    [file]
 
 Extract data from .CivBeyondSwordSave file
@@ -47,12 +46,14 @@ options:
   -h, --help            show this help message and exit
   --max-players MAX_PLAYERS
                         Needed if you have changed your MAX_PLAYERS value in CvDefines.h
-  --gen-enums           Create enums file from XML files
   --gamefiles           Find and print relevant game files paths
+  --browse [BROWSE]     Browse saves in a directory
+  --gen-enums           Create enums file from XML files
   --plots               Attempt to parse the plot data. WARNING: still buggy!
   --settings            Only return the games settings. No game state or player data
   --player PLAYER       Only return the player data for a specific player idx
   --list-players        List all player idx, name, leader, civ in the game
+  --version             Print version info
   --ai-survivor         Use XML settings from AI Survivor series
   --debug               Print debug info
 ```
@@ -98,7 +99,7 @@ The enums defined in `civ4save/enums/` are automatically generated from the game
 
 
 ### Write Order
-The game calls it's `::write` functions in this order:
+The game calls its `::write` functions in this order:
 
 1. CvInitCore
 2. CvGame

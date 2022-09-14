@@ -1,6 +1,11 @@
 from pathlib import Path
 
 
+def unenumify(e) -> str:
+    strip_leading = str(e).split("_")[1:]
+    return " ".join(strip_leading).title()
+
+
 def get_game_dir() -> Path:
     leaf = "Steam/steamapps/common/Sid Meier's Civilization IV Beyond the Sword"
     possible_locations = [
@@ -14,11 +19,12 @@ def get_game_dir() -> Path:
         raise FileNotFoundError("Could not locate XML files")
 
 
-def get_saves_dir() -> Path:
+def get_saves_dir(sub_dir: str = "single") -> Path:
     return Path.home().joinpath(
         ".local/share/Steam/steamapps/compatdata",
         "8800/pfx/drive_c/users/steamuser",
-        "My Documents/My Games/Beyond the Sword/Saves"
+        "My Documents/My Games/Beyond the Sword/Saves",
+        sub_dir
     )
 
 

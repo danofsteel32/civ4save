@@ -4,14 +4,9 @@ import sys
 from dataclasses import asdict, is_dataclass
 from enum import Enum
 
-from . import organize, save_file, utils
+from . import browse, organize, save_file, utils
 from .structure import get_format
 from .xml_files import make_enums
-
-
-def unenumify(e) -> str:
-    strip_leading = str(e).split("_")[1:]
-    return " ".join(strip_leading).title()
 
 
 class CustomJsonEncoder(json.JSONEncoder):
@@ -25,7 +20,7 @@ class CustomJsonEncoder(json.JSONEncoder):
         elif isinstance(o, Enum):
             if o.name == "NO_RELIGION":
                 return "No Religion"
-            return unenumify(o.name)
+            return utils.unenumify(o.name)
         return super().default(o)
 
 
@@ -42,17 +37,25 @@ def parse_args(args):
         help="Needed if you have changed your MAX_PLAYERS value in CvDefines.h",
     )
     group.add_argument(
+        "--gamefiles",
+        action="store_true",
+        default=False,
+        help="Find and print relevant game files paths",
+    )
+    group.add_argument(
+        "--browse",
+        dest="browse",
+        type=str,
+        const="tests/saves",
+        nargs="?",
+        help="Browse saves in a directory",
+    )
+    group.add_argument(
         "--gen-enums",
         dest="gen_enums",
         action="store_true",
         default=False,
         help="Create enums file from XML files",
-    )
-    group.add_argument(
-        "--gamefiles",
-        action="store_true",
-        default=False,
-        help="Find and print relevant game files paths",
     )
     group.add_argument(
         "--plots",
@@ -82,6 +85,13 @@ def parse_args(args):
         default=False,
         help="List all player idx, name, leader, civ in the game",
     )
+    group.add_argument(
+        "--version",
+        dest="version",
+        action="store_true",
+        default=False,
+        help="Print version info",
+    )
     parser.add_argument(
         "--ai-survivor",
         dest="ai_survivor",
@@ -104,6 +114,12 @@ def parse_args(args):
 
 def run():
     args = parse_args(sys.argv[1:])
+    fmt = get_format(args.ai_survivor, args.plots, args.debug)
+
+    if args.version:
+        from . import __version__
+        print(__version__)
+        return
 
     if args.gamefiles:
         print(utils.get_game_dir())
@@ -114,13 +130,16 @@ def run():
         make_enums(args.ai_survivor)
         return
 
+    if args.browse:
+        save_files = browse.get_save_files(args.browse)
+        browse.browse(save_files, fmt)
+        return
+
     if not args.file:
         print("Save file is a required argument")
         sys.exit(1)
 
     save_bytes = save_file.read(args.file)
-    fmt = get_format(args.ai_survivor, args.plots, args.debug)
-
     try:
         data = fmt.parse(save_bytes, max_players=args.max_players)
     except Exception as e:
