@@ -58,6 +58,12 @@ options:
   --debug               Print debug info
 ```
 
+##### Browse Example
+`civ4save --browse <dir of save files>`
+
+Navigate with `jk` or arrow keys.
+![Browse Example](https://github.com/danofsteel32/civ4save/blob/main/civ4save-browse.png)
+
 #### As a Libray
 
 ```python
