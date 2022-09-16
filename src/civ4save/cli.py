@@ -4,7 +4,13 @@ import sys
 from dataclasses import asdict, is_dataclass
 from enum import Enum
 
-from . import browse, organize, save_file, utils
+try:
+    from . import browse
+    _browse = True
+except NotImplementedError as ex:
+    _browse = False
+
+from . import organize, save_file, utils
 from .structure import get_format
 from .xml_files import make_enums
 
@@ -131,8 +137,10 @@ def run():
         return
 
     if args.browse:
-        save_files = browse.get_save_files(args.browse)
-        browse.browse(save_files, fmt)
+        if _browse:
+            save_files = browse.get_save_files(args.browse)
+            browse.browse(save_files, fmt)
+        print("Browsing not currently supported on Windows")
         return
 
     if not args.file:

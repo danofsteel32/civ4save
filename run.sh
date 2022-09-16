@@ -6,10 +6,15 @@ set -o nounset
 set -o pipefail
 
 APPNAME="civ4save"
-VENVPATH="${HOME}/.venv/${APPNAME}"
+VENVPATH="./venv"
 
 venv() {
-    echo "source ${VENVPATH}/bin/activate"
+    local _bin="${VENVPATH}/bin"
+    if [ -d "${_bin}" ]; then
+        echo "source ${VENVPATH}/bin/activate"
+    else
+        echo "source ${VENVPATH}/Scripts/activate"
+    fi
 }
 
 make-venv() {
@@ -22,7 +27,12 @@ reset-venv() {
 }
 
 wrapped-python() {
-    "${VENVPATH}"/bin/python "$@"
+    local _bin="${VENVPATH}/bin"
+    if [ -d "${_bin}" ]; then
+        "${VENVPATH}"/bin/python "$@"
+    else
+        "${VENVPATH}"/Scripts/python "$@"
+    fi
 }
 
 wrapped-pip() {

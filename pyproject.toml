@@ -32,7 +32,7 @@ dev = ["black", "flake8", "flake8-isort", "mypy", "pytest"]
 Homepage = "https://github.com/danofsteel32/civ4save"
 
 [project.scripts]
-civ4save = "civ4save.__main__:main"
+civ4save = "civ4save.cli:run"
 
 [tool.isort]
 line_length = 88

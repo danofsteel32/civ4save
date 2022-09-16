@@ -7,7 +7,7 @@ from civ4save.structure import get_format
 
 MAX_PLAYERS = 19
 
-
+# TODO assert not-a-real raises Exception
 def test_version():
     assert __version__ == "0.4.0"
 
@@ -42,19 +42,21 @@ def vanilla_with_plots(file):
 def test_vanilla():
     for f in Path("tests/saves").iterdir():
         if f.name == "not-a-real.CivBeyondSwordSave":
+            with pytest.raises(save_file.NotASaveFile):
+                vanilla(f)
             continue
         if not vanilla(f):
-            print(f"FAIL {f.name}")
-            pytest.fail()
+            pytest.fail(f.name)
 
 
 def test_vanilla_with_plots():
     for f in Path("tests/saves").iterdir():
         if f.name == "not-a-real.CivBeyondSwordSave":
+            with pytest.raises(save_file.NotASaveFile):
+                vanilla_with_plots(f)
             continue
         if not vanilla_with_plots(f):
-            print(f"FAIL {f.name}")
-            pytest.fail()
+            pytest.fail(f.name)
 
 
 def ai_survivor(file):
