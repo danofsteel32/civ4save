@@ -5,7 +5,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-APPNAME="civ4save"
 VENVPATH="./venv"
 
 venv() {
@@ -85,7 +84,7 @@ tests() {
 }
 
 c4() {
-    wrapped-python -m civ4save "$@"
+    wrapped-python -m civ4save.cli "$@"
 }
 
 default() {

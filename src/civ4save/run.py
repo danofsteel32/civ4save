@@ -1,5 +1,10 @@
-from civ4save import save_file, structure
+from pathlib import Path
 
-save = save_file.read("tests/saves/bismark-emperor-turn86.CivBeyondSwordSave")
-fmt = structure.get_format(debug=True)
-fmt.parse(save, max_players=19)
+from civ4save import utils
+
+from . import struct
+# from civ4save.save_file import SaveFile
+from .models import Context
+
+if __name__ == "__main__":
+    context = Context(max_players=19)

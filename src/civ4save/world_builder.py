@@ -1,8 +1,6 @@
 import re
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Optional
-
 
 TEAM = re.compile("Team=*")
 LEADER = re.compile("LeaderType=*")
@@ -15,72 +13,77 @@ TERRAIN = re.compile("TerrainType=*")
 PLOT_TYPE = re.compile("PlotType=*")
 
 
-BONUS_ORDER = list(reversed([
-    "BONUS_GEMS",
-    "BONUS_GOLD",
-    "BONUS_SILVER",
+BONUS_ORDER = list(
+    reversed(
+        [
+            "BONUS_GEMS",
+            "BONUS_GOLD",
+            "BONUS_SILVER",
+            "BONUS_COPPER",
+            "BONUS_IRON",
+            "BONUS_HORSE",
+            "BONUS_IVORY",
+            "BONUS_CORN",
+            "BONUS_PIG",
+            "BONUS_COW",
+            "BONUS_WHEAT",
+            "BONUS_RICE",
+            "BONUS_SHEEP",
+            "BONUS_BANANA",
+            "BONUS_DEER",
+            "BONUS_FISH",
+            "BONUS_CLAM",
+            "BONUS_CRAB",
+            "BONUS_FUR",
+            "BONUS_SUGAR",
+            "BONUS_SPICES",
+            "BONUS_WINE",
+            "BONUS_DYE",
+            "BONUS_SILK",
+            "BONUS_INCENSE",
+            "BONUS_STONE",
+            "BONUS_MARBLE",
+            "BONUS_OIL",
+            "BONUS_WHALE",
+            "BONUS_COAL",
+            "BONUS_ALUMINUM",
+            "BONUS_URANIUM",
+        ]
+    )
+)
 
-    "BONUS_COPPER",
-    "BONUS_IRON",
-    "BONUS_HORSE",
-    "BONUS_IVORY",
-
-    "BONUS_CORN",
-    "BONUS_PIG",
-    "BONUS_COW",
-    "BONUS_WHEAT",
-    "BONUS_RICE",
-    "BONUS_SHEEP",
-    "BONUS_BANANA",
-    "BONUS_DEER",
-
-    "BONUS_FISH",
-    "BONUS_CLAM",
-    "BONUS_CRAB",
-
-    "BONUS_FUR",
-
-    "BONUS_SUGAR",
-    "BONUS_SPICES",
-    "BONUS_WINE",
-    "BONUS_DYE",
-    "BONUS_SILK",
-    "BONUS_INCENSE",
-
-    "BONUS_STONE",
-    "BONUS_MARBLE",
-
-    "BONUS_OIL",
-    "BONUS_WHALE",
-    "BONUS_COAL",
-    "BONUS_ALUMINUM",
-    "BONUS_URANIUM",
-]))
-
-BONUS_RANKS = {BONUS_ORDER[n]: max(n, 2) for n in range(len(BONUS_ORDER)-1, -1, -1)}
+BONUS_RANKS = {BONUS_ORDER[n]: max(n, 2) for n in range(len(BONUS_ORDER) - 1, -1, -1)}
 
 
-TERRAIN_ORDER = list(reversed([
-    "TERRAIN_GRASS",
-    "TERRAIN_PLAINS",
-    "TERRAIN_COAST",
-    "TERRAIN_TUNDRA",
-    "TERRAIN_OCEAN",
-    "TERRAIN_DESERT",
-    "TERRAIN_SNOW",
-]))
+TERRAIN_ORDER = list(
+    reversed(
+        [
+            "TERRAIN_GRASS",
+            "TERRAIN_PLAINS",
+            "TERRAIN_COAST",
+            "TERRAIN_TUNDRA",
+            "TERRAIN_OCEAN",
+            "TERRAIN_DESERT",
+            "TERRAIN_SNOW",
+        ]
+    )
+)
 
-TERRAIN_RANKS = {TERRAIN_ORDER[n]: n for n in range(len(TERRAIN_ORDER)-1, -1, -1)}
+TERRAIN_RANKS = {TERRAIN_ORDER[n]: n for n in range(len(TERRAIN_ORDER) - 1, -1, -1)}
 
-FEATURE_ORDER = list(reversed([
-    "FEATURE_FLOOD_PLAINS",
-    "FEATURE_OASIS",
-    "FEATURE_FOREST",
-    "FEATURE_ICE",
-    "FEATURE_JUNGLE",
-]))
+FEATURE_ORDER = list(
+    reversed(
+        [
+            "FEATURE_FLOOD_PLAINS",
+            "FEATURE_OASIS",
+            "FEATURE_FOREST",
+            "FEATURE_ICE",
+            "FEATURE_JUNGLE",
+        ]
+    )
+)
 
-FEATURE_RANKS = {FEATURE_ORDER[n]: n for n in range(len(FEATURE_ORDER)-1, -1, -1)}
+FEATURE_RANKS = {FEATURE_ORDER[n]: n for n in range(len(FEATURE_ORDER) - 1, -1, -1)}
 
 PLOT_TYPES = {
     "0": 0,  # peak
@@ -88,11 +91,6 @@ PLOT_TYPES = {
     "1": 2,  # hills
     "2": 3,  # land
 }
-
-
-# S6_saves = (f for f in Path("tests/S6_Saves").iterdir() if "WBSave" in f.name)
-# for f in S6_saves:
-#     break
 
 
 @dataclass
@@ -185,7 +183,7 @@ for idx, line in enumerate(lines):
 
     if line == "BeginPlayer":
         player_block = []
-        for player_line in lines[idx+1:]:
+        for player_line in lines[idx + 1 :]:
             if player_line != "EndPlayer":
                 player_block.append(player_line)
             else:
@@ -196,7 +194,7 @@ for idx, line in enumerate(lines):
 
     elif line == "BeginPlot":
         plot_block = []
-        for plot_line in lines[idx+1:]:
+        for plot_line in lines[idx + 1 :]:
             if plot_line != "EndPlot":
                 plot_block.append(plot_line)
             else:
@@ -208,8 +206,3 @@ for player in players:
     plot_radius = player_plot_radius(player, plots, 2)
     radius_value = sum(plot_value(p) for p in plot_radius)
     print(player, radius_value)
-
-
-"""
-{winner} {first_dead}
-"""

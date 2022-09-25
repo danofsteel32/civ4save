@@ -1,7 +1,4 @@
-""" enums/base.py
-These are defined in the source instead of being constructed at runtime
-from the XML files.
-"""
+"""enums/base.py"""
 from enum import Enum
 
 
@@ -26,28 +23,6 @@ class GameStateType(Enum):
     GAMESTATE_ON = 0
     GAMESTATE_OVER = 1
     GAMESTATE_EXTENDED = 2
-
-
-class YieldType(Enum):
-    NO_YIELD = -1
-    YIELD_FOOD = 0
-    YIELD_PRODUCTION = 1
-    YIELD_COMMERCE = 2
-
-
-class TraitType(Enum):
-    NO_TRAIT = -1
-    TRAIT_PHILOSOPHICAL = 0
-    TRAIT_AGGRESSIVE = 1
-    TRAIT_SPIRITUAL = 2
-    TRAIT_EXPANSIVE = 3
-    TRAIT_INDUSTRIOUS = 4
-    TRAIT_CREATIVE = 5
-    TRAIT_FINANCIAL = 6
-    TRAIT_ORGANIZED = 7
-    TRAIT_CHARISMATIC = 8
-    TRAIT_PROTECTIVE = 9
-    TRAIT_IMPERIALISTIC = 10
 
 
 class TradeableItem(Enum):
@@ -85,12 +60,10 @@ class PlotType(Enum):
     PLOT_OCEAN = 3
 
 
-BASE_ENUMS = [
-    GameType,
-    GameStateType,
-    YieldType,
-    TraitType,
-    TradeableItem,
-    ReplayMessageType,
-    PlotType,
-]
+class MultiplayerOptionType(Enum):
+    NO_MPOPTION = -1
+    MPOPTION_SIMULTANEOUS_TURNS = 0
+    MPOPTION_TAKEOVER_AI = 1
+    MPOPTION_SHUFFLE_TEAMS = 2
+    MPOPTION_ANONYMOUS = 3
+    MPOPTION_TURN_TIMER = 4

@@ -1,108 +1,32 @@
-from pathlib import Path
-
 import pytest
 
-from civ4save import __version__, organize, save_file
-from civ4save.structure import get_format
+from civ4save import Context, SaveFile, __version__
 
 MAX_PLAYERS = 19
 
-# TODO assert not-a-real raises Exception
+
 def test_version():
-    assert __version__ == "0.4.0"
+    assert __version__ == "0.5.0"
 
 
-def vanilla(file):
-    save_bytes = save_file.read(file)
-    fmt = get_format()
-    try:
-        data = fmt.parse(save_bytes, max_players=MAX_PLAYERS)
-    except Exception:
-        return False
-    return True
+@pytest.mark.parametrize("file", [
+    "tests/saves/Gandhi-culture-win-t331.CivBeyondSwordSave",
+])
+def test_parse(file):
+    context = Context(max_players=19)
+    save = SaveFile(file, context)
+    save.parse()
 
-    organize.default(data, MAX_PLAYERS)
-    organize.just_settings(data)
-    organize.just_players(data, MAX_PLAYERS)
-    for p in organize.player_list(data, MAX_PLAYERS):
-        organize.player(data, MAX_PLAYERS, p["idx"])
+    assert save.settings.start_year == -4000
+    assert save.settings.game_options["GAMEOPTION_NO_VASSAL_STATES"]
+    assert save.settings.game_speed.name == "GAMESPEED_NORMAL"
 
+    assert save.game_state.winner == 0
+    assert save.game_state.victory.name == "VICTORY_CULTURAL"
+    assert len(save.game_state.scores) == save.settings.num_civs
+    assert "Plato" in save.game_state.great_people_born
 
-def vanilla_with_plots(file):
-    save_bytes = save_file.read(file)
-    fmt = get_format(plots=True)
-    try:
-        data = fmt.parse(save_bytes, max_players=MAX_PLAYERS)
-    except Exception:
-        return False
-    organize.with_plots(data, MAX_PLAYERS)
-    return True
-
-
-def test_vanilla():
-    for f in Path("tests/saves").iterdir():
-        if f.name == "not-a-real.CivBeyondSwordSave":
-            with pytest.raises(save_file.NotASaveFile):
-                vanilla(f)
-            continue
-        if not vanilla(f):
-            pytest.fail(f.name)
-
-
-def test_vanilla_with_plots():
-    for f in Path("tests/saves").iterdir():
-        if f.name == "not-a-real.CivBeyondSwordSave":
-            with pytest.raises(save_file.NotASaveFile):
-                vanilla_with_plots(f)
-            continue
-        if not vanilla_with_plots(f):
-            pytest.fail(f.name)
-
-
-def ai_survivor(file):
-    save_bytes = save_file.read(file)
-    fmt = get_format(ai_survivor=True)
-    try:
-        data = fmt.parse(save_bytes, max_players=MAX_PLAYERS)
-    except Exception:
-        return False
-
-    organize.default(data, MAX_PLAYERS)
-    organize.just_settings(data)
-    for p in organize.player_list(data, MAX_PLAYERS):
-        organize.player(data, MAX_PLAYERS, p["idx"])
-    return True
-
-
-def ai_survivor_with_plots(file):
-    save_bytes = save_file.read(file)
-    fmt = get_format(ai_survivor=True, plots=True)
-    try:
-        data = fmt.parse(save_bytes, max_players=MAX_PLAYERS)
-    except Exception:
-        return False
-    organize.with_plots(data, MAX_PLAYERS)
-    return True
-
-
-def test_ai_survivor():
-    for f in Path("tests/S6_Saves").iterdir():
-        if f.suffix != ".CivBeyondSwordSave":
-            continue
-        if not ai_survivor(f):
-            print(f"FAIL {f.name}")
-            pytest.fail()
-
-
-def test_ai_survivor_with_plots():
-    for f in Path("tests/S6_Saves").iterdir():
-        if f.suffix != ".CivBeyondSwordSave":
-            continue
-        if not ai_survivor_with_plots(f):
-            print(f"FAIL {f.name}")
-            pytest.fail()
-
-
-def test_not_save_file():
-    with pytest.raises(Exception):
-        save_file.read("tests/saves/not-a-real.CivBeyondSwordSave")
+    player = save.get_player(0)
+    assert player.civ.name == "CIVILIZATION_INDIA"
+    assert player.leader.name == "LEADER_GANDHI"
+    assert "Hollywood" in player.cities[0].wonders

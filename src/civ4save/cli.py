@@ -1,174 +1,141 @@
-import argparse
+from functools import partial
+from pathlib import Path
 import json
-import sys
-from dataclasses import asdict, is_dataclass
-from enum import Enum
 
-try:
-    from . import browse
-    _browse = True
-except NotImplementedError as ex:
-    _browse = False
+import click
+from rich import print
 
-from . import organize, save_file, utils
-from .structure import get_format
-from .xml_files import make_enums
+from . import __version__, utils
+from .objects import Context
+from .save_file import SaveFile
+from .xml_files import make_enums as write_enums
 
 
-class CustomJsonEncoder(json.JSONEncoder):
+@click.group()
+@click.version_option(__version__)
+def cli():
+    pass
+
+
+@cli.command()
+@click.option(
+    "--max-players",
+    default=19,
+    type=int,
+    help="Needed if you have changed your MAX_PLAYERS value in CvDefines.h",
+)
+@click.option(
+    "--settings",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Basic info and settings only. Nothing that would be unknown to the human player",
+)
+@click.option(
+    "--spoilers",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Extra info that could give an advantage to human player.",
+)
+@click.option(
+    "--player",
+    default=-1,
+    type=int,
+    help="Only show data for a specific player idx. Defaults to the human player",
+)
+@click.option(
+    "--list-players",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="List all player (idx, name, leader, civ) in the game",
+)
+@click.option(
+    "--ai-survivor",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Use XML settings from AI Survivor series",
+)
+@click.option(
+    "--debug",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Print detailed debugging info",
+)
+@click.option(
+    "--json",
+    "json_",
+    is_flag=True,
+    show_default=True,
+    default=False,
+    help="Format output as JSON",
+)
+@click.argument("file", type=click.Path(exists=True, path_type=Path))
+def parse(
+    max_players, settings, spoilers, player, list_players, ai_survivor, debug, json_, file
+):
+    """Parses a .CivBeyondSwordSave file
+
+    FILE is a save file or directory of save files
     """
-    Enables serializing dataclasses and Enums
-    """
+    context = Context(max_players=max_players, ai_survivor=ai_survivor)
+    save = SaveFile(file=file, context=context, debug=debug)
+    print(save)
+    save.parse()
 
-    def default(self, o):
-        if is_dataclass(o):
-            return asdict(o)
-        elif isinstance(o, Enum):
-            if o.name == "NO_RELIGION":
-                return "No Religion"
-            return utils.unenumify(o.name)
-        return super().default(o)
-
-
-def parse_args(args):
-    parser = argparse.ArgumentParser(
-        description="Extract data from .CivBeyondSwordSave file"
-    )
-    group = parser.add_mutually_exclusive_group()
-    parser.add_argument(
-        "--max-players",
-        dest="max_players",
-        type=int,
-        default=19,
-        help="Needed if you have changed your MAX_PLAYERS value in CvDefines.h",
-    )
-    group.add_argument(
-        "--gamefiles",
-        action="store_true",
-        default=False,
-        help="Find and print relevant game files paths",
-    )
-    group.add_argument(
-        "--browse",
-        dest="browse",
-        type=str,
-        const="tests/saves",
-        nargs="?",
-        help="Browse saves in a directory",
-    )
-    group.add_argument(
-        "--gen-enums",
-        dest="gen_enums",
-        action="store_true",
-        default=False,
-        help="Create enums file from XML files",
-    )
-    group.add_argument(
-        "--plots",
-        dest="plots",
-        action="store_true",
-        default=False,
-        help="Attempt to parse the plot data. WARNING: still buggy!",
-    )
-    group.add_argument(
-        "--settings",
-        dest="settings",
-        action="store_true",
-        default=False,
-        help="Only return the games settings. No game state or player data",
-    )
-    group.add_argument(
-        "--player",
-        dest="player",
-        type=int,
-        default=-1,
-        help="Only return the player data for a specific player idx",
-    )
-    group.add_argument(
-        "--list-players",
-        dest="list_players",
-        action="store_true",
-        default=False,
-        help="List all player idx, name, leader, civ in the game",
-    )
-    group.add_argument(
-        "--version",
-        dest="version",
-        action="store_true",
-        default=False,
-        help="Print version info",
-    )
-    parser.add_argument(
-        "--ai-survivor",
-        dest="ai_survivor",
-        action="store_true",
-        default=False,
-        help="Use XML settings from AI Survivor series",
-    )
-    parser.add_argument(
-        "--debug",
-        dest="debug",
-        action="store_true",
-        default=False,
-        help="Print debug info",
-    )
-    parser.add_argument(
-        "file", type=str, help="Target save file", const=None, nargs="?"
-    )
-    return parser.parse_args(args)
-
-
-def run():
-    args = parse_args(sys.argv[1:])
-    fmt = get_format(args.ai_survivor, args.plots, args.debug)
-
-    if args.version:
-        from . import __version__
-        print(__version__)
+    if json_:
+        j = partial(json.dumps, indent=4, cls=utils.CustomJsonEncoder)
+    if spoilers:
+        if json_:
+            print(j(save.game_state))
+            return
+        print(save.game_state)
+        return
+    if player > -1:
+        if json_:
+            print(j(save.get_player(player)))
+            return
+        print(save.get_player(player))
+        return
+    if list_players:
+        if json_:
+            print(j(save.players))
+            return
+        print(save.players)
         return
 
-    if args.gamefiles:
-        print(utils.get_game_dir())
-        print(utils.get_saves_dir())
+    if json_:
+        print(j(save.settings))
         return
+    print(save.settings)
+    return
+    # pprint(save.settings)
+    # pprint(save.game_state)
+    # pprint(save.players)
+    # pprint(save.plots)
 
-    if args.gen_enums:
-        make_enums(args.ai_survivor)
-        return
 
-    if args.browse:
-        if _browse:
-            save_files = browse.get_save_files(args.browse)
-            browse.browse(save_files, fmt)
-        print("Browsing not currently supported on Windows")
-        return
+@cli.command(help="Find and print relevant game files paths")
+def gamefiles():
+    game_dir = utils.get_game_dir()
+    saves_dir = utils.get_saves_dir()
+    print("[bold]Game Folder[/bold]")
+    print("[bold]-----------[/bold]")
+    print(utils.renderable_filepath(game_dir))
+    print()
+    print("[bold]Saves Folder[/bold]")
+    print("[bold]------------[/bold]")
+    print(utils.renderable_filepath(saves_dir))
+    print()
 
-    if not args.file:
-        print("Save file is a required argument")
-        sys.exit(1)
 
-    save_bytes = save_file.read(args.file)
-    try:
-        data = fmt.parse(save_bytes, max_players=args.max_players)
-    except Exception as e:
-        print(e)
-        if args.with_plots:
-            print("Probably the plots bug")
-
-    out: dict | list[dict]
-    if args.settings:
-        out = organize.just_settings(data)
-    elif args.player >= 0:
-        out = organize.player(data, args.max_players, args.player)
-    elif args.list_players:
-        out = organize.player_list(data, args.max_players)
-    else:
-        if args.plots:
-            out = organize.with_plots(data, args.max_players)
-        else:
-            out = organize.default(data, args.max_players)
-    print(json.dumps(out, indent=4, cls=CustomJsonEncoder))
+@cli.command(help="Convert XML files to Enums (does not modify your files)." "")
+def make_enums():
+    write_enums()
 
 
 if __name__ == "__main__":
-    run()
+    cli()

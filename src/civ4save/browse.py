@@ -1,10 +1,7 @@
 from functools import cache, partial
 from pathlib import Path
-from simple_term_menu import TerminalMenu
 
-from . import save_file, structure
-from .enums import vanilla as e
-from .utils import unenumify
+from .save_file import SaveFile, NotASaveFile
 
 
 def get_save_files(directory: str):

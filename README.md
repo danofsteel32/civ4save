@@ -1,120 +1,171 @@
-# Beyond the Sword Save File Reader
+# Civ4Save 
 
-Uncompresses and decodes the data in a `.CivBeyondSwordSave` file.
-check out this [example](example.json) to see what data you can get.
+Parse the data in a `.CivBeyondSwordSave` file.
 
-So far I've only tested with the vanilla version of the Civ4 BTS and the slightly tweaked XML files Sullla uses in the [AI survivor series](https://sullla.com/Civ4/civ4survivor6-14.html).
-Mods like BAT/BUG/BULL change the structure of the save file and do not work.
+So far I've only tested with the vanilla version of the Civ4 BTS and the slightly tweaked XML files
+Sullla uses in the [AI survivor series](https://sullla.com/Civ4/civ4survivor6-14.html).
+
+Mods like BAT/BUG/BULL change the structure of the save file and currently cannot be parsed.
 I'd like to support them but I need specific details on what changes the mods are making to the binary save format.
 
 Thanks to [this repo](https://github.com/dguenms/beyond-the-sword-sdk) for hosting the Civ4 BTS source.
 Wouldn't have been possible to make this without it.
 
-
 ### TODO
-- support text or json output
-- `contrib` module/package for analysis (ex. comparing starting locations in ai survivor)
+- Caching of parsed saves (Pickle?, JSON?)
+- Textual cli for browsing saves in a directory
+    - partial parsing for speeed
+- `xml_files.py` needs tests
+- `src/civ4save/objects/*` all need tests
+- use `pdoc` to autogenerate docs
+- `contrib` module/subpackage for interesting scripts (ex. comparing starting locations in ai survivor)
 - diffing tools to tell what changed between 2 saves/autosaves
-- Windows support for browsing saves
+- Click mutually exclusive groups
 
 
 ### Usage
 
 #### Install
 
-* Requires >= python3.10
+* Requires >= python3.10 (only bc type hints)
 * If someone opens an issue requesting 3.6-3.9 I'll get to it
 
 `python -m pip install civ4save`
 
 #### Command line Tool
 
-`civ4save <options> <save_file>`
-
 ```
-usage: __main__.py [-h] [--max-players MAX_PLAYERS] [--gamefiles | --browse [BROWSE] | --gen-enums | --plots |
-                   --settings | --player PLAYER | --list-players | --version] [--ai-survivor] [--debug]
-                   [file]
+$ civ4save --help
 
-Extract data from .CivBeyondSwordSave file
+Usage: civ4save [OPTIONS] COMMAND [ARGS]...
 
-positional arguments:
-  file                  Target save file
+Options:
+  --version  Show the version and exit.
+  --help     Show this message and exit.
 
-options:
-  -h, --help            show this help message and exit
-  --max-players MAX_PLAYERS
-                        Needed if you have changed your MAX_PLAYERS value in CvDefines.h
-  --gamefiles           Find and print relevant game files paths
-  --browse [BROWSE]     Browse saves in a directory
-  --gen-enums           Create enums file from XML files
-  --plots               Attempt to parse the plot data. WARNING: still buggy!
-  --settings            Only return the games settings. No game state or player data
-  --player PLAYER       Only return the player data for a specific player idx
-  --list-players        List all player idx, name, leader, civ in the game
-  --version             Print version info
-  --ai-survivor         Use XML settings from AI Survivor series
-  --debug               Print debug info
+Commands:
+  gamefiles   Find and print relevant game files paths
+  make-enums  Convert XML files to Enums (does not modify your files).
+  parse       Parses a .CivBeyondSwordSave file
 ```
 
-##### Browse Example
-`civ4save --browse <dir of save files>`
+```
+$ civ4save parse --help
 
-Navigate with `jk` or arrow keys.
-![Browse Example](https://github.com/danofsteel32/civ4save/blob/main/civ4save-browse.png)
+Usage: civ4save parse [OPTIONS] FILE
+
+  Parses a .CivBeyondSwordSave file
+
+  FILE is a save file or directory of save files
+
+Options:
+  --max-players INTEGER  Needed if you have changed your MAX_PLAYERS value in
+                         CvDefines.h
+  --settings             Basic info and settings only. Nothing that would be
+                         unknown to the human player
+  --spoilers             Extra info that could give an advantage to human
+                         player.
+  --player INTEGER       Only show data for a specific player idx. Defaults to
+                         the human player
+  --list-players         List all player (idx, name, leader, civ, etc.) in the game
+  --ai-survivor          Use XML settings from AI Survivor series
+  --debug                Print detailed debugging info
+  --json                 Format output as JSON
+  --help                 Show this message and exit.
+```
+
+![Settings](https://github.com/danofsteel32/civ4save/blob/main/screenshots/civ4save-settings.png)
+
+![Spoilers](https://github.com/danofsteel32/civ4save/blob/main/screenshots/civ4save-spoilers.png)
+
+![Player](https://github.com/danofsteel32/civ4save/blob/main/screenshots/civ4save-player_1.png)
+
+![Player Cont.](https://github.com/danofsteel32/civ4save/blob/main/screenshots/civ4save-player_2.png)
+
+`gamefiles` command works on both Linux (flatpak Steam install too) and Windows.
+
+```
+$ civ4save gamefiles
+
+Game Folder
+-----------
+/home/dan/.local/share/Steam/steamapps/common/Sid Meier's Civilization IV Beyond the Sword
+
+Saves Folder
+------------
+/home/dan/.local/share/Steam/steamapps/compatdata/8800/pfx/drive_c/users/steamuser/My 
+Documents/My Games/Beyond the Sword/Saves/single
+```
+
+`make-enums` command is useful for developers/modders.
+It locates the XML files (vanilla, warlords, bts), reads each file, and transforms it into a python enum.
+The enums are written to stdout. Ex. `civ4save make-enums > enums.py`
+It **does not make any changes to your files**.
+
 
 #### As a Libray
 
 ```python
-from civ4save import save_file
-from civ4save.structure import get_format
 
-save_bytes = save_file.read('path/to/save')
+from civ4save Context, SaveFile
 
-# get_format takes 3 optional arguments
-# ai_survivor: bool  -- use the tweaked XML files as seen in ai survivor
-# plots: bool  -- try experimental plot parsing
-# debug: bool  -- calls Construct.Probe() to print debug info
-fmt = get_format()
-# default max_players=19, you'll know if you changed this
-data = fmt.parse(save_bytes, max_players=19)
+# Create a Context
+# Context takes 3 kwargs:
+#   max_players: int (You'll know if you changed it from 19)
+#   max_teams: int (defaults to same as max_players)
+#   ai_survivor: bool (default False)
+context = Context(max_players=19)
 
-# do whatever you want to with the data, see organize.py for ideas
+# SaveFile takes 3 kwargs:
+#   file: str | Path
+#   context: Context
+#   debug: bool (default False)
+# calling parse() will take a few seconds the first time
+save = SaveFile('Rome.CivBeyondSwordSave', context).parse()
+print(save.settings)
 ```
 
 
-### Developement / Contributing
-`python -m pip install ".[dev]"` to install all dev dependencies.
+### Development / Contributing
+
+`python -m pip install ".[dev]"` to install in editable mode along with all dev deps.
 
 `python -m pytest tests/` to run the tests.
 
+Or you can use the `./run.sh` script if you're on Linux.
+
+```
+./run.sh install dev
+./run.sh tests
+./run.sh c4 --help
+./run.sh clean
+./run.sh build
+```
 
 ### How it Works
-Games are saved in a binary format that kind of looks like a sandwich
+Games are saved in a what's basically a memory dump that kind of looks like a sandwich.
 
-`| uncompressed data | zlib compressed data | uncompressed checksum |`
+`| uncompressed data | zlib compressed data | uncompressed data + checksum |`
 
-with most of the data in the compressed middle part. See `save_file.py` to understand how the file is uncompressed.
+The `SaveFile` class handles all of the decompression stuff as well as the parsing using the
+[construct](https://github.com/construct/construct) library.
 
-The [construct](https://github.com/construct/construct) library makes it easy to declaratively define the binary format in `structure.py` and this gives us parsing/writing for free.
-
-From there the functions in `organize.py` sort and cleanup the parsed data.
-
-The enums defined in `civ4save/enums/` are automatically generated from the game XML files using `xml_files.py`.
+If you want to see the binary types they are defined in `src/civ4save/structs.py`
 
 
 ### Write Order
-The game calls its `::write` functions in this order:
+The game calls its `::write` functions in this order when saving:
 
-1. CvInitCore
-2. CvGame
-3. CvMap
-4. CvPlot (incomplete/buggy)
-4. CvTeam (not implemented)
-5. CvPlayer (not implemented)
+1. CvInitCore (done)
+2. CvGame (done)
+3. CvMap (done)
+4. CvPlot (buggy/inconsistent)
+5. CvArea (under construction)
+6. CvTeam (not implemented)
+7. CvPlayer (not implemented)
 
-But there's issues consistently parsing `CvPlot` so only up to CvMap is parsed by default.
-I haven't drilled down the exact cause but it seems to have something to do with the size of the save file.
-Files under 136K (largest test save I have that works) parse fine but anything larger only makes it through ~30-80% of the plots before hitting a string of `0xff` bytes followed by data I can't make any sense of.
 
-`python -m civ4save.plots_bug.py` will demonstrate the bug and prints out debug info.
+### Plots Bug
+For some unknown reason save files larger than 136KB (largest I have that doesn't encounter the bug)
+parsing fails about half through the plots array. pass `debug=True` to `SaveFile` to see details when parsing
+a large save file and you'll get detailed debugging output.
