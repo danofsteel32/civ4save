@@ -122,6 +122,7 @@ def parse(
 def gamefiles():
     game_dir = utils.get_game_dir()
     saves_dir = utils.get_saves_dir()
+    xml_dir = utils.get_xml_dir()
     print("[bold]Game Folder[/bold]")
     print("[bold]-----------[/bold]")
     print(utils.renderable_filepath(game_dir))
@@ -129,6 +130,10 @@ def gamefiles():
     print("[bold]Saves Folder[/bold]")
     print("[bold]------------[/bold]")
     print(utils.renderable_filepath(saves_dir))
+    print()
+    print("[bold]XML Folder[/bold]")
+    print("[bold]----------[/bold]")
+    print(utils.renderable_filepath(xml_dir))
     print()
 
 

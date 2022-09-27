@@ -89,6 +89,14 @@ def get_saves_dir(sub_dir: str = "single") -> Path:
     return saves_dir
 
 
+def get_xml_dir() -> Path:
+    game_dir = get_game_dir()
+    bts_xml = game_dir / "Beyond the Sword" / "Assets" / "XML"
+    if not bts_xml.exists():
+        raise FileNotFoundError("Could not locate XML directory")
+    return bts_xml
+
+
 def clear_auto_saves():
     auto_saves = get_saves_dir() / "single/auto"
     for save in auto_saves.iterdir():

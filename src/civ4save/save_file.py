@@ -1,6 +1,6 @@
 import typing
 import zlib
-from enum import Enum
+from enum import Enum, auto
 from functools import cached_property
 from pathlib import Path
 
@@ -15,27 +15,32 @@ class NotASaveFile(Exception):
 
 
 class ParserState(Enum):
-    READY = 0
-    METADATA = 1
-    CV_INIT_CORE = 2
-    CV_GAME = 3
-    CV_MAP_BASE = 4
-    CV_MAP_PLOTS = 6
-    PARTIAL_PARSE = 7
-    FULL_PARSE = 8
+    READY = auto()
+    METADATA = auto()
+    CV_INIT_CORE = auto()
+    CV_GAME = auto()
+    CV_MAP_BASE = auto()
+    CV_MAP_PLOTS = auto()
+    PARTIAL_PARSE = auto()
+    FULL_PARSE = auto()
 
 
 class SaveFile:
     """
     file: str | Path
-    context: Context
+    context: Context | None
     debug: bool
     """
 
-    def __init__(self, file: str | Path, context: Context, debug: bool = False):
+    def __init__(
+        self,
+        file: str | Path,
+        context: typing.Optional[Context] = None,
+        debug: bool = False,
+    ):
         """Read and decompress the file, but do not parse anything yet"""
         self.file = file
-        self.context = context
+        self.context = context if context else Context()
         self.debug = debug
 
         self._idx: int = 0  # current index in the byte array
@@ -94,17 +99,17 @@ class SaveFile:
                 print(self._parser_state)
             match self._parser_state:
                 case ParserState.READY:
-                    self._metadata = self._parse_metadata()
+                    self._parser_state = ParserState.METADATA
                 case ParserState.METADATA:
-                    self._cv_init_core_data = self._parse_cv_init_core()
+                    self._metadata = self._parse_metadata()
                 case ParserState.CV_INIT_CORE:
-                    self._cv_game_data = self._parse_cv_game()
+                    self._cv_init_core_data = self._parse_cv_init_core()
                 case ParserState.CV_GAME:
-                    self._cv_map_base_data = self._parse_cv_map_base()
+                    self._cv_game_data = self._parse_cv_game()
                 case ParserState.CV_MAP_BASE:
-                    self._cv_map_plots_data = self._parse_cv_map_plots()
+                    self._cv_map_base_data = self._parse_cv_map_base()
                 case ParserState.CV_MAP_PLOTS:
-                    break
+                    self._cv_map_plots_data = self._parse_cv_map_plots()
                 case ParserState.PARTIAL_PARSE:
                     break
                 case ParserState.FULL_PARSE:
@@ -116,7 +121,6 @@ class SaveFile:
         Parses just the first few bytes of CvInitCore.
         Fail loud and early if the version number is unrecognized.
         """
-        self._parser_state = ParserState.METADATA
         struct = structs.metadata()
         data = struct.parse(self._bytes)
         self._idx += data._idx
@@ -124,30 +128,35 @@ class SaveFile:
         if data.version != 302:
             raise NotImplementedError(f"Unkown {self.version=}")
         self._version = data.version
+        # Move to next state
+        self._parser_state = ParserState.CV_INIT_CORE
         return data
 
     def _parse_cv_init_core(self) -> C.Container[typing.Any]:
         """Parses CvInitCore"""
-        self._parser_state = ParserState.CV_INIT_CORE
         struct = structs.cv_init_core(self.context)
         data = struct.parse(self._bytes[self._idx : self._z_start])
         self._idx += data._idx
+        # Move to next state
+        self._parser_state = ParserState.CV_GAME
         return data
 
     def _parse_cv_game(self) -> C.Container[typing.Any]:
         """Parses CvGame"""
-        self._parser_state = ParserState.CV_GAME
         struct = structs.cv_game(self.context)
         data = struct.parse(self._bytes[self._idx :])
         self._idx += data._idx
+        # Move to next state
+        self._parser_state = ParserState.CV_MAP_BASE
         return data
 
     def _parse_cv_map_base(self) -> C.Container[typing.Any]:
         """Parses everything in CvMap up to the plots array"""
-        self._parser_state = ParserState.CV_MAP_BASE
         struct = structs.cv_map_base(self.context)
         data = struct.parse(self._bytes[self._idx :])
         self._idx += data._idx
+        # Move to next state
+        self._parser_state = ParserState.PARTIAL_PARSE
         return data
 
     def _parse_cv_map_plots(
@@ -158,7 +167,6 @@ class SaveFile:
         correct. If self.debug=True print detailed debugging info on failure
         to parse else just stop and return the plots that could be parsed.
         """
-        self._parser_state = ParserState.CV_MAP_PLOTS
         self._start_cv_map_plots = self._idx
         struct = structs.cv_plot(self.context)
 
@@ -183,9 +191,7 @@ class SaveFile:
             self._idx += plot.end_plot_index
             self._plots.append(plot)
 
-        if len(self._plots) != grid_width * grid_height:
-            self._parser_state = ParserState.PARTIAL_PARSE
-        else:
+        if len(self._plots) == grid_width * grid_height:
             self._parser_state = ParserState.FULL_PARSE
 
         return self._plots
@@ -270,19 +276,23 @@ class SaveFile:
     @property
     def version(self) -> int:
         """Returns the version of the save file, 302 for BTS vanilla."""
-        self.parse()
+        if self._parser_state.value < ParserState.PARTIAL_PARSE.value:
+            self.parse()
         return self._version
 
     @property
     def current_turn(self) -> int:
         """Returns the current turn."""
-        self.parse()
+        if self._parser_state.value < ParserState.PARTIAL_PARSE.value:
+            self.parse()
         return self._cv_init_core_data.game_turn
 
     @property
     def map_size(self) -> tuple[int, int]:
         """Returns map grid size (width x height)."""
-        self.parse()
+        if self._parser_state.value < ParserState.FULL_PARSE.value:
+            self._parser_state = ParserState.CV_MAP_PLOTS
+            self.parse()
         grid_width = self._cv_map_base_data.grid_width
         grid_height = self._cv_map_base_data.grid_height
         return grid_width, grid_height
@@ -290,23 +300,35 @@ class SaveFile:
     @cached_property
     def settings(self) -> Settings:
         """Returns the game's settings"""
+        if self._parser_state.value < ParserState.PARTIAL_PARSE.value:
+            self.parse()
         return Settings.from_struct(
             self._cv_init_core_data, self._cv_game_data, self._cv_map_base_data
         )
 
     @cached_property
     def game_state(self) -> GameState:
+        if self._parser_state.value < ParserState.PARTIAL_PARSE.value:
+            self.parse()
         return GameState.from_struct(self._cv_game_data, self._cv_map_base_data)
 
     @cached_property
     def players(self) -> dict[int, Player]:
+        if self._parser_state.value < ParserState.PARTIAL_PARSE.value:
+            self.parse()
         return get_players(self._cv_init_core_data, self._cv_game_data)
 
     @cached_property
     def plots(self) -> list[Plot]:
+        if self._parser_state.value < ParserState.FULL_PARSE.value:
+            self._parser_state = ParserState.CV_MAP_PLOTS
+            self.parse()
         return [Plot.from_struct(p) for p in self._plots]
 
     def get_plot(self, x: int, y: int) -> typing.Optional[Plot]:
+        if self._parser_state.value < ParserState.FULL_PARSE.value:
+            self._parser_state = ParserState.CV_MAP_PLOTS
+            self.parse()
         plot_index = utils.calc_plot_index(self.map_size[0], x, y)
         try:
             return self.plots[plot_index]
@@ -314,6 +336,8 @@ class SaveFile:
             return None
 
     def get_player(self, player_idx: int) -> typing.Optional[Player]:
+        if self._parser_state.value < ParserState.PARTIAL_PARSE.value:
+            self.parse()
         try:
             return self.players[player_idx]
         except KeyError:

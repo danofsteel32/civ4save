@@ -4,10 +4,14 @@ import types
 
 class Context:
     """
-    Holds necessary info for parsing.
+    max_players: int
+    max_teams: int
+    ai_survivor: bool
     """
 
-    def __init__(self, max_players: int, max_teams: int = 0, ai_survivor: bool = False):
+    def __init__(
+        self, max_players: int = 19, max_teams: int = 0, ai_survivor: bool = False
+    ):
         self.max_players = max_players
         self.max_teams = max_teams if max_teams else max_players
         self.ai_survivor = ai_survivor
