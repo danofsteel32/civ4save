@@ -116,7 +116,7 @@ save.get_player(0)  # Returns civ4save.objects.Player
 # only get parsed when accessed. Afterwards they are cached so access is fast again
 save.get_plot(x=20, y=20)  # Returns civ4save.objects.Plot
 for plot in save.plots:
-    print(plot)
+    print(plot.owner, plot.improvement_type)
 
 # Optionally create a Context to change a few values the parser uses
 # Context takes 3 kwargs:
