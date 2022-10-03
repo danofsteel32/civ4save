@@ -7,7 +7,7 @@ Sullla uses in the [AI survivor series](https://sullla.com/Civ4/civ4survivor6-14
 A tweaked DLL to support a higher `MAX_PLAYERS` will work you just need to pass the `max_players` value to the parser.
 
 Mods like BAT/BUG/BULL change the structure of the save file and currently cannot be parsed.
-I'd like to support them but I need specific details on what changes the mods are making to the binary save format.
+Supporting at least a subset of features for BAT saves is on my TODO list.
 
 Thanks to [this repo](https://github.com/dguenms/beyond-the-sword-sdk) for hosting the Civ4 BTS source.
 Wouldn't have been possible to make this without it.
@@ -72,7 +72,7 @@ Options:
 
 ![Player Cont.](https://github.com/danofsteel32/civ4save/blob/main/screenshots/civ4save-player_2.png)
 
-`gamefiles` command works on both Linux (flatpak Steam install too) and Windows.
+`gamefiles` command works on both Linux and Windows.
 
 ```
 $ civ4save gamefiles
@@ -173,15 +173,19 @@ parsing fails about half through the plots array. pass `debug=True` to `SaveFile
 a large save file and you'll get detailed debugging output. When `debug=False` the parser parses as many
 plots as it can and doesn't raise any exceptions.
 
+*Note to self: Take some in-game screenshots of the tile that messes things up*
+
 
 ### TODO
-- Caching of parsed saves (Pickle?, JSON?)
-- Build more useful objects from some of the XML files (Leaders, Civs)
-- [Textual](https://github.com/Textualize/textual) UI for browsing saves in a directory
-- `xml_files.py` needs tests
-- `src/civ4save/objects/*` all need tests
-- use `pdoc` to autogenerate docs (and better docstrings)
-- `contrib` subpackage for interesting scripts (ex. comparing starting locations in ai survivor)
-- diffing tools to tell what changed between 2 saves/autosaves
+- make `parse` the default command
 - Click mutually exclusive group plugin for more robust cli arg handling
-- `cli.py` fix all those if statements
+- `src/civ4save/objects/*` all need tests
+- `xml_files.py` needs tests
+- tox for tests (3.7, 3.8, 3.9, 3.10)
+- Caching of parsed saves (probably using [dataclasses_json](https://pypi.org/project/dataclasses-json/))
+- Build more useful objects from some of the XML files (Leaders, Civs)
+- `contrib` subpackage for interesting scripts (ex. comparing starting locations in ai survivor)
+- use `pdoc` to autogenerate docs (and better docstrings)
+- [Textual](https://github.com/Textualize/textual) UI for browsing saves in a directory
+    - maybe a `send to trash` button to make it easy to clean out unwanted saves
+- diffing tools to tell what changed between 2 saves/autosaves
