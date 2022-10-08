@@ -4,20 +4,20 @@ from dataclasses import asdict, is_dataclass
 from enum import Enum
 from pathlib import Path
 
+import xmltodict
+
 
 class CustomJsonEncoder(json.JSONEncoder):
     """
     Enables serializing dataclasses and Enums
     """
 
-    def default(self, o):
-        if is_dataclass(o):
-            return asdict(o)
-        elif isinstance(o, Enum):
-            if o.name == "NO_RELIGION":
-                return "No Religion"
-            return unenumify(o.name)
-        return super().default(o)
+    def default(self, obj):  # type: ignore
+        if is_dataclass(obj):
+            return asdict(obj)
+        elif isinstance(obj, Enum):
+            return obj.name
+        return super().default(obj)
 
 
 def renderable_filepath(path: Path) -> str:
@@ -40,16 +40,16 @@ def next_plot(
     return next_x, next_y
 
 
-def get_enum_length(e) -> int:
+def get_enum_length(e: Enum) -> int:
     """
     Ignores the negative value members of the enum because we don't want to
     count the NO_<something> = -1
     """
-    return len([m for m in e.__members__ if e[m].value >= 0])
+    return len([m for m in e.__members__ if e[m].value >= 0])  # type: ignore
 
 
-def unenumify(e) -> str:
-    strip_leading = str(e).split("_")[1:]
+def unenumify(name: str) -> str:
+    strip_leading = str(name).split("_")[1:]
     return " ".join(strip_leading).title()
 
 
@@ -97,19 +97,39 @@ def get_xml_dir() -> Path:
     return bts_xml
 
 
-def clear_auto_saves():
+def clear_auto_saves() -> None:
     auto_saves = get_saves_dir() / "single/auto"
     for save in auto_saves.iterdir():
         print(save.name)
         save.unlink()
 
 
-def test_saves_iter(ai_survivor: bool = False, modded: bool = False):
-    for save in Path("tests/saves").iterdir():
-        yield save
-    if ai_survivor:
-        for save in Path("tests/S6_Saves").iterdir():
-            yield save
-    if modded:
-        for save in Path("tests/modded_saves").iterdir():
-            yield save
+def make_text_map(files: list[Path], lang: str = "English") -> dict[str, str]:
+    """
+    Read these files and create a mapping of the TXT_KEY -> <lang> value.
+        CIV4GameTextInfos_Cities.xml
+        CIV4GameText_Cities_BTS.xml
+        CIV4GameTextInfos_Objects.xml
+        CIV4GameText_Warlords_Objects.xml
+        CIV4GameText_Objects_BTS.xml
+    """
+
+    text_map = {}
+    for file in files:
+        with open(file, mode="r", encoding="ISO-8859-1") as f:
+            data = xmltodict.parse(f.read(), encoding="ISO-8859-1")
+        for text in data["Civ4GameText"]["TEXT"]:
+            tag, name = text["Tag"], text[lang]
+            try:
+                new_name = name.get("Text", None)
+            except AttributeError:
+                text_map[tag] = name
+                continue
+            text_map[tag] = new_name
+    return text_map
+
+
+# if __name__ == "__main__":
+#     files = [f for f in Path("xml").iterdir() if "Text" in f.name]
+#     text_map = make_text_map(files)
+#     print(json.dumps(text_map, indent=4))

@@ -23,11 +23,3 @@ def test_unenumify():
 def test_next_plot():
     assert (1, 0) == utils.next_plot(0, 0, 84, 52)
     assert (0, 1) == utils.next_plot(83, 0, 84, 52)
-
-
-def test_get_game_dir():
-    assert utils.get_game_dir()
-
-
-def test_get_saves_dir():
-    assert utils.get_saves_dir()
