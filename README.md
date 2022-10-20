@@ -204,7 +204,6 @@ plots as it can and doesn't raise any exceptions.
 - Better docs
 - `src/civ4save/objects/*` all need tests
 - `xml_files.py` needs tests
-- `tox` for tests (3.7, 3.10)
 - Caching of parsed saves (probably using [dataclasses_json](https://pypi.org/project/dataclasses-json/))
 - [Textual](https://github.com/Textualize/textual) UI for browsing saves in a directory
     - maybe a `send to trash` button to make it easy to clean out unwanted saves

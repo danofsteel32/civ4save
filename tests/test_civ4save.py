@@ -6,7 +6,7 @@ MAX_PLAYERS = 19
 
 
 def test_version():
-    assert __version__ == "0.6.0"
+    assert __version__ == "0.6.1"
 
 
 @pytest.mark.parametrize("file", [
