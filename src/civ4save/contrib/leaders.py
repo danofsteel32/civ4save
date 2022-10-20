@@ -1,8 +1,9 @@
+"""Some potentially interesting stuff with the Leaders."""
 import json
 from dataclasses import dataclass
 from functools import cache
 from pathlib import Path
-from typing import Optional
+from typing import Dict, List, Optional, Tuple
 
 import importlib_resources
 import xmltodict
@@ -23,10 +24,10 @@ class Leader:
     description: str
     favorite_civic: CivicType
     favorite_religion: ReligionType
-    traits: tuple[TraitType, TraitType]
-    flavors: dict[str, int]
-    unit_ai_weight_modifiers: dict[str, int]
-    improvement_weight_modifiers: dict[str, int]
+    traits: Tuple[TraitType, TraitType]
+    flavors: Dict[str, int]
+    unit_ai_weight_modifiers: Dict[str, int]
+    improvement_weight_modifiers: Dict[str, int]
     wonder_construct_rand: int
     base_attitude: int
     base_peace_weight: int
@@ -70,13 +71,13 @@ class Leader:
         return cls(**d)
 
 
-def leader_attributes() -> list[str]:
-    """Returns list of all Leader attributes."""
-    return list(Leader.__dict__["__dataclass_fields__"].keys())
+def leader_attributes() -> List[str]:
+    """Returns List of all Leader attributes."""
+    return List(Leader.__dict__["__dataclass_fields__"].keys())
 
 
 @cache
-def _get_leaders_from_xml_file(xml_file: str | Path) -> dict[str, Leader]:
+def _get_leaders_from_xml_file(xml_file: str | Path) -> Dict[str, Leader]:
     leaders = {}
 
     text_map_json = (
@@ -236,8 +237,8 @@ def _get_leader_map():
     return leaders
 
 
-def rank_leaders(attribute: str, reverse: bool = False) -> list[tuple]:
-    """Returns a list of 2-tuples (description, attribute) of the leaders
+def rank_leaders(attribute: str, reverse: bool = False) -> List[Tuple]:
+    """Returns a List of 2-Tuples (description, attribute) of the leaders
         sorted by the attribute's value.
     Accepts attributes in CamelCase or snake_case.
     """
@@ -249,7 +250,7 @@ def rank_leaders(attribute: str, reverse: bool = False) -> list[tuple]:
         ["_" + c.lower() if c.isupper() else c for c in attribute]
     ).lstrip("_")
 
-    ranked: list[Leader] = []
+    ranked: List[Leader] = []
     if attribute == "traits":
         ranked = sorted(leaders, key=lambda x: x.traits[0].name)
 
@@ -280,7 +281,7 @@ def get_leader(name: str) -> Optional[Leader]:
     return None
 
 
-def get_leaders() -> dict[str, Leader]:
+def get_leaders() -> Dict[str, Leader]:
     """Returns a dict of leader descriptions mapped to the Leader object."""
     leaders = _get_leader_map()
     return {ld: Leader.from_dict(leaders[ld]) for ld in leaders}

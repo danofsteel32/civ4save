@@ -1,3 +1,4 @@
+"""Public API for civ4save.objects."""
 from .context import Context  # noqa: F401
 from .game_state import GameState  # noqa: F401
 from .player import Player, get_players  # noqa: F401

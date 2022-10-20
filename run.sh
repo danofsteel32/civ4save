@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 set -o errexit
 set -o nounset
 set -o pipefail
@@ -8,52 +7,50 @@ set -o pipefail
 VENVPATH="./venv"
 
 venv() {
-    local _bin="${VENVPATH}/bin"
-    if [ -d "${_bin}" ]; then
+    if [[ -d "${VENVPATH}/bin" ]]; then
         echo "source ${VENVPATH}/bin/activate"
     else
         echo "source ${VENVPATH}/Scripts/activate"
     fi
 }
 
-make-venv() {
+make_venv() {
     python -m venv "${VENVPATH}"
 }
 
-reset-venv() {
+reset_venv() {
     rm -rf "${VENVPATH}"
-    make-venv
+    make_venv
 }
 
-wrapped-python() {
-    local _bin="${VENVPATH}/bin"
-    if [ -d "${_bin}" ]; then
+wrapped_python() {
+    if [[ -d "${VENVPATH}/bin" ]]; then
         "${VENVPATH}"/bin/python "$@"
     else
         "${VENVPATH}"/Scripts/python "$@"
     fi
 }
 
-wrapped-pip() {
-    wrapped-python -m pip "$@"
+wrapped_pip() {
+    wrapped_python -m pip "$@"
 }
 
-python-deps() {
-    wrapped-pip install --upgrade pip setuptools wheel
+python_deps() {
+    wrapped_pip install --upgrade pip setuptools wheel
 
     local pip_extras="${1:-}"
-    if [ -z "${pip_extras}" ]; then
-        wrapped-pip install -e .
+    if [[ -z "${pip_extras}" ]]; then
+        wrapped_pip install -e .
     else
-        wrapped-pip install -e ".[${pip_extras}]"
+        wrapped_pip install -e ".[${pip_extras}]"
     fi
 }
 
 install() {
-    if [ -d "${VENVPATH}" ]; then
-        python-deps "$@"
+    if [[ -d "${VENVPATH}" ]]; then
+        python_deps "$@"
     else
-        make-venv && python-deps "$@"
+        make_venv && python_deps "$@"
     fi
 }
 
@@ -62,7 +59,7 @@ build() {
 }
 
 publish() {
-    clean && build
+    lint && tests && clean && build
     python -m twine upload dist/*
 }
 
@@ -79,16 +76,22 @@ clean() {
     find . -name '*.egg-info' -exec rm -fr {} +
 }
 
+lint() {
+    clean
+    wrapped_python -m flake8 src/ &&
+    wrapped_python -m mypy src/
+}
+
 tests() {
-    wrapped-python -m pytest -rP tests/
+    wrapped_python -m pytest -rA tests/
 }
 
 c4() {
-    wrapped-python -m civ4save.cli "$@"
+    wrapped_python -m civ4save.cli "$@"
 }
 
 default() {
-    c4 "$@"
+    wrapped_python -i -c 'import civ4save'
 }
 
 TIMEFORMAT="Task completed in %3lR"

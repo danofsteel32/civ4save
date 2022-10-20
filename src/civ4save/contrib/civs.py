@@ -1,8 +1,9 @@
+"""Some potentially interesting stuff with the Civs."""
 import json
 from dataclasses import dataclass
 from functools import cache
 from pathlib import Path
-from typing import Optional
+from typing import Dict, List, Optional, Tuple
 
 import importlib_resources
 import xmltodict
@@ -21,11 +22,11 @@ class Civ:
     type: CivilizationType
     description: str
     short_description: str
-    cities: list[str]
+    cities: List[str]
     unique_building: BuildingType
     unique_unit: UnitType
-    starting_techs: tuple[TechType, TechType]
-    leaders: list[LeaderHeadType]
+    starting_techs: Tuple[TechType, TechType]
+    leaders: List[LeaderHeadType]
 
     @classmethod
     def from_dict(cls, d: dict) -> "Civ":
@@ -44,7 +45,7 @@ class Civ:
 
 
 @cache
-def _get_civs_from_xml_files(xml_file: str | Path) -> dict[str, Civ]:
+def _get_civs_from_xml_files(xml_file: str | Path) -> Dict[str, Civ]:
     """
     Creates a mapping of short_description -> Civ
     Ex. "Mali": Civ(CivilizationType.CIVILIZATION_MALI, ...)
@@ -110,9 +111,9 @@ def _get_civ_map() -> dict:
     return civs
 
 
-def get_civs() -> dict[str, Civ]:
+def get_civs() -> Dict[str, Civ]:
     civs = _get_civ_map()
-    return {c: civs[c] for c in civs}
+    return {c: Civ.from_dict(civs[c]) for c in civs}
 
 
 def get_civ(name: str) -> Optional[Civ]:

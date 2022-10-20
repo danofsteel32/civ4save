@@ -17,8 +17,7 @@ Wouldn't have been possible to make this without it.
 
 #### Install
 
-* Requires >= python3.10
-* If someone opens an issue requesting 3.6-3.9 I'll get to it
+* Requires >= python3.7
 
 `python -m pip install civ4save`
 
@@ -34,9 +33,11 @@ Options:
   --help     Show this message and exit.
 
 Commands:
-  gamefiles   Find and print relevant game files paths
-  make-enums  Convert XML files to Enums (does not modify your files).
-  parse       Parses a .CivBeyondSwordSave file
+  civs       Show details for a Civ or list all Civs.
+  gamefiles  Find and print relevant game files paths.
+  leaders    Show Leader or list Leaders optionally sorted by attribute.
+  parse      Parse a .CivBeyondSwordSave file.
+  xml        Generate python code or JSON from the XML files.
 ```
 
 ```
@@ -44,23 +45,23 @@ $ civ4save parse --help
 
 Usage: civ4save parse [OPTIONS] FILE
 
-  Parses a .CivBeyondSwordSave file
+  Parse a .CivBeyondSwordSave file.
 
   FILE is a save file or directory of save files
 
 Options:
-  --max-players INTEGER  Needed if you have changed your MAX_PLAYERS value in
+  --max-players INTEGER  Needed if you have changed MAX_PLAYERS value in
                          CvDefines.h
-  --settings             Basic info and settings only. Nothing that would be
-                         unknown to the human player
+  --settings             Basic settings only. Nothing that would be unknown to
+                         the human player
   --spoilers             Extra info that could give an advantage to human
-                         player.
+                         player
   --player INTEGER       Only show data for a specific player idx. Defaults to
                          the human player
-  --list-players         List all player (idx, name, leader, civ, etc.) in the game
+  --list-players         List all player (idx, name, leader, civ) in the game
   --ai-survivor          Use XML settings from AI Survivor series
   --debug                Print detailed debugging info
-  --json                 Format output as JSON
+  --json                 Format output as JSON. Default is text
   --help                 Show this message and exit.
 ```
 
@@ -90,11 +91,33 @@ XML Folder
 /home/dan/.local/share/Steam/steamapps/common/Sid Meier's Civilization IV Beyond the Sword/Beyond the Sword/Assets/XML
 ```
 
-`make-enums` command could be useful for developers/modders, I needed it to make this library possible.
-It locates the XML files (Vanilla, Warlords, BTS), reads each file, and transforms it into a python enum.
-BTS takes precendence over Warlords and Vanilla if 2 XML files have the same name.
-The enums are written to stdout. Ex. `civ4save make-enums > enums.py`
-It **does not make any changes to your files**.
+The `xml` command can transform the XML files into other datatypes.
+It **does not make any changes to your XML files**, just reads them.
+
+```
+$ civ4save xml --help
+
+Usage: civ4save xml [OPTIONS]
+
+  Generate python code or JSON from the XML files.
+
+Options:
+  --enums                         Transform XML files into Python Enums.
+  --text-map                      Create JSON mapping TEXT_KEY to LANG. Default is English.
+  --lang [English|French|German|Italian|Spanish]
+                                  Language to map TEXT_KEY's to
+  --help                          Show this message and exit.
+```
+
+`--enums` could be useful for developers/modders, I used it to make this project.
+It locates the XML files (Vanilla, Warlords, BTS), reads each file, and transforms
+it into a python enum. BTS takes precendence over Warlords and Warlords over Vanilla
+if 2 XML files have the same name.
+The enums are written to stdout. Ex. `civ4save xml --enums > enums.py` to save them to a file.
+
+`--text-map` creates a simple JSON object mapping each `TEXT_KEY*` human presentable text
+in the given `--lang`. I use this in the `contrib` package to make some of the Civ and Leader
+attributes more readable.
 
 
 #### As a Libray
@@ -134,7 +157,7 @@ save = SaveFile('Rome.CivBeyondSwordSave', context)
 
 `python -m pytest tests/` to run the tests.
 
-Or you can use the `./run.sh` script if you're on Linux.
+Or you can use the `./run.sh` script if you use bash.
 
 ```
 ./run.sh install dev
@@ -177,15 +200,12 @@ plots as it can and doesn't raise any exceptions.
 
 
 ### TODO
-- make `parse` the default command
 - Click mutually exclusive group plugin for more robust cli arg handling
+- Better docs
 - `src/civ4save/objects/*` all need tests
 - `xml_files.py` needs tests
-- tox for tests (3.7, 3.8, 3.9, 3.10)
+- `tox` for tests (3.7, 3.10)
 - Caching of parsed saves (probably using [dataclasses_json](https://pypi.org/project/dataclasses-json/))
-- Build more useful objects from some of the XML files (Leaders, Civs)
-- `contrib` subpackage for interesting scripts (ex. comparing starting locations in ai survivor)
-- use `pdoc` to autogenerate docs (and better docstrings)
 - [Textual](https://github.com/Textualize/textual) UI for browsing saves in a directory
     - maybe a `send to trash` button to make it easy to clean out unwanted saves
-- diffing tools to tell what changed between 2 saves/autosaves
+- Diffing tools to tell what changed between 2 saves/autosaves
