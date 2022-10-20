@@ -1,7 +1,7 @@
 """Some potentially interesting stuff with the Civs."""
 import json
 from dataclasses import dataclass
-from functools import cache
+from functools import lru_cache
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -19,6 +19,7 @@ from ..enums.vanilla import (
 
 @dataclass
 class Civ:
+    """Object holding Civ attributes."""
     type: CivilizationType
     description: str
     short_description: str
@@ -30,6 +31,7 @@ class Civ:
 
     @classmethod
     def from_dict(cls, d: dict) -> "Civ":
+        """Create a new Civ object from a dictionary."""
         techs = [TechType[t] for t in d["starting_techs"]]
         starting_techs = techs[0], techs[1]
         return cls(
@@ -44,10 +46,10 @@ class Civ:
         )
 
 
-@cache
+@lru_cache(1)
 def _get_civs_from_xml_files(xml_file: str | Path) -> Dict[str, Civ]:
-    """
-    Creates a mapping of short_description -> Civ
+    """Create a mapping of short_description -> Civ.
+
     Ex. "Mali": Civ(CivilizationType.CIVILIZATION_MALI, ...)
     """
     civs = {}
@@ -100,8 +102,9 @@ def _get_civs_from_xml_files(xml_file: str | Path) -> Dict[str, Civ]:
     return civs
 
 
-@cache
+@lru_cache(1)
 def _get_civ_map() -> dict:
+    """Load from json file in contrib/data."""
     civs_json = (
         importlib_resources.files("civ4save.contrib.data")
         .joinpath("civs.json")
@@ -112,11 +115,13 @@ def _get_civ_map() -> dict:
 
 
 def get_civs() -> Dict[str, Civ]:
+    """Get all Civs."""
     civs = _get_civ_map()
     return {c: Civ.from_dict(civs[c]) for c in civs}
 
 
 def get_civ(name: str) -> Optional[Civ]:
+    """Get a single Civ by name."""
     civs = _get_civ_map()
     civ_dict = civs.get(name, None)
     if civ_dict:

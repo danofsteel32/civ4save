@@ -2,3 +2,7 @@
 ignore = E203,W503
 max-line-length = 88
 docstring-convention=google
+exclude =
+    __pycache__,
+    __mypy_cache__,
+    src/civ4save/enums

@@ -1,11 +1,14 @@
-from dataclasses import dataclass
+"""The object returned by the `--spoilers` option."""
+from typing import List
+
+import attrs
 
 from civ4save.enums import vanilla as e
 
 
-@dataclass(slots=True)
+@attrs.define(slots=True)
 class GameState:
-    # CvGame
+    """Supposed to represent state a human player shouldn't necessarily know."""
     total_cities: int
     total_population: int
     nukes_exploded: int
@@ -15,17 +18,17 @@ class GameState:
     winner: int
     victory: e.VictoryType
     state: e.GameStateType
-    scores: list[int]
+    scores: List[int]
     # holy cities, corp headquarters
-    cities_destroyed: list[str]
-    great_people_born: list[str]
-
+    cities_destroyed: List[str]
+    great_people_born: List[str]
     # CvMap
     land_plots: int
     owned_plots: int
 
     @classmethod
     def from_struct(cls, cv_game, cv_map):
+        """Create GameState from the cv_game and cv_map parsed structs."""
         best_land_unit = e.UnitType[cv_game.best_land_unit]
         victory = e.VictoryType[cv_game.victory]
         state = e.GameStateType[cv_game.game_state]

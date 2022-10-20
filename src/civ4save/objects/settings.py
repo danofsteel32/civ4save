@@ -1,14 +1,14 @@
-from dataclasses import dataclass
+"""The object returned by the `--settings` option."""
+from typing import Dict
+
+import attrs
 
 from civ4save.enums import vanilla as e
 
 
-@dataclass(slots=True)
+@attrs.define(slots=True)
 class Settings:
-    """
-    Class representing the game's settings (sp only)
-    """
-
+    """Class representing the game's settings (sp only)."""
     # CvInitCore
     game_type: e.GameType
     game_name: str
@@ -19,11 +19,11 @@ class Settings:
     sea_level: e.SeaLevelType
     start_era: e.EraType
     game_speed: e.GameSpeedType
-    game_options: dict[str, bool]
+    game_options: Dict[str, bool]
     """Each GameOption and whether it's enabled"""
     max_turns: int
     advanced_start_points: int
-    victories: dict[str, bool]
+    victories: Dict[str, bool]
     """Each VictoryType and whether it's enabled"""
     num_civs: int
     """Number of civs (not counting barbs)"""
@@ -45,6 +45,7 @@ class Settings:
 
     @classmethod
     def from_struct(cls, cv_init, cv_game, cv_map):
+        """Return `Settings` from the cv_init, cv_game, and cv_map parsed structs."""
         game_type = e.GameType[cv_init.game_type]
         game_speed = e.GameSpeedType[cv_init.game_speed]
         world_size = e.WorldType[cv_init.world_size]
@@ -93,4 +94,3 @@ class Settings:
             wrap_x=cv_map.wrap_x,
             wrap_y=cv_map.wrap_y,
         )
-

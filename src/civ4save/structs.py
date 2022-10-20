@@ -1,5 +1,12 @@
-import typing
+"""Matches the byte structure of a saved game file but in managable chunks.
 
+Everything is little endian bc x86.
+
+Todo:
+    Could define string types as?
+        W_STRING = partial(C.PaddedString, encoding="utf_16_le")
+        STRING = partial(C.PaddedString, encoding="utf_8")
+"""
 import construct as C
 
 from .objects import Context
@@ -7,12 +14,6 @@ from .utils import get_enum_length
 
 NUM_YIELD_TYPES = 3
 
-"""
-Everything is little endian bc x86
-Could define string types as:
-    W_STRING = partial(C.PaddedString, encoding="utf_16_le")
-    STRING = partial(C.PaddedString, encoding="utf_8")
-"""
 # Type Aliases
 INT = C.Int32sl
 UINT = C.Int32ul
@@ -22,7 +23,8 @@ CHAR = C.Int8sl
 UCHAR = C.Int8ul
 
 
-def metadata() -> C.Container[typing.Any]:
+def metadata():
+    """First few bytes containing version and zlib info."""
     return C.Struct(
         "version" / INT,
         "save_bits" / C.Array(8, INT),
@@ -31,8 +33,8 @@ def metadata() -> C.Container[typing.Any]:
     )
 
 
-def cv_init_core(ctx: Context) -> C.Container[typing.Any]:
-    # CvInitCore
+def cv_init_core(ctx: Context):
+    """As defined in CvInitCore."""
     return C.Struct(
         "save_flag" / UINT,
         "game_type" / C.Enum(INT, ctx.enums.GameType),
@@ -151,7 +153,8 @@ def cv_init_core(ctx: Context) -> C.Container[typing.Any]:
     )
 
 
-def trade_data(ctx: Context) -> C.Container[typing.Any]:
+def trade_data(ctx: Context):
+    """Used in cv_game."""
     return C.Struct(
         "item" / C.Enum(INT, ctx.enums.TradeableItem),
         "extra_data" / INT,  # BonusType sometimes applicable
@@ -162,7 +165,8 @@ def trade_data(ctx: Context) -> C.Container[typing.Any]:
     )
 
 
-def vote_option(ctx: Context) -> C.Container[typing.Any]:
+def vote_option(ctx: Context):
+    """Used in cv_game."""
     return C.Struct(
         "type" / C.Enum(INT, ctx.enums.VoteType),
         "player" / INT,
@@ -173,8 +177,8 @@ def vote_option(ctx: Context) -> C.Container[typing.Any]:
     )
 
 
-def cv_game(ctx: Context) -> C.Container[typing.Any]:
-    # CvGameAi + CvGame
+def cv_game(ctx: Context):
+    """As defined in CvGameAi + CvGame."""
     TradeData = trade_data(ctx)
     VoteOption = vote_option(ctx)
     return C.Struct(
@@ -392,8 +396,8 @@ def cv_game(ctx: Context) -> C.Container[typing.Any]:
     )
 
 
-def cv_map_base(ctx: Context) -> C.Container[typing.Any]:
-    # CvMap
+def cv_map_base(ctx: Context):
+    """As defined in CvMap. Plots are treated separately."""
     return C.Struct(
         "map_ui_flag" / UINT,
         "map_unknown_ints" / CHAR[8],
@@ -412,8 +416,8 @@ def cv_map_base(ctx: Context) -> C.Container[typing.Any]:
     )
 
 
-def cv_plot(ctx: Context) -> C.Container[typing.Any]:
-    # CvPlot (called in CvMap)
+def cv_plot(ctx: Context):
+    """As defined in CvPlot (called in CvMap)."""
     return C.Struct(
         "ui_flag" / UINT,
         "x" / SHORT,
@@ -507,8 +511,8 @@ def cv_plot(ctx: Context) -> C.Container[typing.Any]:
     )
 
 
-def cv_plot_debug(ctx: Context) -> C.Container[typing.Any]:
-    # Can play with this for debugging without messing up actual CvPlot
+def cv_plot_debug(ctx: Context):
+    """Can play with this for debugging without messing up actual cv_plot struct."""
     return C.Struct(
         "ui_flag" / UINT,
         "x" / SHORT,
@@ -578,8 +582,11 @@ def cv_plot_debug(ctx: Context) -> C.Container[typing.Any]:
     )
 
 
-def cv_map_area(ctx: Context) -> C.Container[typing.Any]:
-    # CvArea (called in CvMap)
+def cv_map_area(ctx: Context):
+    """As defined in CvArea (called in CvMap).
+
+    UNDER CONSTRUCTION
+    """
     return C.Struct(
         #   pStream->Write(uiFlag);		// flag for expansion
         "area_ui_flag" / UINT,
@@ -665,10 +672,12 @@ def cv_map_area(ctx: Context) -> C.Container[typing.Any]:
     )
 
 
-def cv_map_areas(ctx: Context) -> C.Container[typing.Any]:
-    # CvArea (CvMap)
-    # CvMapArea FFlist metadata plus CvArea array
-    # UNDER CONSTRUCTION
+def cv_map_areas(ctx: Context):
+    """As defined in CvArea (CvMap).
+
+    CvMapArea FFlist metadata plus CvArea array
+    UNDER CONSTRUCTION
+    """
     CvMapArea = cv_map_area(ctx)
     return C.Struct(
         "areas_num_slots" / INT,
@@ -683,26 +692,3 @@ def cv_map_areas(ctx: Context) -> C.Container[typing.Any]:
         "peek" / INT[32],
         "_idx" / C.Tell,
     )
-
-
-# # CvTeamAI.cpp::write + CvTeam.cpp::write
-# # UNDER CONSTRUCTION
-# CvTeam = C.Struct(
-#     "team_data" / INT[200],
-#     # "team_ui_flag" / UINT,
-#     # "team_at_war_plan_state_counter" / C.Array(
-#     #     ctx.max_teams,
-#     #     INT
-#     # ),
-#     # "at_war_counter" / INT[ctx.max_teams],
-#     # "at_peace_counter" / INT[ctx.max_teams],
-#     # "has_met_counter" / INT[ctx.max_teams],
-#     # "open_borders_counter" / INT[ctx.max_teams],
-#     # "defensive_pact_counter" / INT[ctx.max_teams],
-#     # "share_war_counter" / INT[ctx.max_teams],
-#     # "war_success" / INT[ctx.max_teams],
-#     # "enemy_peace_time_trade_value" / INT[ctx.max_teams],
-#     # "enemy_peace_time_grant_value" / INT[ctx.max_teams],
-#     # "war_plan" / INT[ctx.max_teams],
-#     "_idx" / C.Tell,
-# )

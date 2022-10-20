@@ -1,20 +1,28 @@
+"""Classes and functions for dealing with players."""
+
 import re
-from dataclasses import dataclass, field
+from typing import Dict, List, Union
+
+import attrs
 
 from civ4save.enums import vanilla as e
 
 
-@dataclass(slots=True)
+@attrs.define(slots=True)
 class City:
+    """Constructed from replay messages."""
+
     name: str
     x: int
     y: int
     turn_founded: int
-    wonders: list[str] = field(default_factory=list)
+    wonders: List[str] = attrs.field(factory=list)
 
 
-@dataclass(slots=True)
+@attrs.define(slots=True)
 class Civics:
+    """Maps to a players Civics. Initialized with default Civics."""
+
     government: e.CivicType = e.CivicType.CIVIC_DESPOTISM
     legal: e.CivicType = e.CivicType.CIVIC_BARBARISM
     labor: e.CivicType = e.CivicType.CIVIC_TRIBALISM
@@ -22,23 +30,29 @@ class Civics:
     religion: e.CivicType = e.CivicType.CIVIC_PAGANISM
 
 
-@dataclass(slots=True)
+@attrs.define(slots=True)
 class Trade:
-    item: e.TradeableItem | e.BonusType
+    """Can be an item like TRADE_OPEN_BORDERS or Bonus like BONUS_COW."""
+
+    item: Union[e.TradeableItem, e.BonusType]
     amount: int
 
 
-@dataclass(slots=True)
+@attrs.define(slots=True)
 class TradeDeal:
+    """Represent a trade deal between players."""
+
     first_player: int
     second_player: int
     initial_turn: int
-    first_trades: list[Trade]
-    second_trades: list[Trade]
+    first_trades: List[Trade]
+    second_trades: List[Trade]
 
 
-@dataclass(slots=True)
+@attrs.define(slots=True)
 class Player:
+    """Main class representing a player's state."""
+
     idx: int
     name: str
     desc: str
@@ -51,14 +65,15 @@ class Player:
     score: int
     rank: int
     owned_plots: int = 0
-    great_people: list[str] = field(default_factory=list)
-    cities: list[City] = field(default_factory=list)
+    great_people: List[str] = attrs.field(factory=list)
+    cities: List[City] = attrs.field(factory=list)
     religion: e.ReligionType = e.ReligionType.NO_RELIGION
-    civics: Civics = field(default_factory=Civics)
-    trades: list[TradeDeal] = field(default_factory=list)
-    projects: list[str] = field(default_factory=list)
+    civics: Civics = attrs.field(factory=Civics)
+    trades: List[TradeDeal] = attrs.field(factory=list)
+    projects: List[str] = attrs.field(factory=list)
 
     def adopt_civic(self, new_civic: e.CivicType):
+        """Correctly set the new civic."""
         v = new_civic.value
         if v < 5:
             self.civics.government = new_civic
@@ -71,22 +86,31 @@ class Player:
         elif v >= 20:
             self.civics.religion = new_civic
 
-    def pop_city(self, city_name: str):
+    def pop_city(self, city_name: str) -> City:
+        """Remove `City` with `city_name` from cities List and return it."""
         for n, city in enumerate(self.cities):
             if city.name == city_name:
                 return self.cities.pop(n)
         raise ValueError(f"player {self.idx} has no city named {city_name}")
 
-    def city_from_xy(self, x: int, y: int):
+    def city_from_xy(self, x: int, y: int) -> City:
+        """Return city from cities List at given coordinates (x,y)."""
         for city in self.cities:
             if (city.x, city.y) == (x, y):
                 return city
         raise ValueError(f"player {self.idx} has no city @ ({x}, {y})")
 
 
-def _match_empire_to_player(empire: str, players: dict[int, Player]) -> int:
-    """Indian matches IND"""
+def _match_empire_to_player(empire: str, players: Dict[int, Player]) -> int:
+    """Given a Civ adjective, return the player idx of that Civ.
+
+    For example: 'Indian' -> CivilizationType.CIVILIZATION_INDIA
+
+    Should probably be reworked to pull from leaders.json in `contrib` but
+    works for now.
+    """
     all_civs = [(en.name, en.value) for en in e.CivilizationType if en.value > -1]
+    # Mathc
     empire = empire.upper()[:3]
     for civ, n in all_civs:
         stemmed = civ.split("CIVILIZATION_")[1][:3]
@@ -102,7 +126,7 @@ def _match_empire_to_player(empire: str, players: dict[int, Player]) -> int:
         raise ValueError("Could match empire to player")
 
 
-def _init_players(cv_init, cv_game) -> dict[int, Player]:
+def _init_players(cv_init, cv_game) -> Dict[int, Player]:
     players = {}
     for p_idx in range(len(cv_init.civs)):
         civ = cv_init.civs[p_idx]
@@ -125,9 +149,8 @@ def _init_players(cv_init, cv_game) -> dict[int, Player]:
     return players
 
 
-def _set_player_trade_deals(deals, players) -> dict[int, Player]:
-
-    def process_trades(trades) -> list[Trade]:
+def _set_player_trade_deals(deals, players) -> Dict[int, Player]:
+    def process_trades(trades) -> List[Trade]:
         player_trades = []
         for trade in trades:
             item = e.TradeableItem[trade.item]
@@ -151,15 +174,15 @@ def _set_player_trade_deals(deals, players) -> dict[int, Player]:
     return players
 
 
-def _set_player_data(replay_messages, players):
-    """
+def _set_player_data(replay_messages, players) -> Dict[int, Player]:
+    """Set from replay messages.
+
     Read the replay messages and assign ownership of plots, cities, wonders
     as well as player religion and civics
     """
-
     # local vars for tracking who currently owns cities and plots
-    cities: dict[str, int] = {}
-    plots: dict[str, int] = {}
+    cities: Dict[str, int] = {}
+    plots: Dict[str, int] = {}
 
     def text_to_enum_name(text: str):
         rm_leading = re.sub(".*color=[0-9]+,[0-9]+,[0-9]+,[0-9]+>", "", text)
@@ -240,9 +263,12 @@ def _set_player_data(replay_messages, players):
     return players
 
 
-def _fix_potential_duplicate_cities(players):
-    """If capital founded but then map regenerated on turn 0 | 1 there will be
-    duplicate capital founding messages for the human player."""
+def _fix_potential_duplicate_cities(players) -> Dict[int, Player]:
+    """Hacky fix but works.
+
+    If capital founded but then map regenerated on turn 0 | 1 there will be
+    duplicate capital founding messages for the human player.
+    """
     for p_idx in players:
         cities = players[p_idx].cities
 
@@ -257,7 +283,8 @@ def _fix_potential_duplicate_cities(players):
     return players
 
 
-def get_players(cv_init, cv_game) -> dict[int, Player]:
+def get_players(cv_init, cv_game) -> Dict[int, Player]:
+    """Return players dict with all values set."""
     players = _init_players(cv_init, cv_game)
     players = _set_player_data(cv_game.replay_messages, players)
     players = _set_player_trade_deals(cv_game.deals, players)

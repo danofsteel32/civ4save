@@ -1,10 +1,14 @@
-from dataclasses import dataclass
+"""Used in `SaveFile.plots`."""
+from typing import List
+
+import attrs
 
 from civ4save.enums import vanilla as e
 
 
-@dataclass(slots=True)
+@attrs.define(slots=True)
 class Plot:
+    """Represents a plot."""
     x: int
     y: int
     ownership_duration: int
@@ -19,10 +23,11 @@ class Plot:
     feature_type: e.FeatureType
     bonus_type: e.BonusType
     improvement_type: e.ImprovementType
-    yields: list[int]
+    yields: List[int]
 
     @classmethod
     def from_struct(cls, cv_plot):
+        """Return `Plot` from cv_plot parsed struct."""
         plot_type = e.PlotType[cv_plot.plot_type]
         terrain_type = e.TerrainType[cv_plot.terrain_type]
         feature_type = e.FeatureType[cv_plot.feature_type]

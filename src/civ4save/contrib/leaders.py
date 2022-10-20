@@ -1,7 +1,7 @@
 """Some potentially interesting stuff with the Leaders."""
 import json
 from dataclasses import dataclass
-from functools import cache
+from functools import lru_cache
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -20,6 +20,8 @@ from ..enums.vanilla import (
 
 @dataclass
 class Leader:
+    """Object holding Leader attributes."""
+
     type: LeaderHeadType
     description: str
     favorite_civic: CivicType
@@ -63,6 +65,7 @@ class Leader:
 
     @classmethod
     def from_dict(cls, d: dict) -> "Leader":
+        """Create a new Leader object from a dictionary."""
         d["type"] = LeaderHeadType[d["type"]]
         d["favorite_civic"] = CivicType[d["favorite_civic"]]
         d["favorite_religion"] = ReligionType[d["favorite_religion"]]
@@ -76,7 +79,7 @@ def leader_attributes() -> List[str]:
     return List(Leader.__dict__["__dataclass_fields__"].keys())
 
 
-@cache
+@lru_cache(1)
 def _get_leaders_from_xml_file(xml_file: str | Path) -> Dict[str, Leader]:
     leaders = {}
 
@@ -226,8 +229,9 @@ def _get_leaders_from_xml_file(xml_file: str | Path) -> Dict[str, Leader]:
     return leaders
 
 
-@cache
+@lru_cache(1)
 def _get_leader_map():
+    """Load from json file in contrib/data."""
     leaders_json = (
         importlib_resources.files("civ4save.contrib.data")
         .joinpath("leaders.json")
@@ -238,8 +242,8 @@ def _get_leader_map():
 
 
 def rank_leaders(attribute: str, reverse: bool = False) -> List[Tuple]:
-    """Returns a List of 2-Tuples (description, attribute) of the leaders
-        sorted by the attribute's value.
+    """Returns a sorted List of Tuples (description, attribute) by attribute value.
+
     Accepts attributes in CamelCase or snake_case.
     """
     leader_map = _get_leader_map()

@@ -5,7 +5,7 @@ import platform
 from dataclasses import asdict, is_dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Iterator, Tuple
+from typing import Dict, Iterator, Tuple
 
 import xmltodict
 
@@ -184,8 +184,8 @@ def get_xml_text_files() -> Iterator[Path]:
                 yield file
 
 
-def make_text_map(lang: str = "English") -> dict[str, str]:
-    """Create a dict mapping TEXT_KEY* to human readable text in language `lang`.
+def make_text_map(lang: str = "English") -> Dict[str, str]:
+    """Create a Dict mapping TEXT_KEY* to human readable text in language `lang`.
 
     Works from vanilla to Warlords to BTS so the most recent occurence of a
     TEXT_KEY will be the one in the mapping.
@@ -194,7 +194,7 @@ def make_text_map(lang: str = "English") -> dict[str, str]:
         lang (str): Language to map. Defaults to 'English'.
 
     Returns:
-        dict[str, str]: Dictionary of TEXT_KEY* to text.
+        Dict[str, str]: Dictionary of TEXT_KEY* to text.
     """
     text_map = {}
     for file in get_xml_text_files():
