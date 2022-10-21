@@ -31,8 +31,8 @@ class ParserState(Enum):
     CV_INIT_CORE = auto()
     CV_GAME = auto()
     CV_MAP_BASE = auto()
-    CV_MAP_PLOTS = auto()
     PARTIAL_PARSE = auto()
+    CV_MAP_PLOTS = auto()
     FULL_PARSE = auto()
 
 
@@ -75,7 +75,8 @@ class SaveFile:
         self._cv_game_data: Optional[C.Container[Any]] = None
 
         self._cv_map_base_data: Optional[C.Container[Any]] = None
-        self._plots: List[C.Container[Any]] = []
+        self._cv_plots: List[C.Container[Any]] = []
+        self._plots: List[Plot] = []
         self._areas: List[C.Container[Any]] = []
 
         self._parser_state: ParserState = ParserState.READY
@@ -130,7 +131,7 @@ class SaveFile:
                 self._cv_map_base_data = self._parse_cv_map_base()
 
             elif self._parser_state == ParserState.CV_MAP_PLOTS:
-                self._cv_map_plots_data = self._parse_cv_map_plots()
+                self._parse_cv_map_plots()
 
             elif self._parser_state == ParserState.PARTIAL_PARSE:
                 break
@@ -213,19 +214,19 @@ class SaveFile:
             next_x, next_y = utils.next_plot(plot.x, plot.y, grid_width, grid_height)
 
             self._idx += plot.end_plot_index
-            self._plots.append(plot)
+            self._cv_plots.append(plot)
 
-        if len(self._plots) == grid_width * grid_height:
+        if len(self._cv_plots) == grid_width * grid_height:
             self._parser_state = ParserState.FULL_PARSE
 
-        return self._plots
+        return self._cv_plots
 
     def _print_debug_plot(self, num: int, ex: Exception):
         """Logs the last successfully parsed plot, failing plot, and exception."""
         struct = structs.cv_plot_debug(self.context)
         grid_width, grid_height = self.map_size
-        last_plot = self._plots[-1]
-        print(f"Parsed {len(self._plots)}/{num} plots")
+        last_plot = self._cv_plots[-1]
+        print(f"Parsed {len(self._cv_plots)}/{num} plots")
         print(f"Parsed {self._idx}/{len(self._bytes)} bytes")
         print(f"map_size={grid_width}x{grid_height}")
         print(f"Last good plot: x={last_plot.x} y={last_plot.y}")
@@ -287,11 +288,10 @@ class SaveFile:
             raise ParseError("current_turn | cv_init_core_data not parsed?")
         return self._cv_init_core_data.game_turn
 
-    @property
+    @LazyProperty
     def map_size(self) -> Tuple[int, int]:
         """Returns map grid size (width x height)."""
-        if self._parser_state.value < ParserState.FULL_PARSE.value:
-            self._parser_state = ParserState.CV_MAP_PLOTS
+        if self._parser_state.value < ParserState.CV_MAP_BASE.value:
             self.parse()
         if not self._cv_map_base_data:
             raise ParseError("map_size | cv_map_base_data not parsed?")
@@ -322,18 +322,21 @@ class SaveFile:
             self.parse()
         return get_players(self._cv_init_core_data, self._cv_game_data)
 
-    @LazyProperty
+    @property
     def plots(self) -> List[Plot]:
         """Return the Plots list."""
-        if self._parser_state.value < ParserState.FULL_PARSE.value:
+        if self._plots:
+            return self._plots
+
+        if self._parser_state.value == ParserState.PARTIAL_PARSE.value:
             self._parser_state = ParserState.CV_MAP_PLOTS
             self.parse()
-        return [Plot.from_struct(p) for p in self._plots]
+            self._plots = [Plot.from_struct(p) for p in self._cv_plots]
+        return self._plots
 
     def get_plot(self, x: int, y: int) -> Optional[Plot]:
         """Return `Plot` matching the given coordinates (x, y)."""
         if self._parser_state.value < ParserState.FULL_PARSE.value:
-            self._parser_state = ParserState.CV_MAP_PLOTS
             self.parse()
         plot_index = utils.calc_plot_index(self.map_size[0], x, y)
         try:

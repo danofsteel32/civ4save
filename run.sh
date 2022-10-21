@@ -90,6 +90,10 @@ c4() {
     wrapped_python -m civ4save.cli "$@"
 }
 
+version_bump() {
+    sed -i "s/${1}/${2}/g" pyproject.toml src/civ4save/__init__.py tests/test_civ4save.py
+}
+
 default() {
     wrapped_python -i -c 'import civ4save'
 }

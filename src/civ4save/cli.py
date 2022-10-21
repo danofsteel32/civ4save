@@ -126,10 +126,13 @@ def parse(
 
     if spoilers:
         print_fn(save.game_state)
+        return
     if player > -1:
         print_fn(save.get_player(player))
+        return
     if list_players:
         print_fn(save.players)
+        return
     print_fn(save.settings)
     return
 

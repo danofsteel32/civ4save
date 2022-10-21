@@ -202,6 +202,7 @@ plots as it can and doesn't raise any exceptions.
 ### TODO
 - Click mutually exclusive group plugin for more robust cli arg handling
 - Better docs
+- `SaveFile` needs a logger
 - `src/civ4save/objects/*` all need tests
 - `xml_files.py` needs tests
 - Caching of parsed saves (probably using [dataclasses_json](https://pypi.org/project/dataclasses-json/))
