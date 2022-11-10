@@ -55,11 +55,12 @@ install() {
 }
 
 build() {
+    clean
     python -m build
 }
 
 publish() {
-    lint && tests && clean && build
+    lint && tests && build
     python -m twine upload dist/*
 }
 
@@ -77,7 +78,6 @@ clean() {
 }
 
 lint() {
-    clean
     wrapped_python -m flake8 src/ &&
     wrapped_python -m mypy src/
 }
@@ -92,6 +92,22 @@ c4() {
 
 version_bump() {
     sed -i "s/${1}/${2}/g" pyproject.toml src/civ4save/__init__.py tests/test_civ4save.py
+}
+
+help-messages() {
+    civ4save --version
+    echo
+    civ4save --help
+    echo
+    civ4save parse --help
+    echo
+    civ4save gamefiles --help
+    echo
+    civ4save civs --help
+    echo
+    civ4save leaders --help
+    echo
+    civ4save xml --help
 }
 
 default() {

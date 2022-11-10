@@ -28,7 +28,6 @@ from rich import print
 from . import __version__, utils
 from .contrib.civs import get_civ, get_civs
 from .contrib.leaders import get_leader, leader_attributes, rank_leaders
-from .objects import Context
 from .save_file import SaveFile
 from .xml_files import make_enums as write_enums
 
@@ -37,17 +36,11 @@ TEXT_MAP_LANGS = ["English", "French", "German", "Italian", "Spanish"]
 
 @click.group()
 @click.version_option(__version__)
-def cli():  # noqa: D103
+def cli() -> None:  # noqa: D103
     pass
 
 
 @cli.command()
-@click.option(
-    "--max-players",
-    default=19,
-    type=int,
-    help="Needed if you have changed MAX_PLAYERS value in CvDefines.h",
-)
 @click.option(
     "--settings",
     is_flag=True,
@@ -76,20 +69,6 @@ def cli():  # noqa: D103
     help="List all player (idx, name, leader, civ) in the game",
 )
 @click.option(
-    "--ai-survivor",
-    is_flag=True,
-    show_default=True,
-    default=False,
-    help="Use XML settings from AI Survivor series",
-)
-@click.option(
-    "--debug",
-    is_flag=True,
-    show_default=True,
-    default=False,
-    help="Print detailed debugging info",
-)
-@click.option(
     "--json",
     "json_",
     is_flag=True,
@@ -99,24 +78,19 @@ def cli():  # noqa: D103
 )
 @click.argument("file", type=click.Path(exists=True, path_type=Path))
 def parse(
-    max_players,
-    settings,
-    spoilers,
-    player,
-    list_players,
-    ai_survivor,
-    debug,
-    json_,
-    file,
+    settings: bool,
+    spoilers: bool,
+    player: int,
+    list_players: bool,
+    json_: bool,
+    file: Path,
 ) -> None:
     """Parse a .CivBeyondSwordSave file.
 
     FILE is a save file or directory of save files
     """
-    context = Context(max_players=max_players, ai_survivor=ai_survivor)
-    save = SaveFile(file=file, context=context, debug=debug)
+    save = SaveFile(file=file)
     print(save)
-    save.parse()
 
     print_fn = print
     if json_:
@@ -138,7 +112,7 @@ def parse(
 
 
 @cli.command(help="Find and print relevant game files paths.")
-def gamefiles():
+def gamefiles() -> None:
     """Print commonly used Civ4 file paths to `stdout`."""
     names_and_getters: List[Tuple[str, Callable[[], Path]]] = [
         ("Game Folder", utils.get_game_dir),
@@ -172,7 +146,7 @@ def gamefiles():
     default="English",
     help="Language to map TEXT_KEY's to",
 )
-def xml(enums: bool, text_map: bool, lang: str):
+def xml(enums: bool, text_map: bool, lang: str) -> None:
     """Generate python code or JSON from the XML files."""
     if enums:
         write_enums()
@@ -203,7 +177,7 @@ def xml(enums: bool, text_map: bool, lang: str):
 @click.argument("leader_name", type=str, required=False, default="")
 def leaders(
     leader_name: str, sort_by: str, reverse: bool, list_: bool, attributes: bool
-):
+) -> None:
     """Show Leader or list Leaders optionally sorted by attribute.
 
     LEADER_NAME examples: Shaka, 'Genghis Khan'
@@ -232,6 +206,7 @@ def leaders(
         print(f"Leader name {leader_name} not recognized")
         return
     print(ld)
+    return
 
 
 @cli.command()
@@ -239,7 +214,7 @@ def leaders(
     "-l", "--list", "list_", is_flag=True, default=False, help="List all civs"
 )
 @click.argument("civ_name", type=str, required=False)
-def civs(civ_name: str, list_: bool):
+def civs(civ_name: str, list_: bool) -> None:
     """Show details for a Civ or list all Civs.
 
     CIV_NAME examples: Germany, 'Holy Rome'

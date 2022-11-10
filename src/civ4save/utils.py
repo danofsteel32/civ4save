@@ -3,9 +3,9 @@
 import json
 import platform
 from dataclasses import asdict, is_dataclass
-from enum import Enum
+from enum import Enum, EnumMeta
 from pathlib import Path
-from typing import Dict, Iterator, Tuple
+from typing import Any, Dict, Iterator, Tuple, Union
 
 import xmltodict
 
@@ -13,13 +13,13 @@ import xmltodict
 class CustomJsonEncoder(json.JSONEncoder):
     """Enable serializing dataclasses and Enums."""
 
-    def default(self, obj):
+    def default(self, o: Any) -> Union[dict, str, json.JSONEncoder]:
         """Override default."""
-        if is_dataclass(obj):
-            return asdict(obj)
-        elif isinstance(obj, Enum):
-            return obj.name
-        return super().default(obj)
+        if is_dataclass(o):
+            return asdict(o)
+        elif isinstance(o, Enum):
+            return o.name
+        return super().default(o)
 
 
 def renderable_filepath(path: Path) -> str:
@@ -49,9 +49,7 @@ def calc_plot_index(grid_width: int, x: int, y: int) -> int:
     return index
 
 
-def next_plot(
-    x: int, y: int, grid_width: int, grid_height: int
-) -> Tuple[int, int]:
+def next_plot(x: int, y: int, grid_width: int, grid_height: int) -> Tuple[int, int]:
     """Return the next coordinate pair (x, y) taking into account grid size.
 
     Args:
@@ -71,7 +69,7 @@ def next_plot(
     return next_x, next_y
 
 
-def get_enum_length(e: Enum) -> int:
+def get_enum_length(e: EnumMeta) -> int:
     """Ignore the negative value member of the enum when getting member count.
 
     Args:

@@ -1,14 +1,15 @@
 """Some potentially interesting stuff with the Civs."""
+from __future__ import annotations
+
 import json
 from dataclasses import dataclass
-from functools import lru_cache
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import importlib_resources
 import xmltodict
 
-from ..enums.vanilla import (
+from civ4save.vanilla.enums import (
     BuildingType,
     CivilizationType,
     LeaderHeadType,
@@ -20,6 +21,7 @@ from ..enums.vanilla import (
 @dataclass
 class Civ:
     """Object holding Civ attributes."""
+
     type: CivilizationType
     description: str
     short_description: str
@@ -30,7 +32,7 @@ class Civ:
     leaders: List[LeaderHeadType]
 
     @classmethod
-    def from_dict(cls, d: dict) -> "Civ":
+    def from_dict(cls, d: dict) -> Civ:
         """Create a new Civ object from a dictionary."""
         techs = [TechType[t] for t in d["starting_techs"]]
         starting_techs = techs[0], techs[1]
@@ -42,11 +44,10 @@ class Civ:
             unique_building=BuildingType[d["unique_building"]],
             unique_unit=UnitType[d["unique_unit"]],
             starting_techs=starting_techs,
-            leaders=[LeaderHeadType[ld] for ld in d["leaders"]]
+            leaders=[LeaderHeadType[ld] for ld in d["leaders"]],
         )
 
 
-@lru_cache(1)
 def _get_civs_from_xml_files(xml_file: str | Path) -> Dict[str, Civ]:
     """Create a mapping of short_description -> Civ.
 
@@ -102,7 +103,6 @@ def _get_civs_from_xml_files(xml_file: str | Path) -> Dict[str, Civ]:
     return civs
 
 
-@lru_cache(1)
 def _get_civ_map() -> dict:
     """Load from json file in contrib/data."""
     civs_json = (

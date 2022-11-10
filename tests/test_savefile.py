@@ -1,30 +1,25 @@
 import pytest
 
-from civ4save import Context, NotASaveFile, SaveFile, __version__
-
-
-def test_version():
-    assert __version__ == "0.6.3"
+from civ4save import NotASaveFile, SaveFile
 
 
 def test_bad_file():
     with pytest.raises(NotASaveFile):
         save = SaveFile("tests/saves/not-a-real.CivBeyondSwordSave")
+        save.current_turn
 
 
 @pytest.mark.parametrize(
-    "filename,speed,civ,leader,ai_survivor",
+    "filename,speed,civ,leader",
     [
-        ("bismark-emperor-turn86.CivBeyondSwordSave", "NORMAL", "GERMANY", "BISMARCK", False),
-        ("survivor-6-wildcard.CivBeyondSwordSave", "NORMAL", "NATIVE_AMERICA", "SITTING_BULL", True),
-        ("churchill-random-roll.CivBeyondSwordSave", "NORMAL", "ENGLAND", "CHURCHILL", False),
-        ("mehmed-epic.CivBeyondSwordSave", "EPIC", "OTTOMAN", "MEHMED", False),
-        ("Gandhi-culture-win-t331.CivBeyondSwordSave", "NORMAL", "INDIA", "GANDHI", False)
+        ("bismark-emperor-turn86.CivBeyondSwordSave", "NORMAL", "GERMANY", "BISMARCK"),
+        ("churchill-random-roll.CivBeyondSwordSave", "NORMAL", "ENGLAND", "CHURCHILL"),
+        ("mehmed-epic.CivBeyondSwordSave", "EPIC", "OTTOMAN", "MEHMED"),
+        ("Gandhi-culture-win-t331.CivBeyondSwordSave", "NORMAL", "INDIA", "GANDHI")
     ]
 )
-def test_savefile(filename, speed, civ, leader, ai_survivor):
-    context = Context(ai_survivor=True) if ai_survivor else None
-    save = SaveFile(f"tests/saves/{filename}", context=context)
+def test_savefile(filename, speed, civ, leader):
+    save = SaveFile(f"tests/saves/{filename}")
     assert save.settings.game_speed.name == f"GAMESPEED_{speed}"
 
     player = save.get_player(0)

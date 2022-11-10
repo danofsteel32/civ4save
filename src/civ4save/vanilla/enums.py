@@ -1,8 +1,9 @@
-"""enums/vanilla.py"""
-from enum import Enum
+"""Vanilla types."""
+
+from enum import IntEnum
 
 
-class GameType(Enum):
+class GameType(IntEnum):  # noqa: D101
     GAME_NONE = -1
     GAME_SP_NEW = 0
     GAME_SP_SCENARIO = 1
@@ -19,13 +20,13 @@ class GameType(Enum):
     GAME_REPLAY = 12
 
 
-class GameStateType(Enum):
+class GameStateType(IntEnum):  # noqa: D101
     GAMESTATE_ON = 0
     GAMESTATE_OVER = 1
     GAMESTATE_EXTENDED = 2
 
 
-class TradeableItem(Enum):
+class TradeableItem(IntEnum):  # noqa: D101
     TRADE_ITEM_NONE = -1
     TRADE_GOLD = 0
     TRADE_GOLD_PER_TURN = 1
@@ -46,13 +47,13 @@ class TradeableItem(Enum):
     TRADE_RELIGION = 16
 
 
-class ReplayMessageType(Enum):
+class ReplayMessageType(IntEnum):  # noqa: D101
     MAJOR_EVENT = 0
     CITY_FOUNDED = 1
     PLOT_OWNER_CHANGE = 2
 
 
-class PlotType(Enum):
+class PlotType(IntEnum):  # noqa: D101
     NO_PLOT = -1
     PLOT_PEAK = 0
     PLOT_HILLS = 1
@@ -60,7 +61,7 @@ class PlotType(Enum):
     PLOT_OCEAN = 3
 
 
-class ArtDefinesBonusType(Enum):
+class ArtDefinesBonusType(IntEnum):  # noqa: D101
     NO_ART_DEFINES_BONUS = -1
     ART_DEF_BONUS_ALUMINUM = 0
     ART_DEF_BONUS_COAL = 1
@@ -107,7 +108,7 @@ class ArtDefinesBonusType(Enum):
     ART_DEF_BONUS_VICTORY_GREEN = 42
 
 
-class ArtDefinesBuildingType(Enum):
+class ArtDefinesBuildingType(IntEnum):  # noqa: D101
     NO_ART_DEFINES_BUILDING = -1
     ART_DEF_BUILDING_PALACE = 0
     ART_DEF_BUILDING_GREAT_PALACE = 1
@@ -271,7 +272,7 @@ class ArtDefinesBuildingType(Enum):
     ART_DEF_BUILDING_APOSTOLIC_PALACE = 159
 
 
-class ArtDefinesCivilizationType(Enum):
+class ArtDefinesCivilizationType(IntEnum):  # noqa: D101
     NO_ART_DEFINES_CIVILIZATION = -1
     ART_DEF_CIVILIZATION_AMERICA = 0
     ART_DEF_CIVILIZATION_ARABIA = 1
@@ -311,7 +312,7 @@ class ArtDefinesCivilizationType(Enum):
     ART_DEF_CIVILIZATION_BARBARIAN = 35
 
 
-class ArtDefinesFeatureType(Enum):
+class ArtDefinesFeatureType(IntEnum):  # noqa: D101
     NO_ART_DEFINES_FEATURE = -1
     ART_DEF_FEATURE_ICE = 0
     ART_DEF_FEATURE_JUNGLE = 1
@@ -321,7 +322,7 @@ class ArtDefinesFeatureType(Enum):
     ART_DEF_FEATURE_FALLOUT = 5
 
 
-class ArtDefinesImprovementType(Enum):
+class ArtDefinesImprovementType(IntEnum):  # noqa: D101
     NO_ART_DEFINES_IMPROVEMENT = -1
     ART_DEF_IMPROVEMENT_LAND_WORKED = 0
     ART_DEF_IMPROVEMENT_WATER_WORKED = 1
@@ -350,7 +351,7 @@ class ArtDefinesImprovementType(Enum):
     ART_DEF_IMPROVEMENT_FOREST_PRESERVE = 24
 
 
-class ArtDefinesInterfaceType(Enum):
+class ArtDefinesInterfaceType(IntEnum):  # noqa: D101
     NO_ART_DEFINES_INTERFACE = -1
     ARROW_HEAD = 0
     ARROW_MXMY = 1
@@ -676,7 +677,7 @@ class ArtDefinesInterfaceType(Enum):
     INTERFACE_AUTOMATE = 321
 
 
-class ArtDefinesLeaderheadType(Enum):
+class ArtDefinesLeaderheadType(IntEnum):  # noqa: D101
     NO_ART_DEFINES_LEADERHEAD = -1
     ART_DEF_LEADER_BARBARIAN = 0
     ART_DEF_LEADER_ALEXANDER = 1
@@ -733,7 +734,7 @@ class ArtDefinesLeaderheadType(Enum):
     ART_DEF_LEADER_ZARA_YAQOB = 52
 
 
-class ArtDefinesMiscType(Enum):
+class ArtDefinesMiscType(IntEnum):  # noqa: D101
     NO_ART_DEFINES_MISC = -1
     ART_GREAT_WALL_POST = 0
     ART_GREAT_WALL_SEGMENT = 1
@@ -785,7 +786,7 @@ class ArtDefinesMiscType(Enum):
     SOUND_BLASTER_LOGO = 47
 
 
-class ArtDefinesMovieType(Enum):
+class ArtDefinesMovieType(IntEnum):  # noqa: D101
     NO_ART_DEFINES_MOVIE = -1
     ART_DEF_MOVIE_INTRO = 0
     ART_DEF_MOVIE_2K_INTRO = 1
@@ -840,7 +841,7 @@ class ArtDefinesMovieType(Enum):
     ART_DEF_MOVIE_CHRIST_THE_REDEEMER = 50
 
 
-class ArtDefinesTerrainType(Enum):
+class ArtDefinesTerrainType(IntEnum):  # noqa: D101
     NO_ART_DEFINES_TERRAIN = -1
     ART_DEF_TERRAIN_GRASS = 0
     ART_DEF_TERRAIN_PLAINS = 1
@@ -853,7 +854,7 @@ class ArtDefinesTerrainType(Enum):
     ART_DEF_TERRAIN_HILL = 8
 
 
-class ArtDefinesUnitType(Enum):
+class ArtDefinesUnitType(IntEnum):  # noqa: D101
     NO_ART_DEFINES_UNIT = -1
     ART_DEF_UNIT_LION = 0
     ART_DEF_UNIT_BEAR = 1
@@ -1081,7 +1082,7 @@ class ArtDefinesUnitType(Enum):
     ART_DEF_UNIT_WORKER_SOUTH_AMERICA = 223
 
 
-class MainMenusType(Enum):
+class MainMenusType(IntEnum):  # noqa: D101
     NO_MAIN_MENUS = -1
     MAIN_MENU_CLASSICAL = 0
     MAIN_MENU_VANILLA = 1
@@ -1089,7 +1090,7 @@ class MainMenusType(Enum):
     MAIN_MENU_BEYOND_SWORD = 3
 
 
-class AttitudeType(Enum):
+class AttitudeType(IntEnum):  # noqa: D101
     NO_ATTITUDE = -1
     ATTITUDE_FURIOUS = 0
     ATTITUDE_ANNOYED = 1
@@ -1098,7 +1099,7 @@ class AttitudeType(Enum):
     ATTITUDE_FRIENDLY = 4
 
 
-class BasicType(Enum):
+class BasicType(IntEnum):  # noqa: D101
     NO_BASIC = -1
     CONCEPT_ANIMALS = 0
     CONCEPT_AIR_UNITS = 1
@@ -1152,7 +1153,7 @@ class BasicType(Enum):
     CONCEPT_IRRIGATION = 49
 
 
-class CalendarType(Enum):
+class CalendarType(IntEnum):  # noqa: D101
     NO_CALENDAR = -1
     CALENDAR_DEFAULT = 0
     CALENDAR_BI_YEARLY = 1
@@ -1163,14 +1164,14 @@ class CalendarType(Enum):
     CALENDAR_WEEKS = 6
 
 
-class CityTabType(Enum):
+class CityTabType(IntEnum):  # noqa: D101
     NO_CITY_TAB = -1
     CITYTAB_UNITS = 0
     CITYTAB_BUILDINGS = 1
     CITYTAB_WONDERS = 2
 
 
-class DenialType(Enum):
+class DenialType(IntEnum):  # noqa: D101
     NO_DENIAL = -1
     DENIAL_UNKNOWN = 0
     DENIAL_NEVER = 1
@@ -1203,7 +1204,7 @@ class DenialType(Enum):
     DENIAL_PEACE_NOT_POSSIBLE_YOU = 28
 
 
-class DomainType(Enum):
+class DomainType(IntEnum):  # noqa: D101
     NO_DOMAIN = -1
     DOMAIN_SEA = 0
     DOMAIN_AIR = 1
@@ -1211,13 +1212,13 @@ class DomainType(Enum):
     DOMAIN_IMMOBILE = 3
 
 
-class InvisibleType(Enum):
+class InvisibleType(IntEnum):  # noqa: D101
     NO_INVISIBLE = -1
     INVISIBLE_SUBMARINE = 0
     INVISIBLE_STEALTH = 1
 
 
-class MemoryType(Enum):
+class MemoryType(IntEnum):  # noqa: D101
     NO_MEMORY = -1
     MEMORY_DECLARED_WAR = 0
     MEMORY_DECLARED_WAR_ON_FRIEND = 1
@@ -1254,7 +1255,7 @@ class MemoryType(Enum):
     MEMORY_LIBERATED_CITIES = 32
 
 
-class MonthType(Enum):
+class MonthType(IntEnum):  # noqa: D101
     NO_MONTH = -1
     MONTH_JANUARY = 0
     MONTH_FEBRUARY = 1
@@ -1270,7 +1271,7 @@ class MonthType(Enum):
     MONTH_DECEMBER = 11
 
 
-class NewConceptType(Enum):
+class NewConceptType(IntEnum):  # noqa: D101
     NO_NEW_CONCEPT = -1
     CONCEPT_ESPIONAGE = 0
     CONCEPT_COLONIES = 1
@@ -1295,7 +1296,7 @@ class NewConceptType(Enum):
     CONCEPT_LIBERATION = 20
 
 
-class SeasonType(Enum):
+class SeasonType(IntEnum):  # noqa: D101
     NO_SEASON = -1
     SEASON_WINTER = 0
     SEASON_SPRING = 1
@@ -1303,7 +1304,7 @@ class SeasonType(Enum):
     SEASON_FALL = 3
 
 
-class UnitAIType(Enum):
+class UnitAIType(IntEnum):  # noqa: D101
     NO_UNIT_A_I = -1
     UNITAI_UNKNOWN = 0
     UNITAI_ANIMAL = 1
@@ -1348,7 +1349,7 @@ class UnitAIType(Enum):
     UNITAI_ATTACK_CITY_LEMMING = 40
 
 
-class UnitCombatType(Enum):
+class UnitCombatType(IntEnum):  # noqa: D101
     NO_UNIT_COMBAT = -1
     UNITCOMBAT_RECON = 0
     UNITCOMBAT_ARCHER = 1
@@ -1362,7 +1363,7 @@ class UnitCombatType(Enum):
     UNITCOMBAT_AIR = 9
 
 
-class BuildingClassType(Enum):
+class BuildingClassType(IntEnum):  # noqa: D101
     NO_BUILDING_CLASS = -1
     BUILDINGCLASS_PALACE = 0
     BUILDINGCLASS_GREAT_PALACE = 1
@@ -1491,7 +1492,7 @@ class BuildingClassType(Enum):
     BUILDINGCLASS_APOSTOLIC_PALACE = 124
 
 
-class BuildingType(Enum):
+class BuildingType(IntEnum):  # noqa: D101
     NO_BUILDING = -1
     BUILDING_PALACE = 0
     BUILDING_GREAT_PALACE = 1
@@ -1654,7 +1655,7 @@ class BuildingType(Enum):
     BUILDING_APOSTOLIC_PALACE = 158
 
 
-class SpecialBuildingType(Enum):
+class SpecialBuildingType(IntEnum):  # noqa: D101
     NO_SPECIAL_BUILDING = -1
     SPECIALBUILDING_BOMB_SHELTER = 0
     SPECIALBUILDING_TEMPLE = 1
@@ -1662,7 +1663,7 @@ class SpecialBuildingType(Enum):
     SPECIALBUILDING_MONASTERY = 3
 
 
-class CivilizationType(Enum):
+class CivilizationType(IntEnum):  # noqa: D101
     NO_CIVILIZATION = -1
     CIVILIZATION_AMERICA = 0
     CIVILIZATION_ARABIA = 1
@@ -1702,7 +1703,7 @@ class CivilizationType(Enum):
     CIVILIZATION_BARBARIAN = 35
 
 
-class LeaderHeadType(Enum):
+class LeaderHeadType(IntEnum):  # noqa: D101
     NO_LEADER_HEAD = -1
     LEADER_BARBARIAN = 0
     LEADER_ALEXANDER = 1
@@ -1759,7 +1760,7 @@ class LeaderHeadType(Enum):
     LEADER_ZARA_YAQOB = 52
 
 
-class UnitArtStyleTypeType(Enum):
+class UnitArtStyleType(IntEnum):  # noqa: D101
     NO_UNIT_ART_STYLE = -1
     UNIT_ARTSTYLE_ASIAN = 0
     UNIT_ARTSTYLE_EUROPEAN = 1
@@ -1768,7 +1769,7 @@ class UnitArtStyleTypeType(Enum):
     UNIT_ARTSTYLE_SOUTH_AMERICA = 4
 
 
-class EventType(Enum):
+class EventType(IntEnum):  # noqa: D101
     NO_EVENT = -1
     EVENT_FOREST_FIRE_1 = 0
     EVENT_FOREST_FIRE_2 = 1
@@ -2111,7 +2112,7 @@ class EventType(Enum):
     EVENT_IMPEACHMENT_2 = 338
 
 
-class EventTriggerType(Enum):
+class EventTriggerType(IntEnum):  # noqa: D101
     NO_EVENT_TRIGGER = -1
     EVENTTRIGGER_FOREST_FIRE = 0
     EVENTTRIGGER_CITY_RUINS_ANCIENT = 1
@@ -2312,7 +2313,7 @@ class EventTriggerType(Enum):
     EVENTTRIGGER_IMPEACHMENT = 196
 
 
-class CivicType(Enum):
+class CivicType(IntEnum):  # noqa: D101
     NO_CIVIC = -1
     CIVIC_DESPOTISM = 0
     CIVIC_HEREDITARY_RULE = 1
@@ -2341,7 +2342,7 @@ class CivicType(Enum):
     CIVIC_FREE_RELIGION = 24
 
 
-class CommerceType(Enum):
+class CommerceType(IntEnum):  # noqa: D101
     NO_COMMERCE = -1
     COMMERCE_GOLD = 0
     COMMERCE_RESEARCH = 1
@@ -2349,7 +2350,7 @@ class CommerceType(Enum):
     COMMERCE_ESPIONAGE = 3
 
 
-class CorporationType(Enum):
+class CorporationType(IntEnum):  # noqa: D101
     NO_CORPORATION = -1
     CORPORATION_1 = 0
     CORPORATION_2 = 1
@@ -2360,7 +2361,7 @@ class CorporationType(Enum):
     CORPORATION_7 = 6
 
 
-class CursorType(Enum):
+class CursorType(IntEnum):  # noqa: D101
     NO_CURSOR = -1
     CURSOR_DEFAULT = 0
     CURSOR_PING = 1
@@ -2387,7 +2388,7 @@ class CursorType(Enum):
     CURSOR_EDIT = 22
 
 
-class DiplomacyType(Enum):
+class DiplomacyType(IntEnum):  # noqa: D101
     NO_DIPLOMACY = -1
     AI_DIPLOCOMMENT_DECLARE_WAR = 0
     AI_DIPLOCOMMENT_NO_VASSAL = 1
@@ -2489,7 +2490,7 @@ class DiplomacyType(Enum):
     USER_DIPLOCOMMENT_EXIT = 97
 
 
-class EraType(Enum):
+class EraType(IntEnum):  # noqa: D101
     NO_ERA = -1
     ERA_ANCIENT = 0
     ERA_CLASSICAL = 1
@@ -2500,7 +2501,7 @@ class EraType(Enum):
     ERA_FUTURE = 6
 
 
-class EspionageMissionType(Enum):
+class EspionageMissionType(IntEnum):  # noqa: D101
     NO_ESPIONAGE_MISSION = -1
     ESPIONAGEMISSION_SEE_DEMOGRAPHICS = 0
     ESPIONAGEMISSION_CITY_VISIBILITY = 1
@@ -2522,7 +2523,7 @@ class EspionageMissionType(Enum):
     ESPIONAGEMISSION_COUNTERESPIONAGE = 17
 
 
-class ForceControlType(Enum):
+class ForceControlType(IntEnum):  # noqa: D101
     NO_FORCE_CONTROL = -1
     FORCECONTROL_SPEED = 0
     FORCECONTROL_HANDICAP = 1
@@ -2533,7 +2534,7 @@ class ForceControlType(Enum):
     FORCECONTROL_ADVANCED_START = 6
 
 
-class GameOptionType(Enum):
+class GameOptionType(IntEnum):  # noqa: D101
     NO_GAME_OPTION = -1
     GAMEOPTION_ADVANCED_START = 0
     GAMEOPTION_NO_CITY_RAZING = 1
@@ -2561,7 +2562,7 @@ class GameOptionType(Enum):
     GAMEOPTION_NO_ESPIONAGE = 23
 
 
-class MultiplayerOptionType(Enum):
+class MultiplayerOptionType(IntEnum):  # noqa: D101
     NO_MPOPTION = -1
     MPOPTION_SIMULTANEOUS_TURNS = 0
     MPOPTION_TAKEOVER_AI = 1
@@ -2570,7 +2571,7 @@ class MultiplayerOptionType(Enum):
     MPOPTION_TURN_TIMER = 4
 
 
-class GameSpeedType(Enum):
+class GameSpeedType(IntEnum):  # noqa: D101
     NO_GAME_SPEED = -1
     GAMESPEED_MARATHON = 0
     GAMESPEED_EPIC = 1
@@ -2578,7 +2579,7 @@ class GameSpeedType(Enum):
     GAMESPEED_QUICK = 3
 
 
-class GraphicOptionType(Enum):
+class GraphicOptionType(IntEnum):  # noqa: D101
     NO_GRAPHIC_OPTION = -1
     GRAPHICOPTION_SINGLE_UNIT_GRAPHICS = 0
     GRAPHICOPTION_HEALTH_BARS = 1
@@ -2594,7 +2595,7 @@ class GraphicOptionType(Enum):
     GRAPHICOPTION_CITY_RADIUS = 11
 
 
-class HandicapType(Enum):
+class HandicapType(IntEnum):  # noqa: D101
     NO_HANDICAP = -1
     HANDICAP_SETTLER = 0
     HANDICAP_CHIEFTAIN = 1
@@ -2607,7 +2608,7 @@ class HandicapType(Enum):
     HANDICAP_DEITY = 8
 
 
-class MPOptionType(Enum):
+class MPOptionType(IntEnum):  # noqa: D101
     NO_M_P_OPTION = -1
     MPOPTION_SIMULTANEOUS_TURNS = 0
     MPOPTION_TAKEOVER_AI = 1
@@ -2616,7 +2617,7 @@ class MPOptionType(Enum):
     MPOPTION_TURN_TIMER = 4
 
 
-class PlayerOptionType(Enum):
+class PlayerOptionType(IntEnum):  # noqa: D101
     NO_PLAYER_OPTION = -1
     PLAYEROPTION_ADVISOR_POPUPS = 0
     PLAYEROPTION_ADVISOR_HELP = 1
@@ -2642,7 +2643,7 @@ class PlayerOptionType(Enum):
     PLAYEROPTION_MODDER_3 = 21
 
 
-class ProjectType(Enum):
+class ProjectType(IntEnum):  # noqa: D101
     NO_PROJECT = -1
     PROJECT_MANHATTAN_PROJECT = 0
     PROJECT_THE_INTERNET = 1
@@ -2657,7 +2658,7 @@ class ProjectType(Enum):
     PROJECT_SS_THRUSTERS = 10
 
 
-class ReligionType(Enum):
+class ReligionType(IntEnum):  # noqa: D101
     NO_RELIGION = -1
     RELIGION_JUDAISM = 0
     RELIGION_CHRISTIANITY = 1
@@ -2668,7 +2669,7 @@ class ReligionType(Enum):
     RELIGION_TAOISM = 6
 
 
-class SpecialistType(Enum):
+class SpecialistType(IntEnum):  # noqa: D101
     NO_SPECIALIST = -1
     SPECIALIST_CITIZEN = 0
     SPECIALIST_PRIEST = 1
@@ -2686,7 +2687,7 @@ class SpecialistType(Enum):
     SPECIALIST_GREAT_SPY = 13
 
 
-class VictoryType(Enum):
+class VictoryType(IntEnum):  # noqa: D101
     NO_VICTORY = -1
     VICTORY_SCORE = 0
     VICTORY_TIME = 1
@@ -2697,7 +2698,7 @@ class VictoryType(Enum):
     VICTORY_DIPLOMATIC = 6
 
 
-class VoteType(Enum):
+class VoteType(IntEnum):  # noqa: D101
     NO_VOTE = -1
     VOTE_SECRETARY_GENERAL = 0
     VOTE_VICTORY = 1
@@ -2723,13 +2724,22 @@ class VoteType(Enum):
     VOTE_ASSIGN_CITY = 21
 
 
-class VoteSourceType(Enum):
+class VoteSourceType(IntEnum):  # noqa: D101
     NO_VOTE_SOURCE = -1
     DIPLOVOTE_UN = 0
     DIPLOVOTE_POPE = 1
 
 
-class WorldType(Enum):
+class PlayerVoteType(IntEnum):  # noqa: D101
+    NO_PLAYER_VOTE_CHECKED = -6
+    PLAYER_VOTE_NEVER = -5
+    PLAYER_VOTE_ABSTAIN = -4
+    PLAYER_VOTE_NO = -3
+    PLAYER_VOTE_YES = -2
+    NO_PLAYER_VOTE = -1
+
+
+class WorldType(IntEnum):  # noqa: D101
     NO_WORLD = -1
     WORLDSIZE_DUEL = 0
     WORLDSIZE_TINY = 1
@@ -2739,7 +2749,7 @@ class WorldType(Enum):
     WORLDSIZE_HUGE = 5
 
 
-class ColorValsType(Enum):
+class ColorValsType(IntEnum):  # noqa: D101
     NO_COLOR_VALS = -1
     COLOR_CLEAR = 0
     COLOR_ALPHA_GREY = 1
@@ -2870,7 +2880,7 @@ class ColorValsType(Enum):
     COLOR_PLAYER_LIGHT_BLACK_TEXT = 126
 
 
-class InterfaceModeType(Enum):
+class InterfaceModeType(IntEnum):  # noqa: D101
     NO_INTERFACE_MODE = -1
     INTERFACEMODE_SELECTION = 0
     INTERFACEMODE_PING = 1
@@ -2893,7 +2903,7 @@ class InterfaceModeType(Enum):
     INTERFACEMODE_SAVE_PLOT_NIFS = 18
 
 
-class PlayerColorType(Enum):
+class PlayerColorType(IntEnum):  # noqa: D101
     NO_PLAYER_COLOR = -1
     PLAYERCOLOR_BLACK = 0
     PLAYERCOLOR_BLUE = 1
@@ -2941,7 +2951,7 @@ class PlayerColorType(Enum):
     PLAYERCOLOR_ORANGE_AND_GREEN = 43
 
 
-class AttachableType(Enum):
+class AttachableType(IntEnum):  # noqa: D101
     NO_ATTACHABLE = -1
     ATTACHABLE_SMOKE = 0
     ATTACHABLE_AIRDEBRIS = 1
@@ -3016,7 +3026,7 @@ class AttachableType(Enum):
     ATTACHABLE_INVASIONSHIP_GLOW_BIG = 70
 
 
-class EffectType(Enum):
+class EffectType(IntEnum):  # noqa: D101
     NO_EFFECT = -1
     EFFECT_FOOTSTEP_ON = 0
     EFFECT_FOOTSTEP = 1
@@ -3328,13 +3338,13 @@ class EffectType(Enum):
     EFFECT_FF_TRANSPORT = 307
 
 
-class RouteType(Enum):
+class RouteType(IntEnum):  # noqa: D101
     NO_ROUTE = -1
     ROUTE_ROAD = 0
     ROUTE_RAILROAD = 1
 
 
-class TechType(Enum):
+class TechType(IntEnum):  # noqa: D101
     NO_TECH = -1
     TECH_MYSTICISM = 0
     TECH_MEDITATION = 1
@@ -3430,7 +3440,7 @@ class TechType(Enum):
     TECH_FUTURE_TECH = 91
 
 
-class FeatureType(Enum):
+class FeatureType(IntEnum):  # noqa: D101
     NO_FEATURE = -1
     FEATURE_ICE = 0
     FEATURE_JUNGLE = 1
@@ -3440,7 +3450,7 @@ class FeatureType(Enum):
     FEATURE_FALLOUT = 5
 
 
-class ImprovementType(Enum):
+class ImprovementType(IntEnum):  # noqa: D101
     NO_IMPROVEMENT = -1
     IMPROVEMENT_LAND_WORKED = 0
     IMPROVEMENT_WATER_WORKED = 1
@@ -3469,7 +3479,7 @@ class ImprovementType(Enum):
     IMPROVEMENT_FOREST_PRESERVE = 24
 
 
-class TerrainType(Enum):
+class TerrainType(IntEnum):  # noqa: D101
     NO_TERRAIN = -1
     TERRAIN_GRASS = 0
     TERRAIN_PLAINS = 1
@@ -3482,7 +3492,7 @@ class TerrainType(Enum):
     TERRAIN_HILL = 8
 
 
-class Civ4AnimationPathType(Enum):
+class Civ4AnimationPathType(IntEnum):  # noqa: D101
     NO_CIV4_ANIMATION_PATH = -1
     ANIMATIONPATH_IDLE = 0
     ANIMATIONPATH_MOVE = 1
@@ -3527,7 +3537,7 @@ class Civ4AnimationPathType(Enum):
     ANIMATIONPATH_AIRPATROL = 40
 
 
-class BuildType(Enum):
+class BuildType(IntEnum):  # noqa: D101
     NO_BUILD = -1
     BUILD_ROAD = 0
     BUILD_RAILROAD = 1
@@ -3554,7 +3564,7 @@ class BuildType(Enum):
     BUILD_FOREST_PRESERVE = 22
 
 
-class ControlType(Enum):
+class ControlType(IntEnum):  # noqa: D101
     NO_CONTROL = -1
     CONTROL_CENTERONSELECTION = 0
     CONTROL_SELECTYUNITTYPE = 1
@@ -3621,7 +3631,7 @@ class ControlType(Enum):
     CONTROL_FREE_COLONY = 62
 
 
-class Civ4EntityEventType(Enum):
+class Civ4EntityEventType(IntEnum):  # noqa: D101
     NO_CIV4_ENTITY_EVENT = -1
     ENTITY_EVENT_IDLE = 0
     ENTITY_EVENT_DIE = 1
@@ -3659,7 +3669,7 @@ class Civ4EntityEventType(Enum):
     ENTITY_EVENT_RAILROAD = 33
 
 
-class MissionType(Enum):
+class MissionType(IntEnum):  # noqa: D101
     NO_MISSION = -1
     MISSION_MOVE_TO = 0
     MISSION_ROUTE_TO = 1
@@ -3710,7 +3720,7 @@ class MissionType(Enum):
     MISSION_MULTI_DESELECT = 46
 
 
-class PromotionType(Enum):
+class PromotionType(IntEnum):  # noqa: D101
     NO_PROMOTION = -1
     PROMOTION_COMBAT1 = 0
     PROMOTION_COMBAT2 = 1
@@ -3768,14 +3778,14 @@ class PromotionType(Enum):
     PROMOTION_ACE = 53
 
 
-class SpecialUnitType(Enum):
+class SpecialUnitType(IntEnum):  # noqa: D101
     NO_SPECIAL_UNIT = -1
     SPECIALUNIT_FIGHTER = 0
     SPECIALUNIT_PEOPLE = 1
     SPECIALUNIT_MISSILE = 2
 
 
-class UnitClassType(Enum):
+class UnitClassType(IntEnum):  # noqa: D101
     NO_UNIT_CLASS = -1
     UNITCLASS_LION = 0
     UNITCLASS_BEAR = 1
@@ -3868,7 +3878,7 @@ class UnitClassType(Enum):
     UNITCLASS_GREAT_SPY = 88
 
 
-class UnitType(Enum):
+class UnitType(IntEnum):  # noqa: D101
     NO_UNIT = -1
     UNIT_LION = 0
     UNIT_BEAR = 1
@@ -3995,7 +4005,7 @@ class UnitType(Enum):
     UNIT_GREAT_SPY = 122
 
 
-class TraitType(Enum):
+class TraitType(IntEnum):  # noqa: D101
     NO_TRAIT = -1
     TRAIT_PHILOSOPHICAL = 0
     TRAIT_AGGRESSIVE = 1
@@ -4010,14 +4020,14 @@ class TraitType(Enum):
     TRAIT_IMPERIALIST = 10
 
 
-class ProcessType(Enum):
+class ProcessType(IntEnum):  # noqa: D101
     NO_PROCESS = -1
     PROCESS_WEALTH = 0
     PROCESS_RESEARCH = 1
     PROCESS_CULTURE = 2
 
 
-class BonusType(Enum):
+class BonusType(IntEnum):  # noqa: D101
     NO_BONUS = -1
     BONUS_ALUMINUM = 0
     BONUS_COAL = 1
@@ -4056,7 +4066,7 @@ class BonusType(Enum):
     BONUS_MOVIES = 34
 
 
-class CivicOptionType(Enum):
+class CivicOptionType(IntEnum):  # noqa: D101
     NO_CIVIC_OPTION = -1
     CIVICOPTION_GOVERNMENT = 0
     CIVICOPTION_LEGAL = 1
@@ -4065,7 +4075,7 @@ class CivicOptionType(Enum):
     CIVICOPTION_RELIGION = 4
 
 
-class ClimateType(Enum):
+class ClimateType(IntEnum):  # noqa: D101
     NO_CLIMATE = -1
     CLIMATE_TEMPERATE = 0
     CLIMATE_TROPICAL = 1
@@ -4074,7 +4084,7 @@ class ClimateType(Enum):
     CLIMATE_COLD = 4
 
 
-class CultureLevelType(Enum):
+class CultureLevelType(IntEnum):  # noqa: D101
     NO_CULTURE_LEVEL = -1
     CULTURELEVEL_NONE = 0
     CULTURELEVEL_POOR = 1
@@ -4085,7 +4095,7 @@ class CultureLevelType(Enum):
     CULTURELEVEL_LEGENDARY = 6
 
 
-class EmphasizeType(Enum):
+class EmphasizeType(IntEnum):  # noqa: D101
     NO_EMPHASIZE = -1
     EMPHASIZE_FOOD = 0
     EMPHASIZE_PRODUCTION = 1
@@ -4095,7 +4105,7 @@ class EmphasizeType(Enum):
     EMPHASIZE_AVOID_GROWTH = 5
 
 
-class GoodyType(Enum):
+class GoodyType(IntEnum):  # noqa: D101
     NO_GOODY = -1
     GOODY_LOW_GOLD = 0
     GOODY_HIGH_GOLD = 1
@@ -4111,20 +4121,20 @@ class GoodyType(Enum):
     GOODY_BARBARIANS_STRONG = 11
 
 
-class HurryType(Enum):
+class HurryType(IntEnum):  # noqa: D101
     NO_HURRY = -1
     HURRY_POPULATION = 0
     HURRY_GOLD = 1
 
 
-class SeaLevelType(Enum):
+class SeaLevelType(IntEnum):  # noqa: D101
     NO_SEA_LEVEL = -1
     SEALEVEL_LOW = 0
     SEALEVEL_MEDIUM = 1
     SEALEVEL_HIGH = 2
 
 
-class TurnTimerType(Enum):
+class TurnTimerType(IntEnum):  # noqa: D101
     NO_TURN_TIMER = -1
     TURNTIMER_STATIC = 0
     TURNTIMER_SNAIL = 1
@@ -4134,14 +4144,14 @@ class TurnTimerType(Enum):
     TURNTIMER_BLAZING = 5
 
 
-class UpKeepType(Enum):
+class UpKeepType(IntEnum):  # noqa: D101
     NO_UP_KEEP = -1
     UPKEEP_LOW = 0
     UPKEEP_MEDIUM = 1
     UPKEEP_HIGH = 2
 
 
-class AdvisorType(Enum):
+class AdvisorType(IntEnum):  # noqa: D101
     NO_ADVISOR = -1
     ADVISOR_MILITARY = 0
     ADVISOR_RELIGION = 1
@@ -4151,7 +4161,7 @@ class AdvisorType(Enum):
     ADVISOR_GROWTH = 5
 
 
-class BonusClassType(Enum):
+class BonusClassType(IntEnum):  # noqa: D101
     NO_BONUS_CLASS = -1
     BONUSCLASS_GENERAL = 0
     BONUSCLASS_GRAIN = 1
@@ -4161,14 +4171,14 @@ class BonusClassType(Enum):
     BONUSCLASS_WONDER = 5
 
 
-class YieldType(Enum):
+class YieldType(IntEnum):  # noqa: D101
     NO_YIELD = -1
     YIELD_FOOD = 0
     YIELD_PRODUCTION = 1
     YIELD_COMMERCE = 2
 
 
-class CommandType(Enum):
+class CommandType(IntEnum):  # noqa: D101
     NO_COMMAND = -1
     COMMAND_PROMOTION = 0
     COMMAND_UPGRADE = 1
@@ -4184,3 +4194,14 @@ class CommandType(Enum):
     COMMAND_UNLOAD = 11
     COMMAND_UNLOAD_ALL = 12
     COMMAND_HOTKEY = 13
+
+
+class AreaAIType(IntEnum):  # noqa: D101
+    NO_AREAAI = -1
+    AREAAI_OFFENSIVE = 0
+    AREAAI_DEFENSIVE = 1
+    AREAAI_MASSING = 2
+    AREAAI_ASSAULT = 3
+    AREAAI_ASSAULT_MASSING = 4
+    AREAAI_ASSAULT_ASSIST = 5
+    AREAAI_NEUTRAL = 6

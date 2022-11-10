@@ -1,14 +1,17 @@
 """Used in `SaveFile.plots`."""
-from typing import List
+from __future__ import annotations
+
+from typing import Any, List
 
 import attrs
 
-from civ4save.enums import vanilla as e
+from civ4save.vanilla import enums as e
 
 
 @attrs.define(slots=True)
 class Plot:
     """Represents a plot."""
+
     x: int
     y: int
     ownership_duration: int
@@ -26,27 +29,27 @@ class Plot:
     yields: List[int]
 
     @classmethod
-    def from_struct(cls, cv_plot):
-        """Return `Plot` from cv_plot parsed struct."""
-        plot_type = e.PlotType[cv_plot.plot_type]
-        terrain_type = e.TerrainType[cv_plot.terrain_type]
-        feature_type = e.FeatureType[cv_plot.feature_type]
-        bonus_type = e.BonusType[cv_plot.bonus_type]
-        improvement_type = e.ImprovementType[cv_plot.improvement_type]
+    def from_struct(cls, data: Any) -> Plot:
+        """Return `Plot` from parsed struct."""
+        plot_type = e.PlotType[data.plot_type]
+        terrain_type = e.TerrainType[data.terrain_type]
+        feature_type = e.FeatureType[data.feature_type]
+        bonus_type = e.BonusType[data.bonus_type]
+        improvement_type = e.ImprovementType[data.improvement_type]
         return cls(
-            cv_plot.x,
-            cv_plot.y,
-            cv_plot.ownership_duration,
-            cv_plot.improvement_duration,
-            cv_plot.starting_plot,
-            cv_plot.hills,
-            cv_plot.potential_city_work,
-            cv_plot.irrigated,
-            cv_plot.owner,
+            data.x,
+            data.y,
+            data.ownership_duration,
+            data.improvement_duration,
+            data.starting_plot,
+            data.hills,
+            data.potential_city_work,
+            data.irrigated,
+            data.owner,
             plot_type,
             terrain_type,
             feature_type,
             bonus_type,
             improvement_type,
-            cv_plot.yields,
+            data.yields,
         )

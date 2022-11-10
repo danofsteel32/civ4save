@@ -1,9 +1,9 @@
 """This module is responsible for parsing the XML files."""
 import re
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, EnumMeta
 from pathlib import Path
-from typing import Generator, Optional
+from typing import Generator, List, Optional, Tuple
 
 import xmltodict
 from jinja2 import Template
@@ -27,10 +27,11 @@ def get_n_parents(path: Path, num: int) -> Path:
 @dataclass
 class Civ4XmlFile:
     """Helper class for transforming XML file to Python Enum."""
+
     path: Path
     _parsed: dict = field(default_factory=dict)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Validate actually xml file."""
         if not self.path.suffix == ".xml":
             raise ValueError(f"{get_n_parents(self.path, 4)} not a xml file")
@@ -56,7 +57,7 @@ class Civ4XmlFile:
     @property
     def negative_one(self) -> str:
         """Return the default NO_<SOMETHING> = -1 name for the Enum."""
-        name = re.sub(r'(?<!^)(?=[A-Z])', '_', self.enum_name)
+        name = re.sub(r"(?<!^)(?=[A-Z])", "_", self.enum_name)
         return "NO_" + name.replace("_Type", "").upper()
 
     @property
@@ -74,7 +75,7 @@ class Civ4XmlFile:
             self._read()
         return [key for key in self._parsed].pop()
 
-    def types(self):
+    def types(self) -> List[Tuple[str, int]]:
         """These become the Enum's members."""
         root = self._parsed[self.root_key]
         key = list(root.keys())[-1]
@@ -83,7 +84,7 @@ class Civ4XmlFile:
             names.append((entry["Type"], n))
         return names
 
-    def to_enum(self):
+    def to_enum(self) -> Enum:
         """Return and Enum derived from the XML file."""
         return Enum(self.enum_name, self.types())
 
@@ -134,14 +135,16 @@ def xml_files_iter() -> Generator[Civ4XmlFile, None, None]:
                     yield Civ4XmlFile(file_or_dir)
 
 
-def write_out_enum(e):
+def write_out_enum(e: EnumMeta) -> None:
     """Write Enum to stdout using a jinja template."""
     data = {
         "enum_name": e.__name__,
-        "members": [{"name": m, "value": e[m].value} for m in e.__members__],
+        "members": [
+            {"name": m, "value": e[m].value} for m in e.__members__  # type: ignore
+        ],
     }
     template = """
-class {{ enum_name }}(Enum):
+class {{ enum_name }}(IntEnum):
     {%- for m in members %}
     {{ m.name }} = {{ m.value }}
     {%- endfor -%}
@@ -154,7 +157,7 @@ class {{ enum_name }}(Enum):
 
 def make_enums() -> None:
     """Write all enums to stdout."""
-    print("from enum import Enum")
+    print("from enum import IntEnum")
     print()
     for xml_file in xml_files_iter():
         try:
@@ -163,6 +166,6 @@ def make_enums() -> None:
             # FIXME some files are not unicode encoded
             continue
         try:
-            write_out_enum(xml_file.to_enum())
+            write_out_enum(xml_file.to_enum())  # type: ignore
         except Exception:
             continue

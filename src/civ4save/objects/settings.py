@@ -1,14 +1,17 @@
 """The object returned by the `--settings` option."""
-from typing import Dict
+from __future__ import annotations
+
+from typing import Any, Dict
 
 import attrs
 
-from civ4save.enums import vanilla as e
+from civ4save.vanilla import enums as e
 
 
 @attrs.define(slots=True)
 class Settings:
     """Class representing the game's settings (sp only)."""
+
     # CvInitCore
     game_type: e.GameType
     game_name: str
@@ -44,53 +47,53 @@ class Settings:
     wrap_y: bool
 
     @classmethod
-    def from_struct(cls, cv_init, cv_game, cv_map):
-        """Return `Settings` from the cv_init, cv_game, and cv_map parsed structs."""
-        game_type = e.GameType[cv_init.game_type]
-        game_speed = e.GameSpeedType[cv_init.game_speed]
-        world_size = e.WorldType[cv_init.world_size]
-        climate = e.ClimateType[cv_init.climate]
-        sea_level = e.SeaLevelType[cv_init.sea_level]
-        start_era = e.EraType[cv_init.start_era]
+    def from_struct(cls, data: Any) -> Settings:
+        """Return `Settings` from the parsed struct."""
+        game_type = e.GameType[data.game_type]
+        game_speed = e.GameSpeedType[data.game_speed]
+        world_size = e.WorldType[data.world_size]
+        climate = e.ClimateType[data.climate]
+        sea_level = e.SeaLevelType[data.sea_level]
+        start_era = e.EraType[data.start_era]
 
-        handicap = e.HandicapType[cv_game.handicap]
-        culture_victory_level = e.CultureLevelType[cv_game.culture_victory_level]
+        handicap = e.HandicapType[data.handicap]
+        culture_victory_level = e.CultureLevelType[data.culture_victory_level]
 
         game_options = {
-            e.GameOptionType(n).name: v for n, v in enumerate(cv_init.game_options)
+            e.GameOptionType(n).name: v for n, v in enumerate(data.game_options)
         }
 
         advanced_start_points = 0
         if game_options["GAMEOPTION_ADVANCED_START"]:
-            advanced_start_points = cv_init.advanced_start_points
+            advanced_start_points = data.advanced_start_points
 
-        victories = {e.VictoryType(n).name: v for n, v in enumerate(cv_init.victories)}
+        victories = {e.VictoryType(n).name: v for n, v in enumerate(data.victories)}
 
-        num_civs = len([c for c in cv_init.civs[:-1] if c != "NO_CIVILIZATION"])
+        num_civs = len([c for c in data.civs[:-1] if c != "NO_CIVILIZATION"])
 
         return cls(
             game_type=game_type,
-            game_name=cv_init.game_name,
-            map_script=cv_init.map_script_name,
+            game_name=data.game_name,
+            map_script=data.map_script_name,
             world_size=world_size,
             climate=climate,
             sea_level=sea_level,
             start_era=start_era,
             game_speed=game_speed,
             game_options=game_options,
-            max_turns=cv_init.max_turns,
+            max_turns=data.max_turns,
             advanced_start_points=advanced_start_points,
             victories=victories,
             num_civs=num_civs,
-            start_turn=cv_game.start_turn,
-            start_year=cv_game.start_year,
+            start_turn=data.start_turn,
+            start_year=data.start_year,
             handicap=handicap,
-            map_random_seed=cv_game.map_random_seed,
-            soren_random_seed=cv_game.soren_random_seed,
-            culture_victory_cities=cv_game.num_culture_victory_cities,
+            map_random_seed=data.map_random_seed,
+            soren_random_seed=data.soren_random_seed,
+            culture_victory_cities=data.num_culture_victory_cities,
             culture_victory_level=culture_victory_level,
-            grid_width=cv_map.grid_width,
-            grid_height=cv_map.grid_height,
-            wrap_x=cv_map.wrap_x,
-            wrap_y=cv_map.wrap_y,
+            grid_width=data.grid_width,
+            grid_height=data.grid_height,
+            wrap_x=data.wrap_x,
+            wrap_y=data.wrap_y,
         )

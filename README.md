@@ -2,12 +2,8 @@
 
 Parse the data in a `.CivBeyondSwordSave` file.
 
-So far I've only tested with the vanilla version of the Civ4 BTS and the slightly tweaked XML files
-Sullla uses in the [AI survivor series](https://sullla.com/Civ4/civ4survivor6-14.html).
-A tweaked DLL to support a higher `MAX_PLAYERS` will work you just need to pass the `max_players` value to the parser.
-
-Mods like BAT/BUG/BULL change the structure of the save file and currently cannot be parsed.
-Supporting at least a subset of features for BAT saves is on my TODO list.
+Currenly only vanilla BTS saves are supported (No mods). Once the remaining parsing bugs are ironed out I
+will work to support the most popular mods (BAT, BUG).
 
 Thanks to [this repo](https://github.com/dguenms/beyond-the-sword-sdk) for hosting the Civ4 BTS source.
 Wouldn't have been possible to make this without it.
@@ -50,19 +46,14 @@ Usage: civ4save parse [OPTIONS] FILE
   FILE is a save file or directory of save files
 
 Options:
-  --max-players INTEGER  Needed if you have changed MAX_PLAYERS value in
-                         CvDefines.h
-  --settings             Basic settings only. Nothing that would be unknown to
-                         the human player
-  --spoilers             Extra info that could give an advantage to human
-                         player
-  --player INTEGER       Only show data for a specific player idx. Defaults to
-                         the human player
-  --list-players         List all player (idx, name, leader, civ) in the game
-  --ai-survivor          Use XML settings from AI Survivor series
-  --debug                Print detailed debugging info
-  --json                 Format output as JSON. Default is text
-  --help                 Show this message and exit.
+  --settings        Basic settings only. Nothing that would be unknown to the
+                    human player
+  --spoilers        Extra info that could give an advantage to human player
+  --player INTEGER  Only show data for a specific player idx. Defaults to the
+                    human player
+  --list-players    List all player (idx, name, leader, civ) in the game
+  --json            Format output as JSON. Default is text
+  --help            Show this message and exit.
 ```
 
 ![Settings](https://github.com/danofsteel32/civ4save/blob/main/screenshots/civ4save-settings.png)
@@ -126,11 +117,12 @@ attributes more readable.
 
 from civ4save import SaveFile
 
-# SaveFile takes 3 args:
+# SaveFile takes 2 args:
 #   file: str | Path (required)
-#   context: Context | None (default None)
-#   debug: bool (default False)
+#   debug: bool (default False, prints hidden fields)
+
 save = SaveFile('Rome.CivBeyondSwordSave')
+save.raw  # raw construct.Struct, use to create your own wrapper objects
 save.settings  # civ4save.objects.Settings
 save.players  # dict[int, civ4save.objects.Player]
 save.game_state  # civ4save.objects.GameState
@@ -140,14 +132,6 @@ save.get_player(0)  # Returns civ4save.objects.Player
 save.get_plot(x=20, y=20)  # Returns civ4save.objects.Plot
 for plot in save.plots:
     print(plot.owner, plot.improvement_type)
-
-# Optionally create a Context to change a few values the parser uses
-# Context takes 3 kwargs:
-#   max_players: int (default is 19, defines length of many arrays in the savefile)
-#   max_teams: int (defaults to same as max_players)
-#   ai_survivor: bool (default False, changes the size of the BuildingType arrays)
-context = Context(max_players=50)
-save = SaveFile('Rome.CivBeyondSwordSave', context)
 ```
 
 
@@ -175,7 +159,7 @@ Games are saved in a what's basically a memory dump that kind of looks like a sa
 The `SaveFile` class handles all of the decompression stuff as well as the parsing using the
 [construct](https://github.com/construct/construct) library.
 
-If you want to see the actual binary structure of the save file see `src/civ4save/structs.py`.
+If you want to see the actual binary structure of the save file see `src/civ4save/vanilla/structure.py`.
 
 
 ### Write Order
@@ -193,10 +177,7 @@ The game calls its `::write` functions in this order when saving:
 ### Plots Bug
 For some unknown reason save files larger than 136KB (largest I have that doesn't encounter the bug)
 parsing fails about half through the plots array. pass `debug=True` to `SaveFile` to see details when parsing
-a large save file and you'll get detailed debugging output. When `debug=False` the parser parses as many
-plots as it can and doesn't raise any exceptions.
-
-*Note to self: Take some in-game screenshots of the tile that messes things up*
+a large save file and you'll get detailed debugging output.
 
 
 ### TODO

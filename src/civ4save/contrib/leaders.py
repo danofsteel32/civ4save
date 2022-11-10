@@ -1,14 +1,15 @@
 """Some potentially interesting stuff with the Leaders."""
+from __future__ import annotations
+
 import json
 from dataclasses import dataclass
-from functools import lru_cache
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import importlib_resources
 import xmltodict
 
-from ..enums.vanilla import (
+from civ4save.vanilla.enums import (
     CivicType,
     ImprovementType,
     LeaderHeadType,
@@ -64,7 +65,7 @@ class Leader:
     freedom_appreciation: int
 
     @classmethod
-    def from_dict(cls, d: dict) -> "Leader":
+    def from_dict(cls, d: dict) -> Leader:
         """Create a new Leader object from a dictionary."""
         d["type"] = LeaderHeadType[d["type"]]
         d["favorite_civic"] = CivicType[d["favorite_civic"]]
@@ -76,10 +77,9 @@ class Leader:
 
 def leader_attributes() -> List[str]:
     """Returns List of all Leader attributes."""
-    return List(Leader.__dict__["__dataclass_fields__"].keys())
+    return list(Leader.__dict__["__dataclass_fields__"].keys())
 
 
-@lru_cache(1)
 def _get_leaders_from_xml_file(xml_file: str | Path) -> Dict[str, Leader]:
     leaders = {}
 
@@ -229,8 +229,7 @@ def _get_leaders_from_xml_file(xml_file: str | Path) -> Dict[str, Leader]:
     return leaders
 
 
-@lru_cache(1)
-def _get_leader_map():
+def _get_leader_map() -> Dict:
     """Load from json file in contrib/data."""
     leaders_json = (
         importlib_resources.files("civ4save.contrib.data")

@@ -1,11 +1,11 @@
 """Classes and functions for dealing with players."""
 
 import re
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Union
 
 import attrs
 
-from civ4save.enums import vanilla as e
+from civ4save.vanilla import enums as e
 
 
 @attrs.define(slots=True)
@@ -72,7 +72,7 @@ class Player:
     trades: List[TradeDeal] = attrs.field(factory=list)
     projects: List[str] = attrs.field(factory=list)
 
-    def adopt_civic(self, new_civic: e.CivicType):
+    def adopt_civic(self, new_civic: e.CivicType) -> None:
         """Correctly set the new civic."""
         v = new_civic.value
         if v < 5:
@@ -101,7 +101,10 @@ class Player:
         raise ValueError(f"player {self.idx} has no city @ ({x}, {y})")
 
 
-def _match_empire_to_player(empire: str, players: Dict[int, Player]) -> int:
+PlayerDict = Dict[int, Player]
+
+
+def _match_empire_to_player(empire: str, players: PlayerDict) -> int:
     """Given a Civ adjective, return the player idx of that Civ.
 
     For example: 'Indian' -> CivilizationType.CIVILIZATION_INDIA
@@ -126,55 +129,43 @@ def _match_empire_to_player(empire: str, players: Dict[int, Player]) -> int:
         raise ValueError("Could match empire to player")
 
 
-def _init_players(cv_init, cv_game) -> Dict[int, Player]:
+def _init_players(data: Any) -> PlayerDict:
     players = {}
-    for p_idx in range(len(cv_init.civs)):
-        civ = cv_init.civs[p_idx]
+    for p_idx in range(len(data.civs)):
+        civ = data.civs[p_idx]
         if civ == "NO_CIVILIZATION":
             continue
         player = Player(
             p_idx,
-            name=cv_init.leader_names[p_idx].name,
-            desc=cv_init.civ_descriptions[p_idx].description,
-            short_desc=cv_init.civ_short_descriptions[p_idx].short_description,
-            adjective=cv_init.civ_adjectives[p_idx].adjective,
-            team=cv_init.teams[p_idx],
-            handicap=e.HandicapType[str(cv_init.handicaps[p_idx])],
-            leader=e.LeaderHeadType[str(cv_init.leaders[p_idx])],
+            name=data.leader_names[p_idx],
+            desc=data.civ_descriptions[p_idx],
+            short_desc=data.civ_short_descriptions[p_idx],
+            adjective=data.civ_adjectives[p_idx],
+            team=data.teams[p_idx],
+            handicap=e.HandicapType[str(data.handicaps[p_idx])],
+            leader=e.LeaderHeadType[str(data.leaders[p_idx])],
             civ=e.CivilizationType[str(civ)],
-            score=cv_game.ai_player_score[p_idx],
-            rank=cv_game.ai_player_rank[p_idx],
+            score=data.ai_player_score[p_idx],
+            rank=data.ai_player_rank[p_idx],
         )
         players[p_idx] = player
     return players
 
 
-def _set_player_trade_deals(deals, players) -> Dict[int, Player]:
-    def process_trades(trades) -> List[Trade]:
-        player_trades = []
-        for trade in trades:
-            item = e.TradeableItem[trade.item]
-            amount = 1
-            if trade.item in {"TRADE_GOLD", "TRADE_GOLD_PER_TURN"}:
-                amount = trade.extra_data
-            elif trade.item == "TRADE_RESOURCES":
-                item = e.BonusType(trade.extra_data)  # type: ignore
-            player_trades.append(Trade(item, amount))
-        return player_trades
-
+def _set_player_trade_deals(deals: List, players: PlayerDict) -> PlayerDict:
     for deal in deals:
         trade_deal = TradeDeal(
-            deal.first_player,
-            deal.second_player,
-            deal.initial_game_turn,
-            process_trades(deal.first_trades),
-            process_trades(deal.second_trades),
+            deal["first_player"],
+            deal["second_player"],
+            deal["initial_game_turn"],
+            deal["first_trades"],
+            deal["second_trades"],
         )
-        players[deal.first_player].trades.append(trade_deal)
+        players[deal["first_player"]].trades.append(trade_deal)
     return players
 
 
-def _set_player_data(replay_messages, players) -> Dict[int, Player]:
+def _set_player_data(replay_messages: List, players: PlayerDict) -> PlayerDict:
     """Set from replay messages.
 
     Read the replay messages and assign ownership of plots, cities, wonders
@@ -184,7 +175,7 @@ def _set_player_data(replay_messages, players) -> Dict[int, Player]:
     cities: Dict[str, int] = {}
     plots: Dict[str, int] = {}
 
-    def text_to_enum_name(text: str):
+    def text_to_enum_name(text: str) -> str:
         rm_leading = re.sub(".*color=[0-9]+,[0-9]+,[0-9]+,[0-9]+>", "", text)
         rm_trailing = rm_leading.replace("</color>!", "")
         return rm_trailing.replace(" ", "_").upper()
@@ -263,7 +254,7 @@ def _set_player_data(replay_messages, players) -> Dict[int, Player]:
     return players
 
 
-def _fix_potential_duplicate_cities(players) -> Dict[int, Player]:
+def _fix_potential_duplicate_cities(players: PlayerDict) -> PlayerDict:
     """Hacky fix but works.
 
     If capital founded but then map regenerated on turn 0 | 1 there will be
@@ -283,10 +274,10 @@ def _fix_potential_duplicate_cities(players) -> Dict[int, Player]:
     return players
 
 
-def get_players(cv_init, cv_game) -> Dict[int, Player]:
+def get_players(data: Any) -> PlayerDict:
     """Return players dict with all values set."""
-    players = _init_players(cv_init, cv_game)
-    players = _set_player_data(cv_game.replay_messages, players)
-    players = _set_player_trade_deals(cv_game.deals, players)
+    players = _init_players(data)
+    players = _set_player_data(data.replay_messages, players)
+    players = _set_player_trade_deals(data.deals, players)
     players = _fix_potential_duplicate_cities(players)
     return players
