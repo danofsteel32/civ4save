@@ -1,0 +1,3 @@
+- [ ] Switch to uv and tox-uv
+- [ ] Tests pass on python 3.8-13
+- [ ] Switch formatting and linting to ruff 
