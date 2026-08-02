@@ -1,4 +1,5 @@
 """Responsible for parsing a save file into useful data structures."""
+
 from __future__ import annotations
 
 import zlib

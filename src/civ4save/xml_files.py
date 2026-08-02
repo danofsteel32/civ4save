@@ -1,4 +1,5 @@
 """This module is responsible for parsing the XML files."""
+
 import re
 from dataclasses import dataclass, field
 from enum import Enum, EnumMeta
@@ -140,7 +141,8 @@ def write_out_enum(e: EnumMeta) -> None:
     data = {
         "enum_name": e.__name__,
         "members": [
-            {"name": m, "value": e[m].value} for m in e.__members__  # type: ignore
+            {"name": m, "value": e[m].value}
+            for m in e.__members__  # type: ignore
         ],
     }
     template = """

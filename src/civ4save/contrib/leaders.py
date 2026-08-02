@@ -1,4 +1,5 @@
 """Some potentially interesting stuff with the Leaders."""
+
 from __future__ import annotations
 
 import json

@@ -1,9 +1,6 @@
 [build-system]
-requires = [
-    "setuptools>=61.0.0",
-    "wheel"
-]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "civ4save"
@@ -16,7 +13,7 @@ classifiers = [
     "License :: OSI Approved :: GNU Affero General Public License v3",
     "Topic :: Games/Entertainment :: Turn Based Strategy",
 ]
-keywords = ["civ", "civilization", "savefile"]
+keywords = ["civ", "civilization", "savefile", "games", ""]
 dependencies = [
     "attrs",
     "click",
@@ -27,14 +24,11 @@ dependencies = [
     "rich",
     "xmltodict",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
-    "black",
-    "flake8",
-    "flake8-isort",
-    "flake8-docstrings",
+    "ruff",
     "mypy",
     "pytest",
     "tox"
@@ -45,13 +39,6 @@ Homepage = "https://github.com/danofsteel32/civ4save"
 
 [project.scripts]
 civ4save = "civ4save.cli:cli"
-
-[tool.isort]
-line_length = 88
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
 
 [tool.mypy]
 ignore_missing_imports = true

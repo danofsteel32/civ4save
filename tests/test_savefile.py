@@ -15,8 +15,8 @@ def test_bad_file():
         ("bismark-emperor-turn86.CivBeyondSwordSave", "NORMAL", "GERMANY", "BISMARCK"),
         ("churchill-random-roll.CivBeyondSwordSave", "NORMAL", "ENGLAND", "CHURCHILL"),
         ("mehmed-epic.CivBeyondSwordSave", "EPIC", "OTTOMAN", "MEHMED"),
-        ("Gandhi-culture-win-t331.CivBeyondSwordSave", "NORMAL", "INDIA", "GANDHI")
-    ]
+        ("Gandhi-culture-win-t331.CivBeyondSwordSave", "NORMAL", "INDIA", "GANDHI"),
+    ],
 )
 def test_savefile(filename, speed, civ, leader):
     save = SaveFile(f"tests/saves/{filename}")

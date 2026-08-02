@@ -1,4 +1,5 @@
 """The object returned by the `--spoilers` option."""
+
 from __future__ import annotations
 
 from typing import Any, List
