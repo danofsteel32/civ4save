@@ -18,7 +18,6 @@ $ civ4save xml --text-map --lang Spanish
 """
 
 import json
-from functools import partial
 from pathlib import Path
 from typing import Callable, List, Tuple
 
@@ -92,22 +91,21 @@ def parse(
     save = SaveFile(file=file)
     print(save)
 
-    print_fn = print
     if json_:
-        # call json.dumps on the arg before calling print
-        j = partial(json.dumps, indent=4, cls=utils.CustomJsonEncoder)
-        print_fn = partial(print, j)
+        raise NotImplementedError("Sorry no json yet")
 
     if spoilers:
-        print_fn(save.game_state)
-        return
+        plots = list(save.plots)
+        out = {"state": save.game_state}
+        out["plots"] = plots
+        print(out)
     if player > -1:
-        print_fn(save.get_player(player))
+        print(save.get_player(player))
         return
     if list_players:
-        print_fn(save.players)
+        print(save.players)
         return
-    print_fn(save.settings)
+    print(save.settings)
     return
 
 
@@ -122,7 +120,7 @@ def gamefiles() -> None:
 
     for name, get_dir_func in names_and_getters:
         print(f"[bold]{name}[/bold]")
-        print(f"[bold]{'-'*len(name)}[/bold]")
+        print(f"[bold]{'-' * len(name)}[/bold]")
         try:
             dir = get_dir_func()
             print(utils.renderable_filepath(dir))
