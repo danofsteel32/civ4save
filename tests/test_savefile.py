@@ -31,3 +31,26 @@ def test_completed_game():
     save = SaveFile("tests/saves/Gandhi-culture-win-t331.CivBeyondSwordSave")
     assert save.game_state.winner == 0
     assert save.game_state.victory.name == "VICTORY_CULTURAL"
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "bismark-emperor-turn86.CivBeyondSwordSave",
+        "churchill-random-roll.CivBeyondSwordSave",
+        "mehmed-epic.CivBeyondSwordSave",
+        "Gandhi-culture-win-t331.CivBeyondSwordSave",
+    ],
+)
+def test_plot_stream_is_complete_and_row_major(filename):
+    save = SaveFile(f"tests/saves/{filename}")
+    grid_width, grid_height = save.map_size
+
+    assert len(save.raw.plots) == grid_width * grid_height
+    assert [
+        (plot.x, plot.y) for plot in save.raw.plots
+    ] == [
+        (x, y)
+        for y in range(grid_height)
+        for x in range(grid_width)
+    ]
