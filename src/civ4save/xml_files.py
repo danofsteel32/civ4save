@@ -140,10 +140,7 @@ def write_out_enum(e: EnumMeta) -> None:
     """Write Enum to stdout using a jinja template."""
     data = {
         "enum_name": e.__name__,
-        "members": [
-            {"name": m, "value": e[m].value}
-            for m in e.__members__  # type: ignore
-        ],
+        "members": [{"name": m, "value": e[m].value} for m in e.__members__],
     }
     template = """
 class {{ enum_name }}(IntEnum):

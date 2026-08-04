@@ -16,7 +16,7 @@ class CustomJsonEncoder(json.JSONEncoder):
     def default(self, o: Any) -> Union[dict, str, json.JSONEncoder]:
         """Override default."""
         if is_dataclass(o):
-            return asdict(o)
+            return asdict(o)  # type: ignore[arg-type]
         elif isinstance(o, Enum):
             return o.name
         return super().default(o)
@@ -78,7 +78,7 @@ def get_enum_length(e: EnumMeta) -> int:
     Returns:
         int: Number of members.
     """
-    return len([m for m in e.__members__ if e[m].value >= 0])  # type: ignore
+    return len([m for m in e.__members__ if e[m].value >= 0])
 
 
 def unenumify(name: str) -> str:
