@@ -4,7 +4,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-VENVPATH="./venv"
+VENVPATH="./.venv"
 
 venv() {
     if [[ -d "${VENVPATH}/bin" ]]; then
@@ -78,7 +78,7 @@ clean() {
 }
 
 lint() {
-    wrapped_python -m flake8 src/ &&
+    wrapped_python -m ruff check --fix src/ &&
     wrapped_python -m mypy src/
 }
 
