@@ -101,7 +101,7 @@ def parse(
 ) -> None:
     """Parse a .CivBeyondSwordSave file.
 
-    FILE is a save file or directory of save files
+    FILE is a .CivBeyondSwordSave file.
     """
     save = SaveFile(file=file)
 

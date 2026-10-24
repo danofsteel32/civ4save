@@ -89,7 +89,7 @@ byte width, signedness, count fields, and conditional presence are wire-format
 contracts, not ordinary implementation details. Confirm them against the
 serialized format rather than guessing from values in one save.
 
-Read `PLOT_PARSING_NOTES.md` before changing `CvPlot` or plot-array parsing.
+Read `BINARY_FORMAT.md` before changing `CvPlot` or plot-array parsing.
 Preserve the exact `grid_width * grid_height` plot count and explicit parse
 failures. Do not restore `GreedyRange`, sentinel-based stopping, silent
 truncation, or any behavior that accepts a partially parsed map as complete.
@@ -113,7 +113,7 @@ Keep known baseline issues separate from regressions introduced by a change:
   and terminal formatting; preserve the existing option precedence.
 - The large Mehmed and Gandhi fixtures must parse complete maps. Their former
   failures came from compressed chunk framing, as documented in
-  `PLOT_PARSING_NOTES.md`; do not weaken plot validation.
+  `BINARY_FORMAT.md`; do not weaken plot validation.
 - Ruff uses its current default rule set with `target-version = "py39"`.
   The expanded defaults expose existing lint findings, mostly unused `noqa`
   comments and older typing syntax. Keep these findings separate from new

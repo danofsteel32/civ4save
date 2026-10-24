@@ -1,25 +1,58 @@
-# Civ4Save 
+# Civ4Save
 
-Parse the data in a `.CivBeyondSwordSave` file.
+Civ4Save is a Python library and command line tool for reading vanilla
+Civilization IV: Beyond the Sword `.CivBeyondSwordSave` files.
 
-Currenly only vanilla BTS saves are supported (No mods). Once the remaining parsing bugs are ironed out I
-will work to support the most popular mods (BAT, BUG).
+- Inspect game settings, players, cities, civics, and trades.
+- Read game state and map plots, including ownership and improvements.
+- Export save data as JSON for scripts and other tools.
+- Look up civilizations and leaders, and rank leaders by attribute.
+- Find game files and convert Civ IV XML into Python enums or translated text maps.
 
-Thanks to [this repo](https://github.com/dguenms/beyond-the-sword-sdk) for hosting the Civ4 BTS source.
-Wouldn't have been possible to make this without it.
+## Install
 
+Requires Python 3.9 or newer.
 
-### Usage
+[uv](https://github.com/dguenms/beyond-the-sword-sdk.git) **(recommended)**
 
-#### Install
+```bash
+uv tool install civ4save
+civ4save --help
+```
 
-* Requires Python >=3.9. CI checks Python 3.9 and 3.15.
+If the command is not found, run `uv tool update-shell` and restart your terminal.
 
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then install
-the command line tool with `uv tool install civ4save`. To use the library in a
-uv project, run `uv add civ4save` instead.
+To use Civ4Save as a library in an existing uv project, run:
 
-#### Command line Tool
+```bash
+uv add civ4save
+```
+
+**pip**
+
+```bash
+pip install civ4save
+```
+
+This installs both the command line tool and the Python library.
+
+## Usage
+
+### Quick start
+
+Read the settings from a save, list its players, or export its data:
+
+```bash
+civ4save parse "Rome.CivBeyondSwordSave"
+civ4save parse --list-players "Rome.CivBeyondSwordSave"
+civ4save parse --player 0 "Rome.CivBeyondSwordSave"
+civ4save parse --json "Rome.CivBeyondSwordSave" > settings.json
+```
+
+Pass a single save file to `parse`. Add `--spoilers` to include game state and
+map data that may reveal information unavailable to the human player.
+
+### Command line tool
 
 ```
 $ civ4save --help
@@ -45,7 +78,7 @@ Usage: civ4save parse [OPTIONS] FILE
 
   Parse a .CivBeyondSwordSave file.
 
-  FILE is a save file or directory of save files
+  FILE is a .CivBeyondSwordSave file.
 
 Options:
   --settings        Basic settings only. Nothing that would be unknown to the
@@ -76,11 +109,16 @@ terminal formatting, so it can be redirected or piped to other tools.
 
 ![Settings](https://github.com/danofsteel32/civ4save/blob/main/screenshots/civ4save-settings.png)
 
+<details>
+<summary>More output examples</summary>
+
 ![Spoilers](https://github.com/danofsteel32/civ4save/blob/main/screenshots/civ4save-spoilers.png)
 
 ![Player](https://github.com/danofsteel32/civ4save/blob/main/screenshots/civ4save-player_1.png)
 
 ![Player Cont.](https://github.com/danofsteel32/civ4save/blob/main/screenshots/civ4save-player_2.png)
+
+</details>
 
 `gamefiles` command works on both Linux and Windows.
 
@@ -120,7 +158,7 @@ Options:
 
 `--enums` could be useful for developers/modders, I used it to make this project.
 It locates the XML files (Vanilla, Warlords, BTS), reads each file, and transforms
-it into a python enum. BTS takes precendence over Warlords and Warlords over Vanilla
+each into a python enum. BTS takes precendence over Warlords and Warlords over Vanilla
 if 2 XML files have the same name.
 The enums are written to stdout. Ex. `civ4save xml --enums > enums.py` to save them to a file.
 
@@ -129,37 +167,37 @@ in the given `--lang`. I use this in the `contrib` package to make some of the C
 attributes more readable.
 
 
-#### As a Libray
+### As a library
 
 ```python
-
 from civ4save import SaveFile
 
-# SaveFile takes 2 args:
-#   file: str | Path (required)
-#   debug: bool (default False, prints hidden fields)
-
-save = SaveFile('Rome.CivBeyondSwordSave')
-save.raw  # raw construct.Struct, use to create your own wrapper objects
+save = SaveFile("Rome.CivBeyondSwordSave")
+save.raw  # Parsed Construct container for access to low-level fields
 save.settings  # civ4save.objects.Settings
 save.players  # dict[int, civ4save.objects.Player]
 save.game_state  # civ4save.objects.GameState
 save.get_player(0)  # Returns civ4save.objects.Player
-# The plots take a few seconds to parse as there are thousands of them so they
-# only get parsed when accessed. Afterwards they are cached so access is fast again
 save.get_plot(x=20, y=20)  # Returns civ4save.objects.Plot
 for plot in save.plots:
     print(plot.owner, plot.improvement_type)
 ```
 
+`SaveFile` accepts a file path as a string or `pathlib.Path`. Pass `debug=True`
+to include hidden fields when displaying parsed Construct data.
 
-### Development / Contributing
+The save is decompressed and parsed on the first access to data, such as
+`save.settings` or `save.raw`, and the parsed container is cached. Some arrays
+are evaluated lazily. The settings, players, and game-state wrappers are cached;
+each access to `save.plots` creates a new list of `Plot` wrappers. Store that
+list if you need to reuse it.
 
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/), clone the
-repository, and run these commands from its root:
+## Development and contributing
+
+Clone the repository, then run these commands from its root:
 
 ```bash
-uv sync
+uv sync --locked
 uv run --locked pre-commit install
 uv run civ4save --help
 uv run pytest
@@ -168,19 +206,9 @@ uv run ruff format --check src tests
 uv run mypy src
 ```
 
-`uv sync` installs the project in editable mode and includes the development
-dependency group. `uv run` uses the project's `.venv`; activation is unnecessary.
-CI uses `--locked` to check that `pyproject.toml` and the checked-in `uv.lock`
-agree without updating the lockfile.
-
-The Git hooks apply Ruff's safe lint fixes and formatting to changed Python
-files, then run `mypy src` once. They use the same locked tools and dependencies
-as CI. If a hook edits files, review and stage the changes before committing
-again. To check every file, run `uv run --locked pre-commit run --all-files`.
-
-Ruff uses its [current default rule set](https://docs.astral.sh/ruff/default-rules/)
-with a Python 3.9 target. No `lint.select` override is needed; dependency upgrades
-can expand the defaults, so review new findings when updating Ruff.
+The hooks run Ruff's safe fixes, Ruff formatting, and mypy before each commit.
+If they edit files, review and stage the changes before committing again. Run
+all hooks manually with `uv run --locked pre-commit run --all-files`.
 
 For a focused test or to select a Python version:
 
@@ -190,81 +218,10 @@ uv run --python 3.9 pytest
 uv run --python 3.15 pytest
 ```
 
-uv can download a requested interpreter if it is missing. Selecting a different
-Python version recreates `.venv` for that version. CI uses separate jobs for
-Python 3.9 and 3.15, covering the minimum and newest targeted versions. The
-project retains compatibility with 3.9 and 3.10,
-although [upstream Python support](https://devguide.python.org/versions/) now
-covers 3.11 through 3.15. Use an upstream-supported version for development.
 
-The maintenance branch has known limitations: the large Gandhi and Mehmed saves
-fail exact plot parsing, and Ruff's expanded
-defaults expose existing lint findings, mostly unused `noqa` comments and older
-typing syntax. Tests use synthetic XML in temporary game directories and mocked
-CLI save objects, so they do not require a local Civ IV installation. Separate
-binary-fixture tests exercise the real save parser and JSON output. CI runs the full suite
-and reports these failures; it does not suppress them. See
-[PLOT_PARSING_NOTES.md](PLOT_PARSING_NOTES.md) for parser diagnostics.
-
-To refresh dependencies, then review and validate the resulting lockfile:
-
-```bash
-uv lock --upgrade
-uv sync
-```
-
-Commit `pyproject.toml` and `uv.lock` together when changing dependency
-requirements. The lockfile selects compatible dependency versions for each
-Python version, including older releases where necessary for Python 3.9.
-
-Build the source distribution and wheel with:
-
-```bash
-uv build
-```
-
-For a release, synchronize the version in `pyproject.toml`,
-`src/civ4save/__init__.py`, and `tests/test_civ4save.py`, run the checks above,
-and build into an empty `dist/` directory. After reviewing the artifacts, upload
-those specific files with `uv publish dist/<filename>.tar.gz dist/<filename>.whl`
-using your PyPI credentials. Publishing is a separate, explicit step.
-
-### How it Works
-Games are saved in a what's basically a memory dump that kind of looks like a sandwich.
-
-`| uncompressed data | zlib compressed data | uncompressed data + checksum |`
-
-The `SaveFile` class handles all of the decompression stuff as well as the parsing using the
-[construct](https://github.com/construct/construct) library.
-
-If you want to see the actual binary structure of the save file see `src/civ4save/vanilla/structure.py`.
+See [AGENTS.md](AGENTS.md) for repository development guidance and
+[BINARY_FORMAT.md](BINARY_FORMAT.md) for parser coverage and binary-format notes.
 
 
-### Write Order
-The game calls its `::write` functions in this order when saving:
-
-1. CvInitCore (done)
-2. CvGame (done)
-3. CvMap (done)
-4. CvPlot (buggy/inconsistent)
-5. CvArea (under construction)
-6. CvTeam (not implemented)
-7. CvPlayer (not implemented)
-
-
-### Plots Bug
-For some unknown reason save files larger than 136KB (largest I have that doesn't encounter the bug)
-parsing fails about half through the plots array. pass `debug=True` to `SaveFile` to see details when parsing
-a large save file and you'll get detailed debugging output.
-
-
-### TODO
-- Click mutually exclusive group plugin for more robust cli arg handling
-- Better docs
-- `SaveFile` needs a logger
-- `src/civ4save/objects/*` all need tests
-- `xml_files.py` needs tests
-- Caching of parsed saves (probably using [dataclasses_json](https://pypi.org/project/dataclasses-json/))
-- [Textual](https://github.com/Textualize/textual) UI for browsing saves in a directory
-    - maybe a `send to trash` button to make it easy to clean out unwanted saves
-- Diffing tools to tell what changed between 2 saves/autosaves
+## Acknowledgements
+Thanks to [this repo](https://github.com/dguenms/beyond-the-sword-sdk) for hosting the Civ4 BTS source. Wouldn't have been possible to make this without it.
