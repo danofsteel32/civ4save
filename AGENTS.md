@@ -29,10 +29,10 @@ rules.
 Use the checked-in `uv.lock` and the canonical `uv` workflow:
 
 ```bash
-uv sync
-uv run pytest
-uv run ruff check src tests
-uv run mypy src
+uv sync --locked
+uv run --locked pytest
+uv run --locked ruff check src tests
+uv run --locked mypy src
 ```
 
 The full pytest suite parses several binary saves and can be slow. During
@@ -46,11 +46,11 @@ uv run civ4save parse --settings tests/saves/bismark-emperor-turn86.CivBeyondSwo
 ```
 
 Before handing off a change, expand validation in proportion to its scope and
-report any tests or checks that were not run. `./run.sh lint` is not a read-only
-check: it runs Ruff with `--fix` on `src/` before mypy. `./run.sh clean` deletes
-build output and generated caches, including `*.egg-info`, `__pycache__`, mypy,
-pytest, and distribution directories. Do not use either command merely to
-inspect the current state.
+report any tests or checks that were not run. Use direct `uv` commands; the old
+shell script and tox configuration have been removed. Ruff's `--fix` option
+modifies files, so omit it when inspecting the current state. CI runs the full
+pytest suite and mypy on Python 3.9 and 3.15, including known baseline failures;
+do not hide these failures with broad exclusions or `continue-on-error`.
 
 ## Coding expectations
 
@@ -101,8 +101,10 @@ Keep known baseline issues separate from regressions introduced by a change:
 - Exact plot parsing of the large Mehmed and Gandhi fixtures exposes known,
   explicit plot-layout failures described in `PLOT_PARSING_NOTES.md`. Do not
   weaken validation to make these fixtures appear to pass.
-- `uv run ruff check src tests` currently reports the unused `json` import in
-  `tests/test_cli.py`.
+- Ruff uses its current default rule set with `target-version = "py39"`.
+  The expanded defaults expose existing lint findings, mostly unused `noqa`
+  comments and older typing syntax. Keep these findings separate from new
+  violations when validating unrelated changes.
 
 When reporting validation, identify these as pre-existing maintenance-branch
 failures and call out any additional failure separately.

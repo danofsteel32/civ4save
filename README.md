@@ -13,9 +13,11 @@ Wouldn't have been possible to make this without it.
 
 #### Install
 
-* Requires >= python3.7
+* Requires Python >=3.9. CI checks Python 3.9 and 3.15.
 
-`python -m pip install civ4save`
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then install
+the command line tool with `uv tool install civ4save`. To use the library in a
+uv project, run `uv add civ4save` instead.
 
 #### Command line Tool
 
@@ -137,19 +139,72 @@ for plot in save.plots:
 
 ### Development / Contributing
 
-`python -m pip install ".[dev]"` to install in editable mode along with all dev deps.
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), clone the
+repository, and run these commands from its root:
 
-`python -m pytest tests/` to run the tests.
-
-Or you can use the `./run.sh` script if you use bash.
-
+```bash
+uv sync --locked
+uv run --locked civ4save --help
+uv run --locked pytest
+uv run --locked ruff check src tests
+uv run --locked mypy src
 ```
-./run.sh install dev
-./run.sh tests
-./run.sh c4 --help
-./run.sh clean
-./run.sh build
+
+`uv sync` installs the project in editable mode and includes the development
+dependency group. `uv run` uses the project's `.venv`; activation is unnecessary.
+`--locked` checks that `pyproject.toml` and the checked-in `uv.lock` agree without
+updating the lockfile.
+
+Ruff uses its [current default rule set](https://docs.astral.sh/ruff/default-rules/)
+with a Python 3.9 target. No `lint.select` override is needed; dependency upgrades
+can expand the defaults, so review new findings when updating Ruff.
+
+For a focused test or to select a Python version:
+
+```bash
+uv run --locked pytest tests/test_savefile.py -k bismark
+uv run --locked --python 3.9 pytest
+uv run --locked --python 3.15 pytest
 ```
+
+uv can download a requested interpreter if it is missing. Selecting a different
+Python version recreates `.venv` for that version. CI uses separate jobs for
+Python 3.9 and 3.15, covering the minimum and newest targeted versions. The
+project retains compatibility with 3.9 and 3.10,
+although [upstream Python support](https://devguide.python.org/versions/) now
+covers 3.11 through 3.15. Use an upstream-supported version for development.
+
+The maintenance branch has known failures: `parse --json` is unimplemented,
+the large Gandhi and Mehmed saves fail exact plot parsing, and Ruff's expanded
+defaults expose existing lint findings, mostly unused `noqa` comments and older
+typing syntax. XML CLI tests also require a local Civ IV installation and fail
+when its XML files cannot be found.
+CI runs the full suite
+and reports these failures; it does not suppress them. See
+[PLOT_PARSING_NOTES.md](PLOT_PARSING_NOTES.md) for parser diagnostics.
+
+To refresh dependencies, then review and validate the resulting lockfile:
+
+```bash
+uv lock --upgrade
+uv sync --locked
+```
+
+Commit `pyproject.toml` and `uv.lock` together when changing dependency
+requirements. The lockfile selects compatible dependency versions for each
+Python version, including older releases where necessary for Python 3.9.
+
+Build the source distribution and wheel with:
+
+```bash
+uv build
+```
+
+For a release, synchronize the version in `pyproject.toml`,
+`src/civ4save/__init__.py`, and `tests/test_civ4save.py`, run the checks above,
+and build into an empty `dist/` directory. After reviewing the artifacts, upload
+those specific files with `uv publish dist/<filename>.tar.gz dist/<filename>.whl`
+using your PyPI credentials. Publishing is a separate, explicit step.
 
 ### How it Works
 Games are saved in a what's basically a memory dump that kind of looks like a sandwich.

@@ -1,5 +1,3 @@
-import json
-
 from click.testing import CliRunner
 
 from civ4save import __version__

@@ -1,3 +1,5 @@
-- [ ] Switch to uv and tox-uv
-- [ ] Tests pass on python 3.8-13
-- [ ] Switch formatting and linting to ruff 
+- [x] Use uv for dependency management, checks, builds, and publishing
+- [x] Configure Python 3.9 and 3.15 checks with uv in CI
+- [x] Use Ruff for linting
+- [ ] Resolve the known JSON CLI and large-map parser test failures
+- [ ] Make XML CLI tests independent of a local Civ IV installation
