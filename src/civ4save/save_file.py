@@ -26,56 +26,41 @@ class ParseError(Exception):
     pass
 
 
-def _find_zlib_end(data: bytes, z_start: int) -> int:
-    """Used to decompress file.
-
-    Binary search to find byte index where incomplete data stream becomes
-    incorrect data stream. I'm not sure if the guess_limit makes sense but
-    I do want some check to an infinite loop / hang.
-
-    https://forums.civfanatics.com/threads/need-a-little-help-with-editing-civ4-save-files.452707/
-    """
-    guess_limit = 50
-
-    low, high = z_start, len(data)
-    prev = 0
-    guesses = 0
-    while True:
-        z_end = (low + high) // 2
-        if z_end == prev:
-            return z_end
-        if guesses > guess_limit:
-            raise NotASaveFile("Could not find zlib end byte index")
-        try:
-            zlib.decompress(data[z_start:z_end])
-        except Exception as ex:
-            prev = z_end
-            if "incomplete" in ex.__str__():
-                low = z_end + 1
-            elif "invalid" in ex.__str__():
-                high = z_end - 1
-        guesses += 1
-
-
 def _read_savefile(file: Union[str, Path]) -> bytes:
-    """Read and decompress file.
+    """Decompress the length-prefixed zlib chunks in a BTS save.
 
-    Find the index in where the zlib magic header is, then find the end
-    of the compressed bytes. Then decompress and return the bytes.
+    Each chunk has a little-endian uint32 byte length; a zero length ends the
+    compressed section. All chunks belong to one zlib stream. BTS flushes this
+    stream without an end marker, so zlib EOF is not the section boundary.
     """
     with open(file, "rb") as f:
         data = f.read()
 
-    magic_number = bytes.fromhex("789c")  # default compression
-    z_start = data.find(magic_number)
-    z_end = _find_zlib_end(data, z_start)
-    if z_start < 0 or z_end < 0:
+    z_start = data.find(bytes.fromhex("789c"))  # default compression
+    if z_start < 4:
         raise NotASaveFile("This is not a .CivBeyondSwordSave file")
 
+    offset = z_start - 4
     decomp_obj = zlib.decompressobj()
-    uncompressed_data = decomp_obj.decompress(data[z_start:z_end])
+    uncompressed = []
+    while True:
+        if offset + 4 > len(data):
+            raise NotASaveFile(f"Missing compressed chunk length at byte {offset}")
+        size = int.from_bytes(data[offset : offset + 4], "little")
+        offset += 4
+        if size == 0:
+            break
+        end = offset + size
+        if end > len(data):
+            raise NotASaveFile(f"Truncated compressed chunk at byte {offset}")
+        try:
+            uncompressed.append(decomp_obj.decompress(data[offset:end]))
+        except zlib.error as exc:
+            raise NotASaveFile(f"Invalid compressed chunk at byte {offset}") from exc
+        offset = end
 
-    return data[:z_start] + uncompressed_data + data[z_end:]
+    # The schema includes the first chunk length in its uncompressed header.
+    return data[:z_start] + b"".join(uncompressed) + data[offset:]
 
 
 class SaveFile:

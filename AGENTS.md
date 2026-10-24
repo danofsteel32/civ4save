@@ -94,7 +94,7 @@ Validate parser changes against both categories of fixture:
 - Small, currently complete maps:
   `bismark-emperor-turn86.CivBeyondSwordSave` and
   `churchill-random-roll.CivBeyondSwordSave`.
-- Large, diagnostic maps: `mehmed-epic.CivBeyondSwordSave` and
+- Large maps: `mehmed-epic.CivBeyondSwordSave` and
   `Gandhi-culture-win-t331.CivBeyondSwordSave`.
 
 ## Maintenance-branch baseline
@@ -104,9 +104,9 @@ Keep known baseline issues separate from regressions introduced by a change:
 - The `parse --json` CLI path emits one document with named sections, serializing
   attrs models recursively and enums by name. Keep stdout free of text headers
   and terminal formatting; preserve the existing option precedence.
-- Exact plot parsing of the large Mehmed and Gandhi fixtures exposes known,
-  explicit plot-layout failures described in `PLOT_PARSING_NOTES.md`. Do not
-  weaken validation to make these fixtures appear to pass.
+- The large Mehmed and Gandhi fixtures must parse complete maps. Their former
+  failures came from compressed chunk framing, as documented in
+  `PLOT_PARSING_NOTES.md`; do not weaken plot validation.
 - Ruff uses its current default rule set with `target-version = "py39"`.
   The expanded defaults expose existing lint findings, mostly unused `noqa`
   comments and older typing syntax. Keep these findings separate from new
