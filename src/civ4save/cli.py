@@ -18,9 +18,11 @@ $ civ4save xml --text-map --lang Spanish
 """
 
 import json
+from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Tuple
+from typing import Any, Callable, List, Tuple
 
+import attrs
 import click
 from rich import print
 
@@ -31,6 +33,19 @@ from .save_file import SaveFile
 from .xml_files import make_enums as write_enums
 
 TEXT_MAP_LANGS = ["English", "French", "German", "Italian", "Spanish"]
+
+
+def _json_value(value: Any) -> Any:
+    """Convert output models recursively, preserving enum names."""
+    if isinstance(value, Enum):
+        return value.name
+    if attrs.has(type(value)):
+        return _json_value(attrs.asdict(value, recurse=False))
+    if isinstance(value, dict):
+        return {key: _json_value(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_value(item) for item in value]
+    return value
 
 
 @click.group()
@@ -89,10 +104,21 @@ def parse(
     FILE is a save file or directory of save files
     """
     save = SaveFile(file=file)
-    print(save)
 
     if json_:
-        raise NotImplementedError("Sorry no json yet")
+        output: dict[str, Any] = {}
+        if spoilers:
+            output.update(state=save.game_state, plots=save.plots)
+        if player > -1:
+            output["player"] = save.get_player(player)
+        elif list_players:
+            output["players"] = save.players
+        else:
+            output["settings"] = save.settings
+        click.echo(json.dumps(_json_value(output), indent=2, ensure_ascii=False))
+        return
+
+    print(save)
 
     if spoilers:
         plots = list(save.plots)

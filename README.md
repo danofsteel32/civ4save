@@ -58,6 +58,22 @@ Options:
   --help            Show this message and exit.
 ```
 
+Use `--json` to write a single JSON document to stdout, for example:
+
+```bash
+civ4save parse --json Rome.CivBeyondSwordSave > settings.json
+civ4save parse --json --player 0 Rome.CivBeyondSwordSave > player.json
+civ4save parse --json --spoilers Rome.CivBeyondSwordSave > map.json
+```
+
+By default the document contains a `settings` object. `--player INDEX` selects
+a `player` object, and `--list-players` selects a `players` object keyed by player
+index (JSON object keys are strings). If both are supplied, `--player` takes
+precedence. `--spoilers` adds `state` and `plots` alongside the selected section.
+Enum values use their names, such as `GAMESPEED_NORMAL`; nested cities, civics,
+and trades are objects and arrays. JSON output contains no text header or
+terminal formatting, so it can be redirected or piped to other tools.
+
 ![Settings](https://github.com/danofsteel32/civ4save/blob/main/screenshots/civ4save-settings.png)
 
 ![Spoilers](https://github.com/danofsteel32/civ4save/blob/main/screenshots/civ4save-spoilers.png)
@@ -174,13 +190,12 @@ project retains compatibility with 3.9 and 3.10,
 although [upstream Python support](https://devguide.python.org/versions/) now
 covers 3.11 through 3.15. Use an upstream-supported version for development.
 
-The maintenance branch has known limitations: `parse --json` is unimplemented,
-the large Gandhi and Mehmed saves fail exact plot parsing, and Ruff's expanded
+The maintenance branch has known limitations: the large Gandhi and Mehmed saves
+fail exact plot parsing, and Ruff's expanded
 defaults expose existing lint findings, mostly unused `noqa` comments and older
 typing syntax. Tests use synthetic XML in temporary game directories and mocked
 CLI save objects, so they do not require a local Civ IV installation. Separate
-binary-fixture tests exercise the real save parser. The JSON CLI test verifies
-the current explicit rejection. CI runs the full suite
+binary-fixture tests exercise the real save parser and JSON output. CI runs the full suite
 and reports these failures; it does not suppress them. See
 [PLOT_PARSING_NOTES.md](PLOT_PARSING_NOTES.md) for parser diagnostics.
 

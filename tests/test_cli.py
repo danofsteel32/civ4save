@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from unittest.mock import MagicMock, Mock
 
 import pytest
@@ -6,6 +7,8 @@ from click.testing import CliRunner
 
 from civ4save import SaveFile, __version__
 from civ4save.cli import cli
+from civ4save.objects.player import City, Civics, Trade, TradeDeal
+from civ4save.vanilla import enums as e
 
 
 @pytest.fixture
@@ -71,12 +74,110 @@ def test_parse_output(runner, parsed_save, options, markers):
         save.get_player.assert_not_called()
 
 
-def test_parse_json_is_unimplemented(runner, parsed_save):
-    file, _, _ = parsed_save
-    result = runner.invoke(cli, ["parse", "--json", str(file)])
-    assert result.exit_code == 1
-    assert isinstance(result.exception, NotImplementedError)
-    assert str(result.exception) == "Sorry no json yet"
+@pytest.mark.parametrize(
+    "options,expected",
+    [
+        ([], {"settings": {"settings_marker": "NORMAL"}}),
+        (["--settings"], {"settings": {"settings_marker": "NORMAL"}}),
+        (["--player", "0"], {"player": {"selected_marker": "Human"}}),
+        (["--list-players"], {"players": {"0": {"player_marker": "Human"}}}),
+        (
+            ["--settings", "--list-players", "--player", "0"],
+            {"player": {"selected_marker": "Human"}},
+        ),
+    ],
+)
+@pytest.mark.parametrize("spoilers", [False, True])
+def test_parse_json(runner, parsed_save, options, expected, spoilers):
+    file, constructor, save = parsed_save
+    if spoilers:
+        options = [*options, "--spoilers"]
+        expected = {
+            **expected,
+            "state": {"state_marker": 86},
+            "plots": [{"plot_marker": 1}],
+        }
+    result = runner.invoke(cli, ["parse", "--json", *options, str(file)])
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output) == expected
+    constructor.assert_called_once_with(file=file)
+    if "--player" in options:
+        save.get_player.assert_called_once_with(0)
+    else:
+        save.get_player.assert_not_called()
+
+
+def test_parse_json_nested_models(runner, parsed_save):
+    file, _, save = parsed_save
+    save.get_player.return_value = {
+        "cities": [City("München [bold]", 3, 4, 12, ["Stonehenge"])],
+        "civics": Civics(),
+        "trades": [TradeDeal(0, 1, 20, [Trade(e.TradeableItem.TRADE_GOLD, 50)], [])],
+        "religion": e.ReligionType.NO_RELIGION,
+    }
+    result = runner.invoke(cli, ["parse", "--json", "--player", "0", str(file)])
+    assert result.exit_code == 0, result.output
+    player = json.loads(result.output)["player"]
+    assert player["cities"] == [
+        {
+            "name": "München [bold]",
+            "x": 3,
+            "y": 4,
+            "turn_founded": 12,
+            "wonders": ["Stonehenge"],
+        }
+    ]
+    assert player["civics"]["government"] == "CIVIC_DESPOTISM"
+    assert player["trades"] == [
+        {
+            "first_player": 0,
+            "second_player": 1,
+            "initial_turn": 20,
+            "first_trades": [{"item": "TRADE_GOLD", "amount": 50}],
+            "second_trades": [],
+        }
+    ]
+    assert player["religion"] == "NO_RELIGION"
+
+
+@pytest.mark.parametrize(
+    "filename,leader",
+    [
+        ("bismark-emperor-turn86.CivBeyondSwordSave", "LEADER_BISMARCK"),
+        ("churchill-random-roll.CivBeyondSwordSave", "LEADER_CHURCHILL"),
+    ],
+)
+def test_parse_json_real_save(runner, monkeypatch, filename, leader):
+    file = Path(__file__).parent / "saves" / filename
+    save = SaveFile(file)
+    monkeypatch.setattr("civ4save.cli.SaveFile", Mock(return_value=save))
+
+    result = runner.invoke(cli, ["parse", "--json", "--spoilers", str(file)])
+    assert result.exit_code == 0, result.output
+    output = json.loads(result.output)
+    assert set(output) == {"settings", "state", "plots"}
+    assert output["settings"]["game_speed"] == "GAMESPEED_NORMAL"
+    assert isinstance(output["settings"]["wrap_x"], bool)
+    assert isinstance(output["state"]["total_cities"], int)
+    assert output["state"]["victory"] == "NO_VICTORY"
+    width = output["settings"]["grid_width"]
+    height = output["settings"]["grid_height"]
+    assert len(output["plots"]) == width * height
+    assert [(p["x"], p["y"]) for p in output["plots"]] == [
+        (x, y) for y in range(height) for x in range(width)
+    ]
+    assert output["plots"][0]["terrain_type"].startswith("TERRAIN_")
+
+    result = runner.invoke(cli, ["parse", "--json", "--list-players", str(file)])
+    assert result.exit_code == 0, result.output
+    players = json.loads(result.output)["players"]
+    assert players["0"]["leader"] == leader
+    assert players["0"]["civics"]["government"].startswith("CIVIC_")
+    assert players["0"]["cities"]
+
+    result = runner.invoke(cli, ["parse", "--json", "--player", "0", str(file)])
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output) == {"player": players["0"]}
 
 
 def test_gamefiles(runner, game_install, saves_dir):
