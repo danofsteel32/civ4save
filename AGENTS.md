@@ -23,6 +23,11 @@ rules.
   vanilla BTS binary wire format.
 - `tests/saves/` contains binary fixtures; the Python tests live directly under
   `tests/`.
+- `tests/conftest.py` isolates the home directory and working directory for
+  every test. Its synthetic installation models vanilla/Warlords/BTS XML
+  precedence and plain/nested translation values. Use these fixtures for
+  filesystem and XML tests; do not depend on an installed game. Resolve binary
+  fixture paths relative to the test module, since the working directory varies.
 
 ## Development and validation
 
@@ -97,7 +102,7 @@ Validate parser changes against both categories of fixture:
 Keep known baseline issues separate from regressions introduced by a change:
 
 - The `parse --json` CLI path is intentionally unimplemented and currently
-  raises `NotImplementedError`.
+  raises `NotImplementedError`. Its CLI test explicitly checks that rejection.
 - Exact plot parsing of the large Mehmed and Gandhi fixtures exposes known,
   explicit plot-layout failures described in `PLOT_PARSING_NOTES.md`. Do not
   weaken validation to make these fixtures appear to pass.

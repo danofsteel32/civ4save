@@ -143,17 +143,17 @@ Install [uv](https://docs.astral.sh/uv/getting-started/installation/), clone the
 repository, and run these commands from its root:
 
 ```bash
-uv sync --locked
-uv run --locked civ4save --help
-uv run --locked pytest
-uv run --locked ruff check src tests
-uv run --locked mypy src
+uv sync
+uv run civ4save --help
+uv run pytest
+uv run ruff check src tests
+uv run mypy src
 ```
 
 `uv sync` installs the project in editable mode and includes the development
 dependency group. `uv run` uses the project's `.venv`; activation is unnecessary.
-`--locked` checks that `pyproject.toml` and the checked-in `uv.lock` agree without
-updating the lockfile.
+CI uses `--locked` to check that `pyproject.toml` and the checked-in `uv.lock`
+agree without updating the lockfile.
 
 Ruff uses its [current default rule set](https://docs.astral.sh/ruff/default-rules/)
 with a Python 3.9 target. No `lint.select` override is needed; dependency upgrades
@@ -162,9 +162,9 @@ can expand the defaults, so review new findings when updating Ruff.
 For a focused test or to select a Python version:
 
 ```bash
-uv run --locked pytest tests/test_savefile.py -k bismark
-uv run --locked --python 3.9 pytest
-uv run --locked --python 3.15 pytest
+uv run pytest tests/test_savefile.py -k bismark
+uv run --python 3.9 pytest
+uv run --python 3.15 pytest
 ```
 
 uv can download a requested interpreter if it is missing. Selecting a different
@@ -174,12 +174,13 @@ project retains compatibility with 3.9 and 3.10,
 although [upstream Python support](https://devguide.python.org/versions/) now
 covers 3.11 through 3.15. Use an upstream-supported version for development.
 
-The maintenance branch has known failures: `parse --json` is unimplemented,
+The maintenance branch has known limitations: `parse --json` is unimplemented,
 the large Gandhi and Mehmed saves fail exact plot parsing, and Ruff's expanded
 defaults expose existing lint findings, mostly unused `noqa` comments and older
-typing syntax. XML CLI tests also require a local Civ IV installation and fail
-when its XML files cannot be found.
-CI runs the full suite
+typing syntax. Tests use synthetic XML in temporary game directories and mocked
+CLI save objects, so they do not require a local Civ IV installation. Separate
+binary-fixture tests exercise the real save parser. The JSON CLI test verifies
+the current explicit rejection. CI runs the full suite
 and reports these failures; it does not suppress them. See
 [PLOT_PARSING_NOTES.md](PLOT_PARSING_NOTES.md) for parser diagnostics.
 
@@ -187,7 +188,7 @@ To refresh dependencies, then review and validate the resulting lockfile:
 
 ```bash
 uv lock --upgrade
-uv sync --locked
+uv sync
 ```
 
 Commit `pyproject.toml` and `uv.lock` together when changing dependency
