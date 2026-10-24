@@ -42,7 +42,7 @@ MAX_PLAYERS = int(os.getenv("MAX_PLAYERS", "19"))
 MAX_TEAMS = MAX_PLAYERS
 NUM_YIELD_TYPES = 3
 
-# -- Type Aliases -- #
+# Type Aliases
 INT = Int32sl
 UINT = Int32ul
 SHORT = Int16sl
@@ -87,8 +87,8 @@ class StringArrayAdapter(Adapter):
 class EnumArrayAdapter(Adapter):
     """Make Enum arrays more useful.
 
-    Used when an array is of len(Enum) and each element of the array a value
-    associated with the Enum member at the index of that element.
+    Used when an array is of len(Enum) and each element of the array is a value
+    member of the Enum.
     """
 
     def __init__(self, _enum: EnumMeta, *args: Any, **kwargs: Any):
