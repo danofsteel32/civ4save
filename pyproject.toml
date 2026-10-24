@@ -1,16 +1,16 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27.0"]
 build-backend = "hatchling.build"
 
 [project]
 name = "civ4save"
-version = "0.7.0"
-description = "Extract data from a .CivBeyondSwordSave file"
+version = "0.8.0"
+description = "Read Civilization IV: Beyond the Sword saves with a Python library and CLI"
 readme = "README.md"
 authors = [{name = "Dan Davis", email = "dan@dandavis.dev"}]
-license = { file = "COPYING" }
+license = "GPL-3.0-only"
+license-files = ["COPYING"]
 classifiers = [
-    "License :: OSI Approved :: GNU Affero General Public License v3",
     "Topic :: Games/Entertainment :: Turn Based Strategy",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
@@ -21,7 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3.15",
 ]
-keywords = ["civ", "civilization", "savefile", "games", ""]
+keywords = ["civ4", "civilization", "beyond-the-sword", "savefile", "games"]
 dependencies = [
     "attrs>=26.1.0",
     "click>=8.1.8",
@@ -44,6 +44,10 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/danofsteel32/civ4save"
+Documentation = "https://github.com/danofsteel32/civ4save#readme"
+Repository = "https://github.com/danofsteel32/civ4save"
+Issues = "https://github.com/danofsteel32/civ4save/issues"
+Changelog = "https://github.com/danofsteel32/civ4save/releases"
 
 [project.scripts]
 civ4save = "civ4save.cli:cli"
