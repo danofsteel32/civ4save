@@ -74,3 +74,24 @@ def test_missing_xml_file(tmp_path):
 def test_xml_discovery_without_installation():
     with pytest.raises(FileNotFoundError, match="game directory"):
         list(xml_files.xml_files_iter())
+
+
+def test_make_enums_logs_failure_and_continues(
+    game_install, monkeypatch, caplog, capsys
+):
+    valid = xml_files.Civ4XmlFile(
+        game_install / "Beyond the Sword/Assets/XML/Units/CIV4UnitInfos.xml"
+    )
+    invalid_path = game_install / "Assets/XML/CIV4EraInfos.xml"
+    invalid_path.write_text("<Civ4EraInfos/>", encoding="utf-8")
+    invalid = xml_files.Civ4XmlFile(invalid_path)
+    monkeypatch.setattr(xml_files, "xml_files_iter", lambda: iter([invalid, valid]))
+
+    xml_files.make_enums()
+
+    assert f"Could not generate enum from {invalid_path}" in caplog.text
+    assert caplog.records[0].exc_info is not None
+    output = capsys.readouterr().out
+    assert "class UnitType(IntEnum):" in output
+    assert "UNIT_BTS_FIRST = 0" in output
+    assert "Could not generate enum" not in output

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import zlib
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from construct import setGlobalPrintPrivateEntries
 from lazy_property import LazyProperty
@@ -17,16 +17,12 @@ from .vanilla.structure import CivBeyondSwordSave
 class NotASaveFile(Exception):
     """Raised when file can't be parsed as a save file."""
 
-    pass
-
 
 class ParseError(Exception):
     """Raised when unexpected parsing error."""
 
-    pass
 
-
-def _read_savefile(file: Union[str, Path]) -> bytes:
+def _read_savefile(file: str | Path) -> bytes:
     """Decompress the length-prefixed zlib chunks in a BTS save.
 
     Each chunk has a little-endian uint32 byte length; a zero length ends the
@@ -68,7 +64,7 @@ class SaveFile:
 
     def __init__(
         self,
-        file: Union[str, Path],
+        file: str | Path,
         debug: bool = False,
     ) -> None:
         """Read and decompress the file, but do not parse anything yet.
@@ -83,7 +79,7 @@ class SaveFile:
         self.debug = debug
 
         self._raw_bytes: bytes
-        self._raw: Optional[Any] = None
+        self._raw: Any | None = None
 
         self._version: int = 0
 
@@ -94,8 +90,8 @@ class SaveFile:
             try:
                 self._raw_bytes = _read_savefile(self.file)
                 self._raw = CivBeyondSwordSave.parse(self._raw_bytes)
-            except Exception:
-                raise NotASaveFile(f"{self.file}")
+            except Exception as exc:
+                raise NotASaveFile(f"{self.file}") from exc
         return self._raw
 
     @property
@@ -109,7 +105,7 @@ class SaveFile:
         return self.raw.game_turn
 
     @property
-    def map_size(self) -> Tuple[int, int]:
+    def map_size(self) -> tuple[int, int]:
         """Returns map grid size (width x height)."""
         return self.raw.grid_width, self.raw.grid_height
 
@@ -124,16 +120,16 @@ class SaveFile:
         return GameState.from_struct(self.raw)
 
     @LazyProperty
-    def players(self) -> Dict[int, Player]:
+    def players(self) -> dict[int, Player]:
         """Return players Dict."""
         return get_players(self.raw)
 
     @property
-    def plots(self) -> List[Plot]:
+    def plots(self) -> list[Plot]:
         """Return the Plots list."""
         return [Plot.from_struct(p) for p in self.raw.plots]
 
-    def get_plot(self, x: int, y: int) -> Optional[Plot]:
+    def get_plot(self, x: int, y: int) -> Plot | None:
         """Return `Plot` matching the given coordinates (x, y)."""
         plot_index = utils.calc_plot_index(self.map_size[0], x, y)
         try:
@@ -141,7 +137,7 @@ class SaveFile:
         except IndexError:
             return None
 
-    def get_player(self, player_idx: int) -> Optional[Player]:
+    def get_player(self, player_idx: int) -> Player | None:
         """Return `Player` at the given player idx."""
         # will raise KeyError
         return self.players[player_idx]

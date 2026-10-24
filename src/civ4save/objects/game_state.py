@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, List
+from typing import Any
 
 import attrs
 
@@ -22,10 +22,10 @@ class GameState:
     winner: int
     victory: e.VictoryType
     state: e.GameStateType
-    scores: List[int]
+    scores: list[int]
     # holy cities, corp headquarters
-    cities_destroyed: List[str]
-    great_people_born: List[str]
+    cities_destroyed: list[str]
+    great_people_born: list[str]
     # CvMap
     land_plots: int
     owned_plots: int

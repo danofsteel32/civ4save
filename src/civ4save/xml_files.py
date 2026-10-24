@@ -1,15 +1,20 @@
 """This module is responsible for parsing the XML files."""
 
+from __future__ import annotations
+
+import logging
 import re
+from collections.abc import Generator
 from dataclasses import dataclass, field
 from enum import Enum, EnumMeta
 from pathlib import Path
-from typing import Generator, List, Optional, Tuple
 
 import xmltodict
 from jinja2 import Template
 
 from civ4save.utils import get_game_dir
+
+logger = logging.getLogger(__name__)
 
 
 def get_n_parents(path: Path, num: int) -> Path:
@@ -62,7 +67,7 @@ class Civ4XmlFile:
         return "NO_" + name.replace("_Type", "").upper()
 
     @property
-    def parent_category(self) -> Optional[str]:
+    def parent_category(self) -> str | None:
         """Example GameInfo/CIV4EraInfos.xml the category is GameInfo."""
         parent = self.path.parent.name
         if self.path.parent.name == "XML":
@@ -76,7 +81,7 @@ class Civ4XmlFile:
             self._read()
         return [key for key in self._parsed].pop()
 
-    def types(self) -> List[Tuple[str, int]]:
+    def types(self) -> list[tuple[str, int]]:
         """These become the Enum's members."""
         root = self._parsed[self.root_key]
         key = list(root.keys())[-1]
@@ -167,4 +172,4 @@ def make_enums() -> None:
         try:
             write_out_enum(xml_file.to_enum())  # type: ignore
         except Exception:
-            continue
+            logger.exception("Could not generate enum from %s", xml_file.path)

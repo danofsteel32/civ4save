@@ -11,8 +11,7 @@ def make_save(payload, chunk_size):
     compressor = zlib.compressobj()
     compressed = compressor.compress(payload) + compressor.flush(zlib.Z_SYNC_FLUSH)
     chunks = [
-        compressed[i : i + chunk_size]
-        for i in range(0, len(compressed), chunk_size)
+        compressed[i : i + chunk_size] for i in range(0, len(compressed), chunk_size)
     ]
     framed = b"".join(struct.pack("<I", len(chunk)) + chunk for chunk in chunks)
     return b"header" + framed + struct.pack("<I", 0) + b"trailer", len(chunks[0])

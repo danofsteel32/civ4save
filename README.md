@@ -160,9 +160,11 @@ repository, and run these commands from its root:
 
 ```bash
 uv sync
+uv run --locked pre-commit install
 uv run civ4save --help
 uv run pytest
 uv run ruff check src tests
+uv run ruff format --check src tests
 uv run mypy src
 ```
 
@@ -170,6 +172,11 @@ uv run mypy src
 dependency group. `uv run` uses the project's `.venv`; activation is unnecessary.
 CI uses `--locked` to check that `pyproject.toml` and the checked-in `uv.lock`
 agree without updating the lockfile.
+
+The Git hooks apply Ruff's safe lint fixes and formatting to changed Python
+files, then run `mypy src` once. They use the same locked tools and dependencies
+as CI. If a hook edits files, review and stage the changes before committing
+again. To check every file, run `uv run --locked pre-commit run --all-files`.
 
 Ruff uses its [current default rule set](https://docs.astral.sh/ruff/default-rules/)
 with a Python 3.9 target. No `lint.select` override is needed; dependency upgrades

@@ -37,8 +37,15 @@ Use the checked-in `uv.lock` and the canonical `uv` workflow:
 uv sync --locked
 uv run --locked pytest
 uv run --locked ruff check src tests
+uv run --locked ruff format --check src tests
 uv run --locked mypy src
 ```
+
+Install the local Git hooks with `uv run --locked pre-commit install` after
+syncing dependencies. The hooks run Ruff's safe fixes, Ruff formatting, and
+`mypy src` using the locked project environment. Run all hooks manually with
+`uv run --locked pre-commit run --all-files`. Formatting changes should be
+reviewed separately from behavioral changes; do not regenerate reference data.
 
 The full pytest suite parses several binary saves and can be slow. During
 development, run the narrowest relevant test first, for example:

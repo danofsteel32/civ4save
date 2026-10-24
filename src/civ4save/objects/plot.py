@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, List
+from typing import Any
 
 import attrs
 
@@ -27,7 +27,7 @@ class Plot:
     feature_type: e.FeatureType
     bonus_type: e.BonusType
     improvement_type: e.ImprovementType
-    yields: List[int]
+    yields: list[int]
 
     @classmethod
     def from_struct(cls, data: Any) -> Plot:

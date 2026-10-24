@@ -19,6 +19,7 @@ jobs:
           enable-cache: true
       - run: uv sync --locked
       - run: uv run --locked ruff check src tests
+      - run: uv run --locked ruff format --check src tests
       - run: uv build
         if: ${{ !cancelled() }}
 

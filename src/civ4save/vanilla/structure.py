@@ -4,9 +4,12 @@ Notes:
     - Everything is little endian bc x86.
 """
 
+from __future__ import annotations
+
 import os
+from collections.abc import Iterable
 from enum import EnumMeta
-from typing import Any, Dict, Iterable, List, Union
+from typing import Any
 
 from construct import (
     Adapter,
@@ -35,7 +38,7 @@ from civ4save.utils import get_enum_length
 
 from . import enums as e
 
-MAX_PLAYERS = int(os.getenv("MAX_PLAYERS", 19))
+MAX_PLAYERS = int(os.getenv("MAX_PLAYERS", "19"))
 MAX_TEAMS = MAX_PLAYERS
 NUM_YIELD_TYPES = 3
 
@@ -70,14 +73,14 @@ class StringAdapter(Adapter):
 class WStringArrayAdapter(Adapter):
     """Eventually need to support _encode."""
 
-    def _decode(self, obj: Iterable, *args: Any) -> List[str]:
+    def _decode(self, obj: Iterable, *args: Any) -> list[str]:
         return [s.string for s in obj]
 
 
 class StringArrayAdapter(Adapter):
     """Eventually need to support _encode."""
 
-    def _decode(self, obj: Iterable, *args: Any) -> List[str]:
+    def _decode(self, obj: Iterable, *args: Any) -> list[str]:
         return [s.string for s in obj]
 
 
@@ -93,10 +96,10 @@ class EnumArrayAdapter(Adapter):
         self._enum = _enum
         super().__init__(*args, **kwargs)
 
-    def _decode(self, obj: Iterable, *args: Any) -> Dict:
+    def _decode(self, obj: Iterable, *args: Any) -> dict:
         return {self._enum(n): val for n, val in enumerate(obj)}
 
-    def _encode(self, obj: Dict, *args: Any) -> List[int]:
+    def _encode(self, obj: dict, *args: Any) -> list[int]:
         # TODO: ensure sorted by enum value writing same order as read
         return [v for k, v in list(obj.items())]
 
@@ -129,35 +132,35 @@ class BoundedCountAdapter(Adapter):
 class VoteOutcomeAdapter(Adapter):
     """VoteOutcome is a hash map in the source code."""
 
-    def _decode(self, obj: Iterable, *args: Any) -> Dict:
+    def _decode(self, obj: Iterable, *args: Any) -> dict:
         return {e.VoteType(n): e.PlayerVoteType(val) for n, val in enumerate(obj)}
 
 
 class DealsAdapter(Adapter):
     """The traded item could be a BonusType or TradeableItem."""
 
-    def _decode(self, obj: Iterable, *args: Any) -> List:
-        def _process_trades(trades: List[Any]) -> List[dict]:
+    def _decode(self, obj: Iterable, *args: Any) -> list:
+        def _process_trades(trades: list[Any]) -> list[dict]:
             player_trades = []
             for trade in trades:
                 amount = 1
-                item: Union[e.BonusType, e.TradeableItem] = e.TradeableItem[trade.item]
+                item: e.BonusType | e.TradeableItem = e.TradeableItem[trade.item]
                 if item.name in {"TRADE_GOLD", "TRADE_GOLD_PER_TURN"}:
                     amount = trade.extra_data
                 elif item.name == "TRADE_RESOURCES":
                     item = e.BonusType(trade.extra_data)
-                player_trades.append(dict(item=item, amount=amount))
+                player_trades.append({"item": item, "amount": amount})
             return player_trades
 
         deals = []
         for deal in obj:
-            trade_deal = dict(
-                first_player=deal.first_player,
-                second_player=deal.second_player,
-                initial_game_turn=deal.initial_game_turn,
-                first_trades=_process_trades(deal.first_trades),
-                second_trades=_process_trades(deal.second_trades),
-            )
+            trade_deal = {
+                "first_player": deal.first_player,
+                "second_player": deal.second_player,
+                "initial_game_turn": deal.initial_game_turn,
+                "first_trades": _process_trades(deal.first_trades),
+                "second_trades": _process_trades(deal.second_trades),
+            }
             deals.append(trade_deal)
         return deals
 

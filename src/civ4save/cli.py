@@ -20,7 +20,7 @@ $ civ4save xml --text-map --lang Spanish
 import json
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable
 
 import attrs
 import click
@@ -50,7 +50,7 @@ def _json_value(value: Any) -> Any:
 
 @click.group()
 @click.version_option(__version__)
-def cli() -> None:  # noqa: D103
+def cli() -> None:
     pass
 
 
@@ -138,7 +138,7 @@ def parse(
 @cli.command(help="Find and print relevant game files paths.")
 def gamefiles() -> None:
     """Print commonly used Civ4 file paths to `stdout`."""
-    names_and_getters: List[Tuple[str, Callable[[], Path]]] = [
+    names_and_getters: list[tuple[str, Callable[[], Path]]] = [
         ("Game Folder", utils.get_game_dir),
         ("Saves Folder", utils.get_saves_dir),
         ("XML Folder", utils.get_xml_dir),

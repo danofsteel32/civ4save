@@ -8,9 +8,10 @@ SAVE_DIR = Path(__file__).parent / "saves"
 
 
 def test_bad_file():
-    with pytest.raises(NotASaveFile):
+    with pytest.raises(NotASaveFile) as exc_info:
         save = SaveFile(SAVE_DIR / "not-a-real.CivBeyondSwordSave")
         _ = save.current_turn
+    assert isinstance(exc_info.value.__cause__, NotASaveFile)
 
 
 @pytest.mark.parametrize(
