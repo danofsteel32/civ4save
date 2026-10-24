@@ -1,3 +1,6 @@
+header-files/
+# Local reference source for the BTS binary save format
+/beyond-the-sword-sdk/
 tests/saves/auto/*
 mods/*
 # Byte-compiled / optimized / DLL files

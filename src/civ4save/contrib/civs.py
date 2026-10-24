@@ -1,10 +1,10 @@
 """Some potentially interesting stuff with the Civs."""
+
 from __future__ import annotations
 
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 import importlib_resources
 import xmltodict
@@ -25,11 +25,11 @@ class Civ:
     type: CivilizationType
     description: str
     short_description: str
-    cities: List[str]
+    cities: list[str]
     unique_building: BuildingType
     unique_unit: UnitType
-    starting_techs: Tuple[TechType, TechType]
-    leaders: List[LeaderHeadType]
+    starting_techs: tuple[TechType, TechType]
+    leaders: list[LeaderHeadType]
 
     @classmethod
     def from_dict(cls, d: dict) -> Civ:
@@ -48,7 +48,7 @@ class Civ:
         )
 
 
-def _get_civs_from_xml_files(xml_file: str | Path) -> Dict[str, Civ]:
+def _get_civs_from_xml_files(xml_file: str | Path) -> dict[str, Civ]:
     """Create a mapping of short_description -> Civ.
 
     Ex. "Mali": Civ(CivilizationType.CIVILIZATION_MALI, ...)
@@ -114,13 +114,13 @@ def _get_civ_map() -> dict:
     return civs
 
 
-def get_civs() -> Dict[str, Civ]:
+def get_civs() -> dict[str, Civ]:
     """Get all Civs."""
     civs = _get_civ_map()
     return {c: Civ.from_dict(civs[c]) for c in civs}
 
 
-def get_civ(name: str) -> Optional[Civ]:
+def get_civ(name: str) -> Civ | None:
     """Get a single Civ by name."""
     civs = _get_civ_map()
     civ_dict = civs.get(name, None)

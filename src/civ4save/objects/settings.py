@@ -1,7 +1,8 @@
 """The object returned by the `--settings` option."""
+
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 import attrs
 
@@ -22,11 +23,11 @@ class Settings:
     sea_level: e.SeaLevelType
     start_era: e.EraType
     game_speed: e.GameSpeedType
-    game_options: Dict[str, bool]
+    game_options: dict[str, bool]
     """Each GameOption and whether it's enabled"""
     max_turns: int
     advanced_start_points: int
-    victories: Dict[str, bool]
+    victories: dict[str, bool]
     """Each VictoryType and whether it's enabled"""
     num_civs: int
     """Number of civs (not counting barbs)"""

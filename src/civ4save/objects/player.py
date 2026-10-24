@@ -1,7 +1,9 @@
 """Classes and functions for dealing with players."""
 
+from __future__ import annotations
+
 import re
-from typing import Any, Dict, List, Union
+from typing import Any
 
 import attrs
 
@@ -16,7 +18,7 @@ class City:
     x: int
     y: int
     turn_founded: int
-    wonders: List[str] = attrs.field(factory=list)
+    wonders: list[str] = attrs.field(factory=list)
 
 
 @attrs.define(slots=True)
@@ -34,7 +36,7 @@ class Civics:
 class Trade:
     """Can be an item like TRADE_OPEN_BORDERS or Bonus like BONUS_COW."""
 
-    item: Union[e.TradeableItem, e.BonusType]
+    item: e.TradeableItem | e.BonusType
     amount: int
 
 
@@ -45,8 +47,8 @@ class TradeDeal:
     first_player: int
     second_player: int
     initial_turn: int
-    first_trades: List[Trade]
-    second_trades: List[Trade]
+    first_trades: list[Trade]
+    second_trades: list[Trade]
 
 
 @attrs.define(slots=True)
@@ -65,12 +67,12 @@ class Player:
     score: int
     rank: int
     owned_plots: int = 0
-    great_people: List[str] = attrs.field(factory=list)
-    cities: List[City] = attrs.field(factory=list)
+    great_people: list[str] = attrs.field(factory=list)
+    cities: list[City] = attrs.field(factory=list)
     religion: e.ReligionType = e.ReligionType.NO_RELIGION
     civics: Civics = attrs.field(factory=Civics)
-    trades: List[TradeDeal] = attrs.field(factory=list)
-    projects: List[str] = attrs.field(factory=list)
+    trades: list[TradeDeal] = attrs.field(factory=list)
+    projects: list[str] = attrs.field(factory=list)
 
     def adopt_civic(self, new_civic: e.CivicType) -> None:
         """Correctly set the new civic."""
@@ -101,7 +103,7 @@ class Player:
         raise ValueError(f"player {self.idx} has no city @ ({x}, {y})")
 
 
-PlayerDict = Dict[int, Player]
+PlayerDict = dict[int, Player]
 
 
 def _match_empire_to_player(empire: str, players: PlayerDict) -> int:
@@ -125,8 +127,7 @@ def _match_empire_to_player(empire: str, players: PlayerDict) -> int:
     for idx in players:
         if players[idx].civ == match:
             return idx
-    else:
-        raise ValueError("Could match empire to player")
+    raise ValueError("Could match empire to player")
 
 
 def _init_players(data: Any) -> PlayerDict:
@@ -152,7 +153,7 @@ def _init_players(data: Any) -> PlayerDict:
     return players
 
 
-def _set_player_trade_deals(deals: List, players: PlayerDict) -> PlayerDict:
+def _set_player_trade_deals(deals: list, players: PlayerDict) -> PlayerDict:
     for deal in deals:
         trade_deal = TradeDeal(
             deal["first_player"],
@@ -165,15 +166,15 @@ def _set_player_trade_deals(deals: List, players: PlayerDict) -> PlayerDict:
     return players
 
 
-def _set_player_data(replay_messages: List, players: PlayerDict) -> PlayerDict:
+def _set_player_data(replay_messages: list, players: PlayerDict) -> PlayerDict:
     """Set from replay messages.
 
     Read the replay messages and assign ownership of plots, cities, wonders
     as well as player religion and civics
     """
     # local vars for tracking who currently owns cities and plots
-    cities: Dict[str, int] = {}
-    plots: Dict[str, int] = {}
+    cities: dict[str, int] = {}
+    plots: dict[str, int] = {}
 
     def text_to_enum_name(text: str) -> str:
         rm_leading = re.sub(".*color=[0-9]+,[0-9]+,[0-9]+,[0-9]+>", "", text)

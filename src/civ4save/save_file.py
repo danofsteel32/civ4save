@@ -1,9 +1,10 @@
 """Responsible for parsing a save file into useful data structures."""
+
 from __future__ import annotations
 
 import zlib
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from construct import setGlobalPrintPrivateEntries
 from lazy_property import LazyProperty
@@ -16,65 +17,46 @@ from .vanilla.structure import CivBeyondSwordSave
 class NotASaveFile(Exception):
     """Raised when file can't be parsed as a save file."""
 
-    pass
-
 
 class ParseError(Exception):
     """Raised when unexpected parsing error."""
 
-    pass
 
+def _read_savefile(file: str | Path) -> bytes:
+    """Decompress the length-prefixed zlib chunks in a BTS save.
 
-def _find_zlib_end(data: bytes, z_start: int) -> int:
-    """Used to decompress file.
-
-    Binary search to find byte index where incomplete data stream becomes
-    incorrect data stream. I'm not sure if the guess_limit makes sense but
-    I do want some check to an infinite loop / hang.
-
-    https://forums.civfanatics.com/threads/need-a-little-help-with-editing-civ4-save-files.452707/
-    """
-    guess_limit = 50
-
-    low, high = z_start, len(data)
-    prev = 0
-    guesses = 0
-    while True:
-        z_end = (low + high) // 2
-        if z_end == prev:
-            return z_end
-        if guesses > guess_limit:
-            raise NotASaveFile("Could not find zlib end byte index")
-        try:
-            zlib.decompress(data[z_start:z_end])
-        except Exception as ex:
-            prev = z_end
-            if "incomplete" in ex.__str__():
-                low = z_end + 1
-            elif "invalid" in ex.__str__():
-                high = z_end - 1
-        guesses += 1
-
-
-def _read_savefile(file: Union[str, Path]) -> bytes:
-    """Read and decompress file.
-
-    Find the index in where the zlib magic header is, then find the end
-    of the compressed bytes. Then decompress and return the bytes.
+    Each chunk has a little-endian uint32 byte length; a zero length ends the
+    compressed section. All chunks belong to one zlib stream. BTS flushes this
+    stream without an end marker, so zlib EOF is not the section boundary.
     """
     with open(file, "rb") as f:
         data = f.read()
 
-    magic_number = bytes.fromhex("789c")  # default compression
-    z_start = data.find(magic_number)
-    z_end = _find_zlib_end(data, z_start)
-    if z_start < 0 or z_end < 0:
+    z_start = data.find(bytes.fromhex("789c"))  # default compression
+    if z_start < 4:
         raise NotASaveFile("This is not a .CivBeyondSwordSave file")
 
+    offset = z_start - 4
     decomp_obj = zlib.decompressobj()
-    uncompressed_data = decomp_obj.decompress(data[z_start:z_end])
+    uncompressed = []
+    while True:
+        if offset + 4 > len(data):
+            raise NotASaveFile(f"Missing compressed chunk length at byte {offset}")
+        size = int.from_bytes(data[offset : offset + 4], "little")
+        offset += 4
+        if size == 0:
+            break
+        end = offset + size
+        if end > len(data):
+            raise NotASaveFile(f"Truncated compressed chunk at byte {offset}")
+        try:
+            uncompressed.append(decomp_obj.decompress(data[offset:end]))
+        except zlib.error as exc:
+            raise NotASaveFile(f"Invalid compressed chunk at byte {offset}") from exc
+        offset = end
 
-    return data[:z_start] + uncompressed_data + data[z_end:]
+    # The schema includes the first chunk length in its uncompressed header.
+    return data[:z_start] + b"".join(uncompressed) + data[offset:]
 
 
 class SaveFile:
@@ -82,7 +64,7 @@ class SaveFile:
 
     def __init__(
         self,
-        file: Union[str, Path],
+        file: str | Path,
         debug: bool = False,
     ) -> None:
         """Read and decompress the file, but do not parse anything yet.
@@ -97,7 +79,7 @@ class SaveFile:
         self.debug = debug
 
         self._raw_bytes: bytes
-        self._raw: Optional[Any] = None
+        self._raw: Any | None = None
 
         self._version: int = 0
 
@@ -108,8 +90,8 @@ class SaveFile:
             try:
                 self._raw_bytes = _read_savefile(self.file)
                 self._raw = CivBeyondSwordSave.parse(self._raw_bytes)
-            except Exception:
-                raise NotASaveFile(f"{self.file}")
+            except Exception as exc:
+                raise NotASaveFile(f"{self.file}") from exc
         return self._raw
 
     @property
@@ -123,7 +105,7 @@ class SaveFile:
         return self.raw.game_turn
 
     @property
-    def map_size(self) -> Tuple[int, int]:
+    def map_size(self) -> tuple[int, int]:
         """Returns map grid size (width x height)."""
         return self.raw.grid_width, self.raw.grid_height
 
@@ -138,16 +120,16 @@ class SaveFile:
         return GameState.from_struct(self.raw)
 
     @LazyProperty
-    def players(self) -> Dict[int, Player]:
+    def players(self) -> dict[int, Player]:
         """Return players Dict."""
         return get_players(self.raw)
 
     @property
-    def plots(self) -> List[Plot]:
+    def plots(self) -> list[Plot]:
         """Return the Plots list."""
         return [Plot.from_struct(p) for p in self.raw.plots]
 
-    def get_plot(self, x: int, y: int) -> Optional[Plot]:
+    def get_plot(self, x: int, y: int) -> Plot | None:
         """Return `Plot` matching the given coordinates (x, y)."""
         plot_index = utils.calc_plot_index(self.map_size[0], x, y)
         try:
@@ -155,7 +137,7 @@ class SaveFile:
         except IndexError:
             return None
 
-    def get_player(self, player_idx: int) -> Optional[Player]:
+    def get_player(self, player_idx: int) -> Player | None:
         """Return `Player` at the given player idx."""
         # will raise KeyError
         return self.players[player_idx]

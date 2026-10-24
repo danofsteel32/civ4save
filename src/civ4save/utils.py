@@ -1,11 +1,14 @@
 """Misc. classes and functions that are used by other modules."""
 
+from __future__ import annotations
+
 import json
 import platform
+from collections.abc import Iterator
 from dataclasses import asdict, is_dataclass
 from enum import Enum, EnumMeta
 from pathlib import Path
-from typing import Any, Dict, Iterator, Tuple, Union
+from typing import Any
 
 import xmltodict
 
@@ -13,10 +16,10 @@ import xmltodict
 class CustomJsonEncoder(json.JSONEncoder):
     """Enable serializing dataclasses and Enums."""
 
-    def default(self, o: Any) -> Union[dict, str, json.JSONEncoder]:
+    def default(self, o: Any) -> dict | str | json.JSONEncoder:
         """Override default."""
         if is_dataclass(o):
-            return asdict(o)
+            return asdict(o)  # type: ignore[arg-type]
         elif isinstance(o, Enum):
             return o.name
         return super().default(o)
@@ -31,7 +34,7 @@ def renderable_filepath(path: Path) -> str:
     Returns:
         str: The string representation of `path` with `repr.path` formatting.
     """
-    return f"[repr.path]{str(path)}[/repr.path]"
+    return f"[repr.path]{path!s}[/repr.path]"
 
 
 def calc_plot_index(grid_width: int, x: int, y: int) -> int:
@@ -49,7 +52,7 @@ def calc_plot_index(grid_width: int, x: int, y: int) -> int:
     return index
 
 
-def next_plot(x: int, y: int, grid_width: int, grid_height: int) -> Tuple[int, int]:
+def next_plot(x: int, y: int, grid_width: int, grid_height: int) -> tuple[int, int]:
     """Return the next coordinate pair (x, y) taking into account grid size.
 
     Args:
@@ -78,7 +81,7 @@ def get_enum_length(e: EnumMeta) -> int:
     Returns:
         int: Number of members.
     """
-    return len([m for m in e.__members__ if e[m].value >= 0])  # type: ignore
+    return len([m for m in e.__members__ if e[m].value >= 0])
 
 
 def unenumify(name: str) -> str:
@@ -112,8 +115,7 @@ def get_game_dir() -> Path:
     for p in possible_locations:
         if p.exists():
             return p
-    else:
-        raise FileNotFoundError("Could not locate BTS game directory")
+    raise FileNotFoundError("Could not locate BTS game directory")
 
 
 def get_saves_dir(sub_dir: str = "single") -> Path:
@@ -178,11 +180,10 @@ def get_xml_text_files() -> Iterator[Path]:
     for expansion in expansions:
         text_dir = game_dir / expansion / stem
         if text_dir.exists():
-            for file in text_dir.iterdir():
-                yield file
+            yield from text_dir.iterdir()
 
 
-def make_text_map(lang: str = "English") -> Dict[str, str]:
+def make_text_map(lang: str = "English") -> dict[str, str]:
     """Create a Dict mapping TEXT_KEY* to human readable text in language `lang`.
 
     Works from vanilla to Warlords to BTS so the most recent occurence of a

@@ -1,57 +1,56 @@
 [build-system]
-requires = [
-    "setuptools>=61.0.0",
-    "wheel"
-]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
 
 [project]
 name = "civ4save"
-version = "0.7.0"
-description = "Extract data from a .CivBeyondSwordSave file"
+version = "0.8.0"
+description = "Read Civilization IV: Beyond the Sword saves with a Python library and CLI"
 readme = "README.md"
 authors = [{name = "Dan Davis", email = "dan@dandavis.dev"}]
-license = { file = "COPYING" }
+license = "GPL-3.0-only"
+license-files = ["COPYING"]
 classifiers = [
-    "License :: OSI Approved :: GNU Affero General Public License v3",
     "Topic :: Games/Entertainment :: Turn Based Strategy",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
 ]
-keywords = ["civ", "civilization", "savefile"]
+keywords = ["civ4", "civilization", "beyond-the-sword", "savefile", "games"]
 dependencies = [
-    "attrs",
-    "click",
-    "construct",
-    "importlib-resources >= 5.9.0",
-    "Jinja2",
-    "lazy-property",
-    "rich",
-    "xmltodict",
+    "attrs>=26.1.0",
+    "click>=8.1.8",
+    "construct>=2.10.70",
+    "importlib-resources>=6.5.2",
+    "Jinja2>=3.1.6",
+    "lazy-property>=0.0.1",
+    "rich>=15.0.0",
+    "xmltodict>=1.0.4",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
-    "black",
-    "flake8",
-    "flake8-isort",
-    "flake8-docstrings",
-    "mypy",
-    "pytest",
-    "tox"
+    "ruff>=0.17.2",
+    "mypy>=1.19.1",
+    "pytest>=8.4.2",
+    "pre-commit>=4.3.0",
 ]
 
 [project.urls]
 Homepage = "https://github.com/danofsteel32/civ4save"
+Documentation = "https://github.com/danofsteel32/civ4save#readme"
+Repository = "https://github.com/danofsteel32/civ4save"
+Issues = "https://github.com/danofsteel32/civ4save/issues"
+Changelog = "https://github.com/danofsteel32/civ4save/releases"
 
 [project.scripts]
 civ4save = "civ4save.cli:cli"
-
-[tool.isort]
-line_length = 88
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -63,3 +62,6 @@ disallow_untyped_defs = true
 [[tool.mypy.overrides]]
 module = "tests/*"
 disallow_untyped_defs = false
+
+[tool.ruff]
+target-version = "py39"

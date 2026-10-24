@@ -18,10 +18,11 @@ $ civ4save xml --text-map --lang Spanish
 """
 
 import json
-from functools import partial
+from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Tuple
+from typing import Any, Callable
 
+import attrs
 import click
 from rich import print
 
@@ -34,9 +35,22 @@ from .xml_files import make_enums as write_enums
 TEXT_MAP_LANGS = ["English", "French", "German", "Italian", "Spanish"]
 
 
+def _json_value(value: Any) -> Any:
+    """Convert output models recursively, preserving enum names."""
+    if isinstance(value, Enum):
+        return value.name
+    if attrs.has(type(value)):
+        return _json_value(attrs.asdict(value, recurse=False))
+    if isinstance(value, dict):
+        return {key: _json_value(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_value(item) for item in value]
+    return value
+
+
 @click.group()
 @click.version_option(__version__)
-def cli() -> None:  # noqa: D103
+def cli() -> None:
     pass
 
 
@@ -87,34 +101,44 @@ def parse(
 ) -> None:
     """Parse a .CivBeyondSwordSave file.
 
-    FILE is a save file or directory of save files
+    FILE is a .CivBeyondSwordSave file.
     """
     save = SaveFile(file=file)
+
+    if json_:
+        output: dict[str, Any] = {}
+        if spoilers:
+            output.update(state=save.game_state, plots=save.plots)
+        if player > -1:
+            output["player"] = save.get_player(player)
+        elif list_players:
+            output["players"] = save.players
+        else:
+            output["settings"] = save.settings
+        click.echo(json.dumps(_json_value(output), indent=2, ensure_ascii=False))
+        return
+
     print(save)
 
-    print_fn = print
-    if json_:
-        # call json.dumps on the arg before calling print
-        j = partial(json.dumps, indent=4, cls=utils.CustomJsonEncoder)
-        print_fn = partial(print, j)
-
     if spoilers:
-        print_fn(save.game_state)
-        return
+        plots = list(save.plots)
+        out = {"state": save.game_state}
+        out["plots"] = plots
+        print(out)
     if player > -1:
-        print_fn(save.get_player(player))
+        print(save.get_player(player))
         return
     if list_players:
-        print_fn(save.players)
+        print(save.players)
         return
-    print_fn(save.settings)
+    print(save.settings)
     return
 
 
 @cli.command(help="Find and print relevant game files paths.")
 def gamefiles() -> None:
     """Print commonly used Civ4 file paths to `stdout`."""
-    names_and_getters: List[Tuple[str, Callable[[], Path]]] = [
+    names_and_getters: list[tuple[str, Callable[[], Path]]] = [
         ("Game Folder", utils.get_game_dir),
         ("Saves Folder", utils.get_saves_dir),
         ("XML Folder", utils.get_xml_dir),
@@ -122,7 +146,7 @@ def gamefiles() -> None:
 
     for name, get_dir_func in names_and_getters:
         print(f"[bold]{name}[/bold]")
-        print(f"[bold]{'-'*len(name)}[/bold]")
+        print(f"[bold]{'-' * len(name)}[/bold]")
         try:
             dir = get_dir_func()
             print(utils.renderable_filepath(dir))

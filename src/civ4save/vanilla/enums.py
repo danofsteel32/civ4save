@@ -3,7 +3,7 @@
 from enum import IntEnum
 
 
-class GameType(IntEnum):  # noqa: D101
+class GameType(IntEnum):
     GAME_NONE = -1
     GAME_SP_NEW = 0
     GAME_SP_SCENARIO = 1
@@ -20,13 +20,13 @@ class GameType(IntEnum):  # noqa: D101
     GAME_REPLAY = 12
 
 
-class GameStateType(IntEnum):  # noqa: D101
+class GameStateType(IntEnum):
     GAMESTATE_ON = 0
     GAMESTATE_OVER = 1
     GAMESTATE_EXTENDED = 2
 
 
-class TradeableItem(IntEnum):  # noqa: D101
+class TradeableItem(IntEnum):
     TRADE_ITEM_NONE = -1
     TRADE_GOLD = 0
     TRADE_GOLD_PER_TURN = 1
@@ -47,13 +47,13 @@ class TradeableItem(IntEnum):  # noqa: D101
     TRADE_RELIGION = 16
 
 
-class ReplayMessageType(IntEnum):  # noqa: D101
+class ReplayMessageType(IntEnum):
     MAJOR_EVENT = 0
     CITY_FOUNDED = 1
     PLOT_OWNER_CHANGE = 2
 
 
-class PlotType(IntEnum):  # noqa: D101
+class PlotType(IntEnum):
     NO_PLOT = -1
     PLOT_PEAK = 0
     PLOT_HILLS = 1
@@ -61,7 +61,7 @@ class PlotType(IntEnum):  # noqa: D101
     PLOT_OCEAN = 3
 
 
-class ArtDefinesBonusType(IntEnum):  # noqa: D101
+class ArtDefinesBonusType(IntEnum):
     NO_ART_DEFINES_BONUS = -1
     ART_DEF_BONUS_ALUMINUM = 0
     ART_DEF_BONUS_COAL = 1
@@ -108,7 +108,7 @@ class ArtDefinesBonusType(IntEnum):  # noqa: D101
     ART_DEF_BONUS_VICTORY_GREEN = 42
 
 
-class ArtDefinesBuildingType(IntEnum):  # noqa: D101
+class ArtDefinesBuildingType(IntEnum):
     NO_ART_DEFINES_BUILDING = -1
     ART_DEF_BUILDING_PALACE = 0
     ART_DEF_BUILDING_GREAT_PALACE = 1
@@ -272,7 +272,7 @@ class ArtDefinesBuildingType(IntEnum):  # noqa: D101
     ART_DEF_BUILDING_APOSTOLIC_PALACE = 159
 
 
-class ArtDefinesCivilizationType(IntEnum):  # noqa: D101
+class ArtDefinesCivilizationType(IntEnum):
     NO_ART_DEFINES_CIVILIZATION = -1
     ART_DEF_CIVILIZATION_AMERICA = 0
     ART_DEF_CIVILIZATION_ARABIA = 1
@@ -312,7 +312,7 @@ class ArtDefinesCivilizationType(IntEnum):  # noqa: D101
     ART_DEF_CIVILIZATION_BARBARIAN = 35
 
 
-class ArtDefinesFeatureType(IntEnum):  # noqa: D101
+class ArtDefinesFeatureType(IntEnum):
     NO_ART_DEFINES_FEATURE = -1
     ART_DEF_FEATURE_ICE = 0
     ART_DEF_FEATURE_JUNGLE = 1
@@ -322,7 +322,7 @@ class ArtDefinesFeatureType(IntEnum):  # noqa: D101
     ART_DEF_FEATURE_FALLOUT = 5
 
 
-class ArtDefinesImprovementType(IntEnum):  # noqa: D101
+class ArtDefinesImprovementType(IntEnum):
     NO_ART_DEFINES_IMPROVEMENT = -1
     ART_DEF_IMPROVEMENT_LAND_WORKED = 0
     ART_DEF_IMPROVEMENT_WATER_WORKED = 1
@@ -351,7 +351,7 @@ class ArtDefinesImprovementType(IntEnum):  # noqa: D101
     ART_DEF_IMPROVEMENT_FOREST_PRESERVE = 24
 
 
-class ArtDefinesInterfaceType(IntEnum):  # noqa: D101
+class ArtDefinesInterfaceType(IntEnum):
     NO_ART_DEFINES_INTERFACE = -1
     ARROW_HEAD = 0
     ARROW_MXMY = 1
@@ -677,7 +677,7 @@ class ArtDefinesInterfaceType(IntEnum):  # noqa: D101
     INTERFACE_AUTOMATE = 321
 
 
-class ArtDefinesLeaderheadType(IntEnum):  # noqa: D101
+class ArtDefinesLeaderheadType(IntEnum):
     NO_ART_DEFINES_LEADERHEAD = -1
     ART_DEF_LEADER_BARBARIAN = 0
     ART_DEF_LEADER_ALEXANDER = 1
@@ -734,7 +734,7 @@ class ArtDefinesLeaderheadType(IntEnum):  # noqa: D101
     ART_DEF_LEADER_ZARA_YAQOB = 52
 
 
-class ArtDefinesMiscType(IntEnum):  # noqa: D101
+class ArtDefinesMiscType(IntEnum):
     NO_ART_DEFINES_MISC = -1
     ART_GREAT_WALL_POST = 0
     ART_GREAT_WALL_SEGMENT = 1
@@ -786,7 +786,7 @@ class ArtDefinesMiscType(IntEnum):  # noqa: D101
     SOUND_BLASTER_LOGO = 47
 
 
-class ArtDefinesMovieType(IntEnum):  # noqa: D101
+class ArtDefinesMovieType(IntEnum):
     NO_ART_DEFINES_MOVIE = -1
     ART_DEF_MOVIE_INTRO = 0
     ART_DEF_MOVIE_2K_INTRO = 1
@@ -841,7 +841,7 @@ class ArtDefinesMovieType(IntEnum):  # noqa: D101
     ART_DEF_MOVIE_CHRIST_THE_REDEEMER = 50
 
 
-class ArtDefinesTerrainType(IntEnum):  # noqa: D101
+class ArtDefinesTerrainType(IntEnum):
     NO_ART_DEFINES_TERRAIN = -1
     ART_DEF_TERRAIN_GRASS = 0
     ART_DEF_TERRAIN_PLAINS = 1
@@ -854,7 +854,7 @@ class ArtDefinesTerrainType(IntEnum):  # noqa: D101
     ART_DEF_TERRAIN_HILL = 8
 
 
-class ArtDefinesUnitType(IntEnum):  # noqa: D101
+class ArtDefinesUnitType(IntEnum):
     NO_ART_DEFINES_UNIT = -1
     ART_DEF_UNIT_LION = 0
     ART_DEF_UNIT_BEAR = 1
@@ -1082,7 +1082,7 @@ class ArtDefinesUnitType(IntEnum):  # noqa: D101
     ART_DEF_UNIT_WORKER_SOUTH_AMERICA = 223
 
 
-class MainMenusType(IntEnum):  # noqa: D101
+class MainMenusType(IntEnum):
     NO_MAIN_MENUS = -1
     MAIN_MENU_CLASSICAL = 0
     MAIN_MENU_VANILLA = 1
@@ -1090,7 +1090,7 @@ class MainMenusType(IntEnum):  # noqa: D101
     MAIN_MENU_BEYOND_SWORD = 3
 
 
-class AttitudeType(IntEnum):  # noqa: D101
+class AttitudeType(IntEnum):
     NO_ATTITUDE = -1
     ATTITUDE_FURIOUS = 0
     ATTITUDE_ANNOYED = 1
@@ -1099,7 +1099,7 @@ class AttitudeType(IntEnum):  # noqa: D101
     ATTITUDE_FRIENDLY = 4
 
 
-class BasicType(IntEnum):  # noqa: D101
+class BasicType(IntEnum):
     NO_BASIC = -1
     CONCEPT_ANIMALS = 0
     CONCEPT_AIR_UNITS = 1
@@ -1153,7 +1153,7 @@ class BasicType(IntEnum):  # noqa: D101
     CONCEPT_IRRIGATION = 49
 
 
-class CalendarType(IntEnum):  # noqa: D101
+class CalendarType(IntEnum):
     NO_CALENDAR = -1
     CALENDAR_DEFAULT = 0
     CALENDAR_BI_YEARLY = 1
@@ -1164,14 +1164,14 @@ class CalendarType(IntEnum):  # noqa: D101
     CALENDAR_WEEKS = 6
 
 
-class CityTabType(IntEnum):  # noqa: D101
+class CityTabType(IntEnum):
     NO_CITY_TAB = -1
     CITYTAB_UNITS = 0
     CITYTAB_BUILDINGS = 1
     CITYTAB_WONDERS = 2
 
 
-class DenialType(IntEnum):  # noqa: D101
+class DenialType(IntEnum):
     NO_DENIAL = -1
     DENIAL_UNKNOWN = 0
     DENIAL_NEVER = 1
@@ -1204,7 +1204,7 @@ class DenialType(IntEnum):  # noqa: D101
     DENIAL_PEACE_NOT_POSSIBLE_YOU = 28
 
 
-class DomainType(IntEnum):  # noqa: D101
+class DomainType(IntEnum):
     NO_DOMAIN = -1
     DOMAIN_SEA = 0
     DOMAIN_AIR = 1
@@ -1212,13 +1212,13 @@ class DomainType(IntEnum):  # noqa: D101
     DOMAIN_IMMOBILE = 3
 
 
-class InvisibleType(IntEnum):  # noqa: D101
+class InvisibleType(IntEnum):
     NO_INVISIBLE = -1
     INVISIBLE_SUBMARINE = 0
     INVISIBLE_STEALTH = 1
 
 
-class MemoryType(IntEnum):  # noqa: D101
+class MemoryType(IntEnum):
     NO_MEMORY = -1
     MEMORY_DECLARED_WAR = 0
     MEMORY_DECLARED_WAR_ON_FRIEND = 1
@@ -1255,7 +1255,7 @@ class MemoryType(IntEnum):  # noqa: D101
     MEMORY_LIBERATED_CITIES = 32
 
 
-class MonthType(IntEnum):  # noqa: D101
+class MonthType(IntEnum):
     NO_MONTH = -1
     MONTH_JANUARY = 0
     MONTH_FEBRUARY = 1
@@ -1271,7 +1271,7 @@ class MonthType(IntEnum):  # noqa: D101
     MONTH_DECEMBER = 11
 
 
-class NewConceptType(IntEnum):  # noqa: D101
+class NewConceptType(IntEnum):
     NO_NEW_CONCEPT = -1
     CONCEPT_ESPIONAGE = 0
     CONCEPT_COLONIES = 1
@@ -1296,7 +1296,7 @@ class NewConceptType(IntEnum):  # noqa: D101
     CONCEPT_LIBERATION = 20
 
 
-class SeasonType(IntEnum):  # noqa: D101
+class SeasonType(IntEnum):
     NO_SEASON = -1
     SEASON_WINTER = 0
     SEASON_SPRING = 1
@@ -1304,7 +1304,7 @@ class SeasonType(IntEnum):  # noqa: D101
     SEASON_FALL = 3
 
 
-class UnitAIType(IntEnum):  # noqa: D101
+class UnitAIType(IntEnum):
     NO_UNIT_A_I = -1
     UNITAI_UNKNOWN = 0
     UNITAI_ANIMAL = 1
@@ -1349,7 +1349,7 @@ class UnitAIType(IntEnum):  # noqa: D101
     UNITAI_ATTACK_CITY_LEMMING = 40
 
 
-class UnitCombatType(IntEnum):  # noqa: D101
+class UnitCombatType(IntEnum):
     NO_UNIT_COMBAT = -1
     UNITCOMBAT_RECON = 0
     UNITCOMBAT_ARCHER = 1
@@ -1363,7 +1363,7 @@ class UnitCombatType(IntEnum):  # noqa: D101
     UNITCOMBAT_AIR = 9
 
 
-class BuildingClassType(IntEnum):  # noqa: D101
+class BuildingClassType(IntEnum):
     NO_BUILDING_CLASS = -1
     BUILDINGCLASS_PALACE = 0
     BUILDINGCLASS_GREAT_PALACE = 1
@@ -1492,7 +1492,7 @@ class BuildingClassType(IntEnum):  # noqa: D101
     BUILDINGCLASS_APOSTOLIC_PALACE = 124
 
 
-class BuildingType(IntEnum):  # noqa: D101
+class BuildingType(IntEnum):
     NO_BUILDING = -1
     BUILDING_PALACE = 0
     BUILDING_GREAT_PALACE = 1
@@ -1655,7 +1655,7 @@ class BuildingType(IntEnum):  # noqa: D101
     BUILDING_APOSTOLIC_PALACE = 158
 
 
-class SpecialBuildingType(IntEnum):  # noqa: D101
+class SpecialBuildingType(IntEnum):
     NO_SPECIAL_BUILDING = -1
     SPECIALBUILDING_BOMB_SHELTER = 0
     SPECIALBUILDING_TEMPLE = 1
@@ -1663,7 +1663,7 @@ class SpecialBuildingType(IntEnum):  # noqa: D101
     SPECIALBUILDING_MONASTERY = 3
 
 
-class CivilizationType(IntEnum):  # noqa: D101
+class CivilizationType(IntEnum):
     NO_CIVILIZATION = -1
     CIVILIZATION_AMERICA = 0
     CIVILIZATION_ARABIA = 1
@@ -1703,7 +1703,7 @@ class CivilizationType(IntEnum):  # noqa: D101
     CIVILIZATION_BARBARIAN = 35
 
 
-class LeaderHeadType(IntEnum):  # noqa: D101
+class LeaderHeadType(IntEnum):
     NO_LEADER_HEAD = -1
     LEADER_BARBARIAN = 0
     LEADER_ALEXANDER = 1
@@ -1760,7 +1760,7 @@ class LeaderHeadType(IntEnum):  # noqa: D101
     LEADER_ZARA_YAQOB = 52
 
 
-class UnitArtStyleType(IntEnum):  # noqa: D101
+class UnitArtStyleType(IntEnum):
     NO_UNIT_ART_STYLE = -1
     UNIT_ARTSTYLE_ASIAN = 0
     UNIT_ARTSTYLE_EUROPEAN = 1
@@ -1769,7 +1769,7 @@ class UnitArtStyleType(IntEnum):  # noqa: D101
     UNIT_ARTSTYLE_SOUTH_AMERICA = 4
 
 
-class EventType(IntEnum):  # noqa: D101
+class EventType(IntEnum):
     NO_EVENT = -1
     EVENT_FOREST_FIRE_1 = 0
     EVENT_FOREST_FIRE_2 = 1
@@ -2112,7 +2112,7 @@ class EventType(IntEnum):  # noqa: D101
     EVENT_IMPEACHMENT_2 = 338
 
 
-class EventTriggerType(IntEnum):  # noqa: D101
+class EventTriggerType(IntEnum):
     NO_EVENT_TRIGGER = -1
     EVENTTRIGGER_FOREST_FIRE = 0
     EVENTTRIGGER_CITY_RUINS_ANCIENT = 1
@@ -2313,7 +2313,7 @@ class EventTriggerType(IntEnum):  # noqa: D101
     EVENTTRIGGER_IMPEACHMENT = 196
 
 
-class CivicType(IntEnum):  # noqa: D101
+class CivicType(IntEnum):
     NO_CIVIC = -1
     CIVIC_DESPOTISM = 0
     CIVIC_HEREDITARY_RULE = 1
@@ -2342,7 +2342,7 @@ class CivicType(IntEnum):  # noqa: D101
     CIVIC_FREE_RELIGION = 24
 
 
-class CommerceType(IntEnum):  # noqa: D101
+class CommerceType(IntEnum):
     NO_COMMERCE = -1
     COMMERCE_GOLD = 0
     COMMERCE_RESEARCH = 1
@@ -2350,7 +2350,7 @@ class CommerceType(IntEnum):  # noqa: D101
     COMMERCE_ESPIONAGE = 3
 
 
-class CorporationType(IntEnum):  # noqa: D101
+class CorporationType(IntEnum):
     NO_CORPORATION = -1
     CORPORATION_1 = 0
     CORPORATION_2 = 1
@@ -2361,7 +2361,7 @@ class CorporationType(IntEnum):  # noqa: D101
     CORPORATION_7 = 6
 
 
-class CursorType(IntEnum):  # noqa: D101
+class CursorType(IntEnum):
     NO_CURSOR = -1
     CURSOR_DEFAULT = 0
     CURSOR_PING = 1
@@ -2388,7 +2388,7 @@ class CursorType(IntEnum):  # noqa: D101
     CURSOR_EDIT = 22
 
 
-class DiplomacyType(IntEnum):  # noqa: D101
+class DiplomacyType(IntEnum):
     NO_DIPLOMACY = -1
     AI_DIPLOCOMMENT_DECLARE_WAR = 0
     AI_DIPLOCOMMENT_NO_VASSAL = 1
@@ -2490,7 +2490,7 @@ class DiplomacyType(IntEnum):  # noqa: D101
     USER_DIPLOCOMMENT_EXIT = 97
 
 
-class EraType(IntEnum):  # noqa: D101
+class EraType(IntEnum):
     NO_ERA = -1
     ERA_ANCIENT = 0
     ERA_CLASSICAL = 1
@@ -2501,7 +2501,7 @@ class EraType(IntEnum):  # noqa: D101
     ERA_FUTURE = 6
 
 
-class EspionageMissionType(IntEnum):  # noqa: D101
+class EspionageMissionType(IntEnum):
     NO_ESPIONAGE_MISSION = -1
     ESPIONAGEMISSION_SEE_DEMOGRAPHICS = 0
     ESPIONAGEMISSION_CITY_VISIBILITY = 1
@@ -2523,7 +2523,7 @@ class EspionageMissionType(IntEnum):  # noqa: D101
     ESPIONAGEMISSION_COUNTERESPIONAGE = 17
 
 
-class ForceControlType(IntEnum):  # noqa: D101
+class ForceControlType(IntEnum):
     NO_FORCE_CONTROL = -1
     FORCECONTROL_SPEED = 0
     FORCECONTROL_HANDICAP = 1
@@ -2534,7 +2534,7 @@ class ForceControlType(IntEnum):  # noqa: D101
     FORCECONTROL_ADVANCED_START = 6
 
 
-class GameOptionType(IntEnum):  # noqa: D101
+class GameOptionType(IntEnum):
     NO_GAME_OPTION = -1
     GAMEOPTION_ADVANCED_START = 0
     GAMEOPTION_NO_CITY_RAZING = 1
@@ -2562,7 +2562,7 @@ class GameOptionType(IntEnum):  # noqa: D101
     GAMEOPTION_NO_ESPIONAGE = 23
 
 
-class MultiplayerOptionType(IntEnum):  # noqa: D101
+class MultiplayerOptionType(IntEnum):
     NO_MPOPTION = -1
     MPOPTION_SIMULTANEOUS_TURNS = 0
     MPOPTION_TAKEOVER_AI = 1
@@ -2571,7 +2571,7 @@ class MultiplayerOptionType(IntEnum):  # noqa: D101
     MPOPTION_TURN_TIMER = 4
 
 
-class GameSpeedType(IntEnum):  # noqa: D101
+class GameSpeedType(IntEnum):
     NO_GAME_SPEED = -1
     GAMESPEED_MARATHON = 0
     GAMESPEED_EPIC = 1
@@ -2579,7 +2579,7 @@ class GameSpeedType(IntEnum):  # noqa: D101
     GAMESPEED_QUICK = 3
 
 
-class GraphicOptionType(IntEnum):  # noqa: D101
+class GraphicOptionType(IntEnum):
     NO_GRAPHIC_OPTION = -1
     GRAPHICOPTION_SINGLE_UNIT_GRAPHICS = 0
     GRAPHICOPTION_HEALTH_BARS = 1
@@ -2595,7 +2595,7 @@ class GraphicOptionType(IntEnum):  # noqa: D101
     GRAPHICOPTION_CITY_RADIUS = 11
 
 
-class HandicapType(IntEnum):  # noqa: D101
+class HandicapType(IntEnum):
     NO_HANDICAP = -1
     HANDICAP_SETTLER = 0
     HANDICAP_CHIEFTAIN = 1
@@ -2608,7 +2608,7 @@ class HandicapType(IntEnum):  # noqa: D101
     HANDICAP_DEITY = 8
 
 
-class MPOptionType(IntEnum):  # noqa: D101
+class MPOptionType(IntEnum):
     NO_M_P_OPTION = -1
     MPOPTION_SIMULTANEOUS_TURNS = 0
     MPOPTION_TAKEOVER_AI = 1
@@ -2617,7 +2617,7 @@ class MPOptionType(IntEnum):  # noqa: D101
     MPOPTION_TURN_TIMER = 4
 
 
-class PlayerOptionType(IntEnum):  # noqa: D101
+class PlayerOptionType(IntEnum):
     NO_PLAYER_OPTION = -1
     PLAYEROPTION_ADVISOR_POPUPS = 0
     PLAYEROPTION_ADVISOR_HELP = 1
@@ -2643,7 +2643,7 @@ class PlayerOptionType(IntEnum):  # noqa: D101
     PLAYEROPTION_MODDER_3 = 21
 
 
-class ProjectType(IntEnum):  # noqa: D101
+class ProjectType(IntEnum):
     NO_PROJECT = -1
     PROJECT_MANHATTAN_PROJECT = 0
     PROJECT_THE_INTERNET = 1
@@ -2658,7 +2658,7 @@ class ProjectType(IntEnum):  # noqa: D101
     PROJECT_SS_THRUSTERS = 10
 
 
-class ReligionType(IntEnum):  # noqa: D101
+class ReligionType(IntEnum):
     NO_RELIGION = -1
     RELIGION_JUDAISM = 0
     RELIGION_CHRISTIANITY = 1
@@ -2669,7 +2669,7 @@ class ReligionType(IntEnum):  # noqa: D101
     RELIGION_TAOISM = 6
 
 
-class SpecialistType(IntEnum):  # noqa: D101
+class SpecialistType(IntEnum):
     NO_SPECIALIST = -1
     SPECIALIST_CITIZEN = 0
     SPECIALIST_PRIEST = 1
@@ -2687,7 +2687,7 @@ class SpecialistType(IntEnum):  # noqa: D101
     SPECIALIST_GREAT_SPY = 13
 
 
-class VictoryType(IntEnum):  # noqa: D101
+class VictoryType(IntEnum):
     NO_VICTORY = -1
     VICTORY_SCORE = 0
     VICTORY_TIME = 1
@@ -2698,7 +2698,7 @@ class VictoryType(IntEnum):  # noqa: D101
     VICTORY_DIPLOMATIC = 6
 
 
-class VoteType(IntEnum):  # noqa: D101
+class VoteType(IntEnum):
     NO_VOTE = -1
     VOTE_SECRETARY_GENERAL = 0
     VOTE_VICTORY = 1
@@ -2724,13 +2724,13 @@ class VoteType(IntEnum):  # noqa: D101
     VOTE_ASSIGN_CITY = 21
 
 
-class VoteSourceType(IntEnum):  # noqa: D101
+class VoteSourceType(IntEnum):
     NO_VOTE_SOURCE = -1
     DIPLOVOTE_UN = 0
     DIPLOVOTE_POPE = 1
 
 
-class PlayerVoteType(IntEnum):  # noqa: D101
+class PlayerVoteType(IntEnum):
     NO_PLAYER_VOTE_CHECKED = -6
     PLAYER_VOTE_NEVER = -5
     PLAYER_VOTE_ABSTAIN = -4
@@ -2739,7 +2739,7 @@ class PlayerVoteType(IntEnum):  # noqa: D101
     NO_PLAYER_VOTE = -1
 
 
-class WorldType(IntEnum):  # noqa: D101
+class WorldType(IntEnum):
     NO_WORLD = -1
     WORLDSIZE_DUEL = 0
     WORLDSIZE_TINY = 1
@@ -2749,7 +2749,7 @@ class WorldType(IntEnum):  # noqa: D101
     WORLDSIZE_HUGE = 5
 
 
-class ColorValsType(IntEnum):  # noqa: D101
+class ColorValsType(IntEnum):
     NO_COLOR_VALS = -1
     COLOR_CLEAR = 0
     COLOR_ALPHA_GREY = 1
@@ -2880,7 +2880,7 @@ class ColorValsType(IntEnum):  # noqa: D101
     COLOR_PLAYER_LIGHT_BLACK_TEXT = 126
 
 
-class InterfaceModeType(IntEnum):  # noqa: D101
+class InterfaceModeType(IntEnum):
     NO_INTERFACE_MODE = -1
     INTERFACEMODE_SELECTION = 0
     INTERFACEMODE_PING = 1
@@ -2903,7 +2903,7 @@ class InterfaceModeType(IntEnum):  # noqa: D101
     INTERFACEMODE_SAVE_PLOT_NIFS = 18
 
 
-class PlayerColorType(IntEnum):  # noqa: D101
+class PlayerColorType(IntEnum):
     NO_PLAYER_COLOR = -1
     PLAYERCOLOR_BLACK = 0
     PLAYERCOLOR_BLUE = 1
@@ -2951,7 +2951,7 @@ class PlayerColorType(IntEnum):  # noqa: D101
     PLAYERCOLOR_ORANGE_AND_GREEN = 43
 
 
-class AttachableType(IntEnum):  # noqa: D101
+class AttachableType(IntEnum):
     NO_ATTACHABLE = -1
     ATTACHABLE_SMOKE = 0
     ATTACHABLE_AIRDEBRIS = 1
@@ -3026,7 +3026,7 @@ class AttachableType(IntEnum):  # noqa: D101
     ATTACHABLE_INVASIONSHIP_GLOW_BIG = 70
 
 
-class EffectType(IntEnum):  # noqa: D101
+class EffectType(IntEnum):
     NO_EFFECT = -1
     EFFECT_FOOTSTEP_ON = 0
     EFFECT_FOOTSTEP = 1
@@ -3338,13 +3338,13 @@ class EffectType(IntEnum):  # noqa: D101
     EFFECT_FF_TRANSPORT = 307
 
 
-class RouteType(IntEnum):  # noqa: D101
+class RouteType(IntEnum):
     NO_ROUTE = -1
     ROUTE_ROAD = 0
     ROUTE_RAILROAD = 1
 
 
-class TechType(IntEnum):  # noqa: D101
+class TechType(IntEnum):
     NO_TECH = -1
     TECH_MYSTICISM = 0
     TECH_MEDITATION = 1
@@ -3440,7 +3440,7 @@ class TechType(IntEnum):  # noqa: D101
     TECH_FUTURE_TECH = 91
 
 
-class FeatureType(IntEnum):  # noqa: D101
+class FeatureType(IntEnum):
     NO_FEATURE = -1
     FEATURE_ICE = 0
     FEATURE_JUNGLE = 1
@@ -3450,7 +3450,7 @@ class FeatureType(IntEnum):  # noqa: D101
     FEATURE_FALLOUT = 5
 
 
-class ImprovementType(IntEnum):  # noqa: D101
+class ImprovementType(IntEnum):
     NO_IMPROVEMENT = -1
     IMPROVEMENT_LAND_WORKED = 0
     IMPROVEMENT_WATER_WORKED = 1
@@ -3479,7 +3479,7 @@ class ImprovementType(IntEnum):  # noqa: D101
     IMPROVEMENT_FOREST_PRESERVE = 24
 
 
-class TerrainType(IntEnum):  # noqa: D101
+class TerrainType(IntEnum):
     NO_TERRAIN = -1
     TERRAIN_GRASS = 0
     TERRAIN_PLAINS = 1
@@ -3492,7 +3492,7 @@ class TerrainType(IntEnum):  # noqa: D101
     TERRAIN_HILL = 8
 
 
-class Civ4AnimationPathType(IntEnum):  # noqa: D101
+class Civ4AnimationPathType(IntEnum):
     NO_CIV4_ANIMATION_PATH = -1
     ANIMATIONPATH_IDLE = 0
     ANIMATIONPATH_MOVE = 1
@@ -3537,7 +3537,7 @@ class Civ4AnimationPathType(IntEnum):  # noqa: D101
     ANIMATIONPATH_AIRPATROL = 40
 
 
-class BuildType(IntEnum):  # noqa: D101
+class BuildType(IntEnum):
     NO_BUILD = -1
     BUILD_ROAD = 0
     BUILD_RAILROAD = 1
@@ -3564,7 +3564,7 @@ class BuildType(IntEnum):  # noqa: D101
     BUILD_FOREST_PRESERVE = 22
 
 
-class ControlType(IntEnum):  # noqa: D101
+class ControlType(IntEnum):
     NO_CONTROL = -1
     CONTROL_CENTERONSELECTION = 0
     CONTROL_SELECTYUNITTYPE = 1
@@ -3631,7 +3631,7 @@ class ControlType(IntEnum):  # noqa: D101
     CONTROL_FREE_COLONY = 62
 
 
-class Civ4EntityEventType(IntEnum):  # noqa: D101
+class Civ4EntityEventType(IntEnum):
     NO_CIV4_ENTITY_EVENT = -1
     ENTITY_EVENT_IDLE = 0
     ENTITY_EVENT_DIE = 1
@@ -3669,7 +3669,7 @@ class Civ4EntityEventType(IntEnum):  # noqa: D101
     ENTITY_EVENT_RAILROAD = 33
 
 
-class MissionType(IntEnum):  # noqa: D101
+class MissionType(IntEnum):
     NO_MISSION = -1
     MISSION_MOVE_TO = 0
     MISSION_ROUTE_TO = 1
@@ -3720,7 +3720,7 @@ class MissionType(IntEnum):  # noqa: D101
     MISSION_MULTI_DESELECT = 46
 
 
-class PromotionType(IntEnum):  # noqa: D101
+class PromotionType(IntEnum):
     NO_PROMOTION = -1
     PROMOTION_COMBAT1 = 0
     PROMOTION_COMBAT2 = 1
@@ -3778,14 +3778,14 @@ class PromotionType(IntEnum):  # noqa: D101
     PROMOTION_ACE = 53
 
 
-class SpecialUnitType(IntEnum):  # noqa: D101
+class SpecialUnitType(IntEnum):
     NO_SPECIAL_UNIT = -1
     SPECIALUNIT_FIGHTER = 0
     SPECIALUNIT_PEOPLE = 1
     SPECIALUNIT_MISSILE = 2
 
 
-class UnitClassType(IntEnum):  # noqa: D101
+class UnitClassType(IntEnum):
     NO_UNIT_CLASS = -1
     UNITCLASS_LION = 0
     UNITCLASS_BEAR = 1
@@ -3878,7 +3878,7 @@ class UnitClassType(IntEnum):  # noqa: D101
     UNITCLASS_GREAT_SPY = 88
 
 
-class UnitType(IntEnum):  # noqa: D101
+class UnitType(IntEnum):
     NO_UNIT = -1
     UNIT_LION = 0
     UNIT_BEAR = 1
@@ -4005,7 +4005,7 @@ class UnitType(IntEnum):  # noqa: D101
     UNIT_GREAT_SPY = 122
 
 
-class TraitType(IntEnum):  # noqa: D101
+class TraitType(IntEnum):
     NO_TRAIT = -1
     TRAIT_PHILOSOPHICAL = 0
     TRAIT_AGGRESSIVE = 1
@@ -4020,14 +4020,14 @@ class TraitType(IntEnum):  # noqa: D101
     TRAIT_IMPERIALIST = 10
 
 
-class ProcessType(IntEnum):  # noqa: D101
+class ProcessType(IntEnum):
     NO_PROCESS = -1
     PROCESS_WEALTH = 0
     PROCESS_RESEARCH = 1
     PROCESS_CULTURE = 2
 
 
-class BonusType(IntEnum):  # noqa: D101
+class BonusType(IntEnum):
     NO_BONUS = -1
     BONUS_ALUMINUM = 0
     BONUS_COAL = 1
@@ -4066,7 +4066,7 @@ class BonusType(IntEnum):  # noqa: D101
     BONUS_MOVIES = 34
 
 
-class CivicOptionType(IntEnum):  # noqa: D101
+class CivicOptionType(IntEnum):
     NO_CIVIC_OPTION = -1
     CIVICOPTION_GOVERNMENT = 0
     CIVICOPTION_LEGAL = 1
@@ -4075,7 +4075,7 @@ class CivicOptionType(IntEnum):  # noqa: D101
     CIVICOPTION_RELIGION = 4
 
 
-class ClimateType(IntEnum):  # noqa: D101
+class ClimateType(IntEnum):
     NO_CLIMATE = -1
     CLIMATE_TEMPERATE = 0
     CLIMATE_TROPICAL = 1
@@ -4084,7 +4084,7 @@ class ClimateType(IntEnum):  # noqa: D101
     CLIMATE_COLD = 4
 
 
-class CultureLevelType(IntEnum):  # noqa: D101
+class CultureLevelType(IntEnum):
     NO_CULTURE_LEVEL = -1
     CULTURELEVEL_NONE = 0
     CULTURELEVEL_POOR = 1
@@ -4095,7 +4095,7 @@ class CultureLevelType(IntEnum):  # noqa: D101
     CULTURELEVEL_LEGENDARY = 6
 
 
-class EmphasizeType(IntEnum):  # noqa: D101
+class EmphasizeType(IntEnum):
     NO_EMPHASIZE = -1
     EMPHASIZE_FOOD = 0
     EMPHASIZE_PRODUCTION = 1
@@ -4105,7 +4105,7 @@ class EmphasizeType(IntEnum):  # noqa: D101
     EMPHASIZE_AVOID_GROWTH = 5
 
 
-class GoodyType(IntEnum):  # noqa: D101
+class GoodyType(IntEnum):
     NO_GOODY = -1
     GOODY_LOW_GOLD = 0
     GOODY_HIGH_GOLD = 1
@@ -4121,20 +4121,20 @@ class GoodyType(IntEnum):  # noqa: D101
     GOODY_BARBARIANS_STRONG = 11
 
 
-class HurryType(IntEnum):  # noqa: D101
+class HurryType(IntEnum):
     NO_HURRY = -1
     HURRY_POPULATION = 0
     HURRY_GOLD = 1
 
 
-class SeaLevelType(IntEnum):  # noqa: D101
+class SeaLevelType(IntEnum):
     NO_SEA_LEVEL = -1
     SEALEVEL_LOW = 0
     SEALEVEL_MEDIUM = 1
     SEALEVEL_HIGH = 2
 
 
-class TurnTimerType(IntEnum):  # noqa: D101
+class TurnTimerType(IntEnum):
     NO_TURN_TIMER = -1
     TURNTIMER_STATIC = 0
     TURNTIMER_SNAIL = 1
@@ -4144,14 +4144,14 @@ class TurnTimerType(IntEnum):  # noqa: D101
     TURNTIMER_BLAZING = 5
 
 
-class UpKeepType(IntEnum):  # noqa: D101
+class UpKeepType(IntEnum):
     NO_UP_KEEP = -1
     UPKEEP_LOW = 0
     UPKEEP_MEDIUM = 1
     UPKEEP_HIGH = 2
 
 
-class AdvisorType(IntEnum):  # noqa: D101
+class AdvisorType(IntEnum):
     NO_ADVISOR = -1
     ADVISOR_MILITARY = 0
     ADVISOR_RELIGION = 1
@@ -4161,7 +4161,7 @@ class AdvisorType(IntEnum):  # noqa: D101
     ADVISOR_GROWTH = 5
 
 
-class BonusClassType(IntEnum):  # noqa: D101
+class BonusClassType(IntEnum):
     NO_BONUS_CLASS = -1
     BONUSCLASS_GENERAL = 0
     BONUSCLASS_GRAIN = 1
@@ -4171,14 +4171,14 @@ class BonusClassType(IntEnum):  # noqa: D101
     BONUSCLASS_WONDER = 5
 
 
-class YieldType(IntEnum):  # noqa: D101
+class YieldType(IntEnum):
     NO_YIELD = -1
     YIELD_FOOD = 0
     YIELD_PRODUCTION = 1
     YIELD_COMMERCE = 2
 
 
-class CommandType(IntEnum):  # noqa: D101
+class CommandType(IntEnum):
     NO_COMMAND = -1
     COMMAND_PROMOTION = 0
     COMMAND_UPGRADE = 1
@@ -4196,7 +4196,7 @@ class CommandType(IntEnum):  # noqa: D101
     COMMAND_HOTKEY = 13
 
 
-class AreaAIType(IntEnum):  # noqa: D101
+class AreaAIType(IntEnum):
     NO_AREAAI = -1
     AREAAI_OFFENSIVE = 0
     AREAAI_DEFENSIVE = 1
