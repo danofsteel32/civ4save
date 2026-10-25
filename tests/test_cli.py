@@ -7,6 +7,7 @@ from click.testing import CliRunner
 
 from civ4save import SaveFile, __version__
 from civ4save.cli import cli
+from civ4save.objects import OrderType, ProductionOrder
 from civ4save.objects.player import City, Civics, Trade, TradeDeal
 from civ4save.vanilla import enums as e
 
@@ -125,6 +126,19 @@ def test_parse_json_nested_models(runner, parsed_save):
             "y": 4,
             "turn_founded": 12,
             "wonders": ["Stonehenge"],
+            "idx": -1,
+            "owner": -1,
+            "population": 0,
+            "turn_acquired": -1,
+            "buildings": [],
+            "religions": [],
+            "corporations": [],
+            "production_queue": [],
+            "base_production_per_turn": 0,
+            "gold_per_turn": 0.0,
+            "science_per_turn": 0.0,
+            "culture_per_turn": 0.0,
+            "espionage_per_turn": 0.0,
         }
     ]
     assert player["civics"]["government"] == "CIVIC_DESPOTISM"
@@ -138,6 +152,60 @@ def test_parse_json_nested_models(runner, parsed_save):
         }
     ]
     assert player["religion"] == "NO_RELIGION"
+
+
+def test_parse_json_city_production(runner, parsed_save):
+    file, _, save = parsed_save
+    save.get_player.return_value = {
+        "cities": [
+            City(
+                "Capital",
+                1,
+                2,
+                0,
+                production_queue=[
+                    ProductionOrder(
+                        OrderType.ORDER_TRAIN, e.UnitType(0), True, 17, e.UnitAIType(2)
+                    ),
+                    ProductionOrder(
+                        OrderType.ORDER_MAINTAIN,
+                        e.ProcessType.PROCESS_WEALTH,
+                        False,
+                        None,
+                    ),
+                ],
+                base_production_per_turn=7,
+                gold_per_turn=12.5,
+                science_per_turn=23.75,
+                culture_per_turn=6.8,
+                espionage_per_turn=1.99,
+            )
+        ]
+    }
+    result = runner.invoke(cli, ["parse", "--json", "--player", "0", str(file)])
+    assert result.exit_code == 0, result.output
+    city = json.loads(result.output)["player"]["cities"][0]
+    assert city["production_queue"] == [
+        {
+            "order_type": "ORDER_TRAIN",
+            "item": e.UnitType(0).name,
+            "repeat": True,
+            "invested_production": 17,
+            "unit_ai": e.UnitAIType(2).name,
+        },
+        {
+            "order_type": "ORDER_MAINTAIN",
+            "item": "PROCESS_WEALTH",
+            "repeat": False,
+            "invested_production": None,
+            "unit_ai": None,
+        },
+    ]
+    assert city["base_production_per_turn"] == 7
+    assert city["gold_per_turn"] == 12.5
+    assert city["science_per_turn"] == 23.75
+    assert city["culture_per_turn"] == 6.8
+    assert city["espionage_per_turn"] == 1.99
 
 
 @pytest.mark.parametrize(
@@ -174,6 +242,23 @@ def test_parse_json_real_save(runner, monkeypatch, filename, leader):
     assert players["0"]["leader"] == leader
     assert players["0"]["civics"]["government"].startswith("CIVIC_")
     assert players["0"]["cities"]
+    assert isinstance(players["0"]["gold"], int)
+    assert isinstance(players["0"]["alive"], bool)
+    assert players["0"]["current_era"].startswith("ERA_")
+    assert players["0"]["cities"][0]["owner"] == 0
+    assert players["0"]["cities"][0]["population"] > 0
+    assert all(
+        building.startswith("BUILDING_")
+        for city in players["0"]["cities"]
+        for building in city["buildings"]
+    )
+    assert players["0"]["units"]
+    assert all(unit["unit_type"].startswith("UNIT_") for unit in players["0"]["units"])
+    assert all(
+        promotion.startswith("PROMOTION_")
+        for unit in players["0"]["units"]
+        for promotion in unit["promotions"]
+    )
 
     result = runner.invoke(cli, ["parse", "--json", "--player", "0", str(file)])
     assert result.exit_code == 0, result.output

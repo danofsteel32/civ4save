@@ -1,7 +1,9 @@
 """Public API for civ4save.objects."""
 
 from .game_state import GameState  # noqa: F401
-from .player import Player, get_players  # noqa: F401
+from .player import City, Civics, Player, get_players  # noqa: F401
 from .plot import Plot  # noqa: F401
+from .production import OrderType, ProductionOrder  # noqa: F401
 from .settings import Settings  # noqa: F401
 from .team import Team, TeamRelation  # noqa: F401
+from .unit import Unit  # noqa: F401

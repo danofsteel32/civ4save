@@ -190,6 +190,17 @@ print([tech.name for tech in team.techs])
 for other_team_id, relation in team.relations.items():
     if relation.at_war:
         print("At war with team", other_team_id)
+
+print(player.gold, player.population, player.alive)
+for city in player.cities:
+    print(city.idx, city.name, city.population, city.buildings)
+    print(city.gold_per_turn, city.science_per_turn, city.culture_per_turn)
+    print("Base hammers:", city.base_production_per_turn)
+    if city.current_production is not None:
+        order = city.current_production
+        print(order.item.name, order.invested_production)
+for unit in player.units:
+    print(unit.idx, unit.unit_type.name, unit.x, unit.y, unit.promotions)
 ```
 
 `save.teams` includes every team slot, including inactive and barbarian teams;
@@ -201,6 +212,55 @@ as unavailable for trading. Relations include every team ID, including self;
 their war weariness and espionage points belong to the source team and need
 not match the other team's values. Team models expose current serialized state,
 which may include information unavailable to the human player.
+
+Players now use serialized state for cities, units, civics and religion rather
+than reconstructing them from replay messages. `player.owned_plots` counts
+current map ownership (including water); `player.land` is the serialized land
+total. `player.gold_per_turn` is net diplomatic payments, not total net income.
+`player.research_queue` preserves queue order. `player.religion` is the active
+state religion, or `NO_RELIGION` when state religion is disabled; the previous
+choice remains available as `player.last_state_religion`.
+
+`save.players` retains configured civilizations, including eliminated players,
+and omits unused `NO_CIVILIZATION` slots. Use `player.alive` to filter living
+players. City and unit IDs are local to their owners: use `(owner, idx)` as a
+reference. `player.capital_city` resolves the saved capital ID to a current city,
+or returns `None`. `player.capital_city_id` preserves the saved value, which may
+be `-1` or a stale ID for an eliminated player. City names and ownership come
+directly from the save, so renamed cities and duplicate names are supported.
+`city.buildings` lists present building types, including free and obsolete
+buildings.
+
+`city.production_queue` contains typed `ProductionOrder` objects in queue order;
+`city.current_production` returns the first, or `None` for an empty queue. Each
+order has an `OrderType`, an `item` (`UnitType`, `BuildingType`, `ProjectType`,
+or `ProcessType`), a `repeat` flag, and `invested_production`. Investment is
+stored per item type, so duplicate queued items share the same saved progress.
+Processes such as Wealth have `invested_production=None`; unit orders also
+include a `unit_ai` role. `OrderType` and `ProductionOrder` are exported from
+`civ4save.objects`.
+
+City `gold_per_turn`, `science_per_turn`, `culture_per_turn`, and
+`espionage_per_turn` are saved commerce output rates converted from hundredths
+to floats (for example, `1250` becomes `12.5`). Gold output does not subtract
+city expenses. With No Espionage enabled, espionage output is added to culture
+and `espionage_per_turn` is zero. These rates already include saved commerce
+modifiers; culture per turn is distinct from accumulated culture.
+
+`base_production_per_turn` is base hammer yield before modifiers. It excludes
+overflow, chops and food converted during worker/settler production. Exact
+hammers applied to an order and turns remaining are not calculated: those
+also need item-specific rules from the game's XML. No installed game is needed
+for the exposed rates and queue. Player JSON includes the queue and output
+fields; the current order is its first queue entry.
+
+The existing `player.great_people`, `player.projects`, and `city.wonders` string
+lists remain English replay-derived history and may be incomplete. Use
+`team.projects` for current project counts and `city.buildings` for current
+buildings. `Unit.name` is the saved custom name and may be empty; `unit.damage`
+is hit points lost. Existing imports from `civ4save.objects.player`, including
+`City`, continue to work; `City`, `Civics`, and `Unit` are also exported from
+`civ4save.objects`. New fields are included in the CLI's player JSON output.
 
 `SaveFile` accepts a file path as a string or `pathlib.Path`. Pass `debug=True`
 to include hidden fields when displaying parsed Construct data.

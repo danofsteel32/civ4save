@@ -23,11 +23,25 @@ and areas nested within the map:
 7. `CvPlayer` and its `CvPlayerAI` trailer: implemented for all player slots,
    including owned plot groups, cities, units, selection groups and events.
 
-The public player objects are still assembled from settings and replay
-messages. Complete serialized player state is available in
+Public player identity and scores come from settings/game fields; current
+cities, units, civics, religion and economic state come from serialized player
+records. Owned plot counts come from the current map. Replay messages only
+enrich legacy great-person, project and city-completion string histories.
+Complete serialized player state is available in
 `SaveFile.raw.player_records`; team state is in `SaveFile.raw.team_records`.
 The existing `SaveFile.raw.teams`
 continues to contain the per-player team assignments from `CvInitCore`.
+
+Public city production orders decode `OrderData` using `OrderTypes` from
+`CvEnums.h`. Queue `data1` selects a unit, building, project or process; `data2`
+is a unit AI role for training orders. `bSave` repeats completed orders.
+Stored production is per item type, not per queue entry; processes have no
+stored production. City commerce rates are hundredths, as returned by
+`CvCity::getCommerceRateTimes100`, including its No Espionage adjustment at the
+object layer. `base_production_per_turn` exposes `getBaseYieldRate(YIELD_PRODUCTION)`
+without claiming the order-specific result of `getCurrentProductionDifference`.
+These mappings were checked against the local `beyond-the-sword-sdk` at
+`3c14d26e21e6e335a19af00fc2c0d7acf207fd14`; no wire-format changes are needed.
 
 Changes to field order, widths, signedness, counts, and conditional presence
 must match the serialized format. Keep the exact `grid_width * grid_height`
@@ -214,8 +228,9 @@ Widths and conditional fields that need special care:
   scripts, sounds, icons and Python callbacks use narrow strings.
 
 The parser retains scalar enum IDs in the newly added raw records except where
-an explicit Construct enum is used. Public object models and exports have not
-changed. The engine-owned data after the players is deliberately left unread.
+an explicit Construct enum is used. The public object layer converts selected
+IDs into typed enums, including production queue items. The engine-owned data
+after the players is deliberately left unread.
 
 Record boundaries and aggregate counts verified against all four fixtures:
 
