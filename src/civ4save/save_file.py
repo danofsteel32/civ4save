@@ -10,7 +10,7 @@ from construct import setGlobalPrintPrivateEntries
 from lazy_property import LazyProperty
 
 from . import utils
-from .objects import GameState, Player, Plot, Settings, get_players
+from .objects import GameState, Player, Plot, Settings, Team, get_players
 from .vanilla.structure import CivBeyondSwordSave
 
 
@@ -123,6 +123,14 @@ class SaveFile:
     def players(self) -> dict[int, Player]:
         """Return players Dict."""
         return get_players(self.raw)
+
+    @LazyProperty
+    def teams(self) -> dict[int, Team]:
+        """Return all team slots keyed by ID, including inactive/barbarian teams.
+
+        A player's team is available as ``save.teams[player.team]``.
+        """
+        return {record.id: Team.from_struct(record) for record in self.raw.team_records}
 
     @property
     def plots(self) -> list[Plot]:

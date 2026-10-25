@@ -176,21 +176,40 @@ save = SaveFile("Rome.CivBeyondSwordSave")
 save.raw  # Parsed Construct container for access to low-level fields
 save.settings  # civ4save.objects.Settings
 save.players  # dict[int, civ4save.objects.Player]
+save.teams  # dict[int, civ4save.objects.Team]
 save.game_state  # civ4save.objects.GameState
 save.get_player(0)  # Returns civ4save.objects.Player
 save.get_plot(x=20, y=20)  # Returns civ4save.objects.Plot
 for plot in save.plots:
     print(plot.owner, plot.improvement_type)
+
+player = save.get_player(0)
+team = save.teams[player.team]
+print(team.population, team.land)
+print([tech.name for tech in team.techs])
+for other_team_id, relation in team.relations.items():
+    if relation.at_war:
+        print("At war with team", other_team_id)
 ```
+
+`save.teams` includes every team slot, including inactive and barbarian teams;
+`team.alive_count` gives the number of living members. Technologies are lists of
+`TechType` enums in enum order. `team.research_progress` and `team.projects` map
+`TechType` and `ProjectType` enums to research progress and completed project
+counts, including zero values. `team.no_trade_techs` lists technologies marked
+as unavailable for trading. Relations include every team ID, including self;
+their war weariness and espionage points belong to the source team and need
+not match the other team's values. Team models expose current serialized state,
+which may include information unavailable to the human player.
 
 `SaveFile` accepts a file path as a string or `pathlib.Path`. Pass `debug=True`
 to include hidden fields when displaying parsed Construct data.
 
 The save is decompressed and parsed on the first access to data, such as
 `save.settings` or `save.raw`, and the parsed container is cached. Some arrays
-are evaluated lazily. The settings, players, and game-state wrappers are cached;
-each access to `save.plots` creates a new list of `Plot` wrappers. Store that
-list if you need to reuse it.
+are evaluated lazily. The settings, players, teams, and game-state wrappers are
+cached; each access to `save.plots` creates a new list of `Plot` wrappers. Store
+that list if you need to reuse it.
 
 ## Development and contributing
 
