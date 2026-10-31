@@ -15,7 +15,9 @@ from construct import (
     Adapter,
     Array,
     Bytes,
+    Check,
     Computed,
+    Const,
     ConstructError,
     Enum,
     ExprValidator,
@@ -35,9 +37,11 @@ from construct import (
     Subconstruct,
     Switch,
     Tell,
+    Terminated,
     ValidationError,
     this,
 )
+from construct.core import stream_size
 
 from civ4save.utils import get_enum_length
 
@@ -1443,6 +1447,85 @@ CvPlayerAI = Struct(
     "_player_ai_end_index" / Tell,
 )
 
+CvGameRecord = Struct(
+    "_game_record_flag" / UINT,
+    "era" / INT,
+    "map_name" / StringAdapter(STRING),
+)
+
+CvPlayerRecord = Struct(
+    "_player_record_start_index" / Tell,
+    "_player_record_flag" / UINT,
+    "id" / INT,
+    "time_played" / INT,
+    "victory" / INT,
+    "leader" / INT,
+    "units_built" / Array(get_enum_length(e.UnitType), INT),
+    "units_killed" / Array(get_enum_length(e.UnitType), INT),
+    "units_lost" / Array(get_enum_length(e.UnitType), INT),
+    "buildings_built" / Array(get_enum_length(e.BuildingType), INT),
+    "religions_founded" / Array(get_enum_length(e.ReligionType), Flag),
+    "cities_built" / INT,
+    "cities_razed" / INT,
+    "golden_ages" / INT,
+    "_player_record_end_index" / Tell,
+)
+
+# CvEventReporter::writeStatistics delegates directly to CvStatistics::write.
+# Only ever-alive slots have records, in player-slot order, without a count word.
+CvStatistics = Struct(
+    "_statistics_start_index" / Tell,
+    "game" / CvGameRecord,
+    "_player_ids"
+    / Computed(
+        lambda ctx: [i for i, p in enumerate(ctx._.player_records) if p.ever_alive]
+    ),
+    "players" / Array(lambda ctx: len(ctx._player_ids), CvPlayerRecord),
+    Check(lambda ctx: [p.id for p in ctx.players] == ctx._player_ids),
+    "_statistics_end_index" / Tell,
+)
+
+# Verified against the footer bytes and the user's identification of the map
+# markers. The SDK omits this serializer; retain the unnamed four-byte fields.
+MapSign = Struct(
+    "_unknown_before_coordinates" / Bytes(4),
+    "x" / INT,
+    "y" / INT,
+    "_unknown_after_coordinates" / Bytes(4),
+    "caption" / StringAdapter(WSTRING),
+)
+
+EngineSigns = Struct(
+    "_unknown" / Bytes(4),
+    "_sz_signs" / COUNT,
+    "signs" / Array(this._sz_signs, MapSign),
+)
+
+# Engine serialization is absent from the SDK. Preserve the unknown bytes;
+# the c4lib GameFooter schema independently identifies the last byte + MD5 string.
+# Python data is retained as bytes, never executed via pickle.loads.
+SaveFooter = Struct(
+    "_footer_start_index" / Tell,
+    "_sz_python_data" / COUNT,
+    "python_data" / Bytes(this._sz_python_data),
+    "_engine_data_size"
+    / Computed(lambda ctx: stream_size(ctx._io) - ctx._io.tell() - 37),
+    Check(this._engine_data_size >= 0),
+    "engine_data" / Bytes(this._engine_data_size),
+    # Parse only this bounded buffer, so malformed signs cannot read checksum bytes.
+    "signs" / Computed(lambda ctx: EngineSigns.parse(ctx.engine_data).signs),
+    "checksum_byte" / UCHAR,
+    "_checksum_length" / Const(32, UINT),
+    "checksum"
+    / ExprValidator(
+        PaddedString(32, "ascii"),
+        lambda value, ctx: (
+            len(value) == 32 and all(char in "0123456789abcdefABCDEF" for char in value)
+        ),
+    ),
+    "_footer_end_index" / Tell,
+)
+
 # Flatten named sections to preserve SaveFile.raw's existing field access.
 CivBeyondSwordSave = Struct(
     *SaveHeader.subcons,
@@ -1454,4 +1537,14 @@ CivBeyondSwordSave = Struct(
     "_teams_end_index" / Tell,
     "player_records" / Array(MAX_PLAYERS, IndexedRecord(CvPlayerAI, "player")),
     "_players_end_index" / Tell,
+    "statistics" / CvStatistics,
+    Check(
+        lambda ctx: (
+            ctx.statistics._statistics_end_index
+            == ctx._params.get("trailer_start", ctx.statistics._statistics_end_index)
+        )
+    ),
+    "footer" / SaveFooter,
+    "_save_end_index" / Tell,
+    Terminated,
 )

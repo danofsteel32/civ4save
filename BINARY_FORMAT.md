@@ -22,6 +22,11 @@ and areas nested within the map:
 6. `CvTeam` and its `CvTeamAI` trailer: implemented for all team slots.
 7. `CvPlayer` and its `CvPlayerAI` trailer: implemented for all player slots,
    including owned plot groups, cities, units, selection groups and events.
+8. `CvStatistics`, called through `CvEventReporter`: implemented, including
+   the game record and every ever-alive player's statistics record.
+9. Uncompressed engine footer: consumed through EOF. The Python payload,
+   engine bytes, checksum byte and checksum string are retained. Map signs
+   are decoded; the remaining engine fields are opaque.
 
 Public player identity and scores come from settings/game fields; current
 cities, units, civics, religion and economic state come from serialized player
@@ -68,8 +73,10 @@ These changes affect private raw fields, not the public model exports.
 
 Lengths and counts reject negative values before reading their payloads. Arrays
 are eager, so parsing validates every implemented section immediately. The
-root parser stops after the final player AI record, leaving the engine-owned
-remainder unread; it does not claim to consume the entire save.
+root parser consumes the entire decompressed save and requires EOF. `SaveFile`
+also checks that statistics end exactly at the compression framing's trailer
+boundary. This is complete byte coverage, not a claim that every engine-owned
+footer field has been identified.
 
 Verified the refactored records against the local SDK at commit
 `3c14d26e21e6e335a19af00fc2c0d7acf207fd14`, particularly `CvInitCore.cpp`,
@@ -229,8 +236,8 @@ Widths and conditional fields that need special care:
 
 The parser retains scalar enum IDs in the newly added raw records except where
 an explicit Construct enum is used. The public object layer converts selected
-IDs into typed enums, including production queue items. The engine-owned data
-after the players is deliberately left unread.
+IDs into typed enums, including production queue items. Statistics follow the
+last player, then the uncompressed engine footer described below.
 
 Record boundaries and aggregate counts verified against all four fixtures:
 
@@ -246,6 +253,82 @@ records, project-dependent art arrays, all supported legacy flags, raw struct
 padding and Unicode strings. They verify boundaries, reject negative counts,
 unknown diplomacy argument types and truncated records, and reconcile real
 player cities with map city IDs, populations and selection-group unit IDs.
+
+## Statistics and engine footer
+
+`CvEventReporter::writeStatistics` delegates directly to `CvStatistics::write`.
+Verified against `CvEventReporter.cpp` and `CvStatistics.cpp` in the local SDK
+at commit `3c14d26e21e6e335a19af00fc2c0d7acf207fd14`.
+
+`SaveFile.raw.statistics.game` contains the game record: a uint32 expansion
+flag, int32 era and narrow map-name string. `statistics.players` contains one
+`CvPlayerRecord` for each player slot whose serialized `ever_alive` flag is
+true, in slot order. There is no record count word, and currently dead players
+and barbarians are included. Record IDs must match the expected slot IDs.
+
+Each player record contains a uint32 expansion flag; int32 player ID, time
+played (minutes), victory and leader; three int32 arrays per unit type (built,
+killed and lost); an int32 array per building type; one religion-founded bool
+per religion; and int32 cities built, cities razed and golden ages. Vanilla's
+123 unit types, 159 building types and seven religions make each record exactly
+2,151 bytes. Enum IDs remain numeric, including the `-1` sentinel.
+
+Statistics end precisely at the end of the compressed payload in all four
+fixtures. Offsets below refer to the decompressed save including its header:
+
+| Fixture | Statistics records | End of statistics / start of footer | Footer bytes |
+| --- | ---: | ---: | ---: |
+| `bismark-emperor-turn86.CivBeyondSwordSave` | 9 | 2,231,592 | 4,160 |
+| `churchill-random-roll.CivBeyondSwordSave` | 8 | 1,325,018 | 81 |
+| `mehmed-epic.CivBeyondSwordSave` | 10 | 5,036,409 | 15,797 |
+| `Gandhi-culture-win-t331.CivBeyondSwordSave` | 6 | 3,072,768 | 4,359 |
+
+The SDK does not include the engine implementation that serializes the footer.
+As a secondary reference, c4lib's
+[GameFooter schema](https://github.com/hankinsohl/c4lib/blob/0c3e0dc0d5dd4861b31edcdb47db8803fac94540/doc/BTS.schema#L1877)
+also retains unknown footer bytes, followed by a checksum byte and a
+length-prefixed MD5 string. The final 37 bytes in all fixtures match this layout:
+one byte, a uint32 length of 32, then 32 ASCII hexadecimal characters. The
+checksum's syntax is validated; its digest is not recomputed or verified.
+
+`SaveFile.raw.footer` exposes:
+
+- `python_data`: a nonnegative int32 byte count and that many payload bytes.
+  In all four fixtures this contains the protocol-0 pickle `S''\np0\n.`.
+  The parser preserves the bytes without unpickling or executing them.
+- `engine_data`: every byte between that payload and the final 37 bytes,
+  preserved verbatim, including the decoded sign prefix.
+- `signs`: map-sign records decoded from the engine-data prefix. Each has
+  signed int32 `x` and `y` coordinates and a UTF-16 `caption` counted in code
+  units. Two other four-byte fields, before and after the coordinates,
+  are retained under private names because their meanings are unconfirmed.
+  The prefix starts with four unnamed bytes and a nonnegative int32 sign count.
+  Signs are parsed in a bounded copy of `engine_data` so truncated records
+  cannot consume the checksum. Data after the signs remains uninterpreted.
+- `checksum_byte` and `checksum`: the final byte and hexadecimal string.
+
+The sign layout is based on the binary fixtures, rather than an SDK serializer
+(which is unavailable). Bismark has three signs, all captioned `X`, at `(56, 23)`,
+`(59, 22)` and `(59, 11)`. The save's owner confirmed these are future-city
+placement markers. The sign prefix occupies 74 bytes: an eight-byte header and
+three 22-byte records. Churchill, Mehmed and Gandhi have zero signs and an
+eight-byte prefix. No field layout beyond that prefix is inferred from the
+signs. Tests independently pack multiple signs, nonzero unnamed fields, empty
+and Unicode captions, negative lengths/counts and truncated records.
+
+The footer's checksum is located relative to EOF, not by scanning for a hex
+string or a sentinel. Missing statistics, mismatched record IDs, negative
+string/payload lengths, compression-boundary mismatches and malformed checksum
+framing fail explicitly. Internal engine-data corruption cannot be detected
+without understanding those fields or verifying the digest. Consuming opaque
+engine bytes must not be described as decoding their internal structure.
+
+`test_statistics.py` uses handwritten bytes to cover populated records,
+sparse/empty ever-alive slots, Unicode map names, signed values, truncation,
+ID mismatches, binary payload retention and malformed footer framing. Existing
+full-save tests verify statistics, record boundaries and EOF across all four
+real fixtures. Compression tests also check the independently retained trailer
+boundary.
 
 ## Regression safeguards
 

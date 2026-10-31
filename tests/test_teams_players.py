@@ -439,6 +439,46 @@ def test_complete_teams_and_players(filename, teams_end, players_end, cities, un
     assert raw._teams_end_index == teams_end
     assert raw.player_records[0]._player_start_index == teams_end
     assert raw._players_end_index == players_end
+    statistics_ends = {
+        "bismark-emperor-turn86.CivBeyondSwordSave": 2231592,
+        "churchill-random-roll.CivBeyondSwordSave": 1325018,
+        "mehmed-epic.CivBeyondSwordSave": 5036409,
+        "Gandhi-culture-win-t331.CivBeyondSwordSave": 3072768,
+    }
+    statistics = raw.statistics
+    assert statistics._statistics_start_index == players_end
+    assert statistics._statistics_end_index == statistics_ends[filename]
+    assert [p.id for p in statistics.players] == [
+        i for i, p in enumerate(raw.player_records) if p.ever_alive
+    ]
+    assert statistics.players[-1].id == 18  # barbarian statistics are serialized too
+    assert all(
+        p._player_record_end_index - p._player_record_start_index == 2151
+        for p in statistics.players
+    )
+    assert raw.footer._footer_start_index == statistics._statistics_end_index
+    assert raw.footer.python_data == b"S''\np0\n."
+    assert [(s.x, s.y, s.caption) for s in raw.footer.signs] == (
+        [(56, 23, "X"), (59, 22, "X"), (59, 11, "X")]
+        if filename == "bismark-emperor-turn86.CivBeyondSwordSave"
+        else []
+    )
+    assert len(raw.footer.checksum) == 32
+    assert raw.footer._footer_end_index == raw._save_end_index == len(save._raw_bytes)
+    expected_player_zero = {
+        "bismark-emperor-turn86.CivBeyondSwordSave": (23, 4, 1, 6, 0),
+        "churchill-random-roll.CivBeyondSwordSave": (1, 1, 0, 1, 0),
+        "mehmed-epic.CivBeyondSwordSave": (126, 93, 29, 10, 1),
+        "Gandhi-culture-win-t331.CivBeyondSwordSave": (91, 5, 2, 6, 1),
+    }
+    player_statistics = statistics.players[0]
+    assert (
+        sum(player_statistics.units_built),
+        sum(player_statistics.units_killed),
+        sum(player_statistics.units_lost),
+        player_statistics.cities_built,
+        player_statistics.golden_ages,
+    ) == expected_player_zero[filename]
     assert sum(len(player.cities) for player in raw.player_records) == cities
     assert sum(len(player.units) for player in raw.player_records) == units
     # Existing settings mapping and higher-level Player API must survive.

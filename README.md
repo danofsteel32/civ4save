@@ -265,6 +265,24 @@ is hit points lost. Existing imports from `civ4save.objects.player`, including
 `SaveFile` accepts a file path as a string or `pathlib.Path`. Pass `debug=True`
 to include hidden fields when displaying parsed Construct data.
 
+Historical statistics are available through `save.raw.statistics`. Its `game`
+record contains the era and map name; its `players` list includes every
+ever-alive player, including dead civilizations and barbarians. Each player
+record has an `id`, time played in minutes, per-type units built/killed/lost,
+buildings built, religions founded, cities built/razed and golden ages.
+
+The parser consumes the whole file. `save.raw.footer` retains the Python
+payload as `python_data`, undecoded engine bytes as `engine_data`, and the
+final `checksum_byte` and `checksum`. Python payloads remain bytes. The checksum
+format is checked, but the digest is not verified; the engine bytes' internal
+structure is only partly decoded. Map labels are available as
+`save.raw.footer.signs`; each sign has `x`, `y` and `caption` fields. For example:
+
+```python
+for sign in save.raw.footer.signs:
+    print(sign.x, sign.y, sign.caption)
+```
+
 The save is decompressed and parsed on the first access to data, such as
 `save.settings` or `save.raw`, and the parsed container is cached. Some arrays
 are evaluated lazily. The settings, players, teams, and game-state wrappers are

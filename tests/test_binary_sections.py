@@ -248,6 +248,8 @@ def test_game_scalars_arrays_and_nested_records():
 
 
 def test_sections_compose_into_flat_raw_fields():
+    from tests.test_statistics import footer_bytes
+
     header = ints(302, *range(8), 1499)
     settings = init_core_bytes()
     framing = ints(0, 65536)
@@ -255,10 +257,11 @@ def test_sections_compose_into_flat_raw_fields():
     map_data = map_bytes([], width=0, height=0)
     teams = team_bytes(ai=True) * 19
     players = player_bytes(ai=True) * 19
-    raw = parse_record(
-        s.CivBeyondSwordSave,
-        header + settings + framing + game + map_data + teams + players,
-    )
+    data = header + settings + framing + game + map_data + teams + players
+    data += ints(0, -1) + narrow("")  # no ever-alive players in synthetic records
+    trailer_start = len(data)
+    data += footer_bytes()
+    raw = s.CivBeyondSwordSave.parse(data, trailer_start=trailer_start)
     assert raw.version == 302
     assert raw.game_name == "Game 😀"
     assert raw.civ_passwords[0] == "password-0é"
@@ -274,6 +277,15 @@ def test_sections_compose_into_flat_raw_fields():
     assert len(raw.team_records) == len(raw.player_records) == 19
     assert raw._teams_end_index == raw._map_end_index + len(teams)
     assert raw._players_end_index == raw._teams_end_index + len(players)
+    assert raw.statistics._statistics_end_index == trailer_start
+    assert raw.footer._footer_start_index == trailer_start
+    assert raw._save_end_index == len(data)
+    for invalid_boundary in [trailer_start - 1, trailer_start + 1]:
+        with pytest.raises(ConstructError):
+            s.CivBeyondSwordSave.parse(data, trailer_start=invalid_boundary)
+    for invalid_data in [data[:-1], data + b"extra", data[: raw._players_end_index]]:
+        with pytest.raises(ConstructError):
+            s.CivBeyondSwordSave.parse(invalid_data)
     prefix = header + settings + framing + game + map_data
     with pytest.raises(ConstructError, match="team 18 at byte"):
         s.CivBeyondSwordSave.parse(prefix + teams[:-1])
