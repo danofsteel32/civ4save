@@ -4,7 +4,7 @@ import zlib
 import pytest
 
 from civ4save import NotASaveFile
-from civ4save.save_file import _read_savefile
+from civ4save.save_file import _decompress_savefile, _read_savefile
 
 
 def make_save(payload, chunk_size):
@@ -27,6 +27,9 @@ def test_decompress_framed_stream(tmp_path, chunk_size):
     assert _read_savefile(path) == (
         b"header" + struct.pack("<I", first_size) + payload + b"trailer"
     )
+    decompressed, trailer_start = _decompress_savefile(path)
+    assert trailer_start == len(b"header") + 4 + len(payload)
+    assert decompressed[trailer_start:] == b"trailer"
 
 
 @pytest.mark.parametrize(

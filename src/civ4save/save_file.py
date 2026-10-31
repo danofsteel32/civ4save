@@ -10,7 +10,7 @@ from construct import setGlobalPrintPrivateEntries
 from lazy_property import LazyProperty
 
 from . import utils
-from .objects import GameState, Player, Plot, Settings, get_players
+from .objects import GameState, Player, Plot, Settings, Team, get_players
 from .vanilla.structure import CivBeyondSwordSave
 
 
@@ -23,11 +23,17 @@ class ParseError(Exception):
 
 
 def _read_savefile(file: str | Path) -> bytes:
+    """Return decompressed save bytes, preserving the header and trailer."""
+    return _decompress_savefile(file)[0]
+
+
+def _decompress_savefile(file: str | Path) -> tuple[bytes, int]:
     """Decompress the length-prefixed zlib chunks in a BTS save.
 
     Each chunk has a little-endian uint32 byte length; a zero length ends the
     compressed section. All chunks belong to one zlib stream. BTS flushes this
     stream without an end marker, so zlib EOF is not the section boundary.
+    Return the combined bytes and the trailer's offset in those bytes.
     """
     with open(file, "rb") as f:
         data = f.read()
@@ -56,7 +62,8 @@ def _read_savefile(file: str | Path) -> bytes:
         offset = end
 
     # The schema includes the first chunk length in its uncompressed header.
-    return data[:z_start] + b"".join(uncompressed) + data[offset:]
+    payload = data[:z_start] + b"".join(uncompressed)
+    return payload + data[offset:], len(payload)
 
 
 class SaveFile:
@@ -88,8 +95,10 @@ class SaveFile:
         """Returns the raw parsed struct."""
         if not self._raw:
             try:
-                self._raw_bytes = _read_savefile(self.file)
-                self._raw = CivBeyondSwordSave.parse(self._raw_bytes)
+                self._raw_bytes, trailer_start = _decompress_savefile(self.file)
+                self._raw = CivBeyondSwordSave.parse(
+                    self._raw_bytes, trailer_start=trailer_start
+                )
             except Exception as exc:
                 raise NotASaveFile(f"{self.file}") from exc
         return self._raw
@@ -123,6 +132,14 @@ class SaveFile:
     def players(self) -> dict[int, Player]:
         """Return players Dict."""
         return get_players(self.raw)
+
+    @LazyProperty
+    def teams(self) -> dict[int, Team]:
+        """Return all team slots keyed by ID, including inactive/barbarian teams.
+
+        A player's team is available as ``save.teams[player.team]``.
+        """
+        return {record.id: Team.from_struct(record) for record in self.raw.team_records}
 
     @property
     def plots(self) -> list[Plot]:

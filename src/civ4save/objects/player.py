@@ -2,23 +2,95 @@
 
 from __future__ import annotations
 
-import re
+from collections import Counter
 from typing import Any
 
 import attrs
 
 from civ4save.vanilla import enums as e
 
+from .production import ProductionOrder
+from .unit import Unit
+
 
 @attrs.define(slots=True)
 class City:
-    """Constructed from replay messages."""
+    """Current city state, identified by (owner, idx).
+
+    Wonders retains replay-derived completion names; buildings is the current
+    serialized inventory, including free buildings and obsolete buildings.
+    """
 
     name: str
     x: int
     y: int
     turn_founded: int
     wonders: list[str] = attrs.field(factory=list)
+    idx: int = -1
+    owner: int = -1
+    population: int = 0
+    turn_acquired: int = -1
+    buildings: list[e.BuildingType] = attrs.field(factory=list)
+    religions: list[e.ReligionType] = attrs.field(factory=list)
+    corporations: list[e.CorporationType] = attrs.field(factory=list)
+    production_queue: list[ProductionOrder] = attrs.field(factory=list)
+    base_production_per_turn: int = 0
+    gold_per_turn: float = 0.0
+    science_per_turn: float = 0.0
+    culture_per_turn: float = 0.0
+    espionage_per_turn: float = 0.0
+
+    @property
+    def current_production(self) -> ProductionOrder | None:
+        """Return the first queued order, or None for an empty queue."""
+        return self.production_queue[0] if self.production_queue else None
+
+    @classmethod
+    def from_struct(cls, data: Any, *, no_espionage: bool = False) -> City:
+        """Create a city from a parsed CvCity or CvCityAI record.
+
+        Commerce rates are saved in hundredths. With No Espionage, the SDK
+        adds espionage to culture instead. Base production excludes modifiers,
+        overflow, chops and food converted while producing workers/settlers.
+        Gold is city output before subtracting expenses, not net income.
+        """
+        gold, science, culture, espionage = data.commerce_rate
+        if no_espionage:
+            culture += espionage
+            espionage = 0
+        return cls(
+            name=data.name,
+            x=data.x,
+            y=data.y,
+            turn_founded=data.game_turn_founded,
+            idx=data.id,
+            owner=data.owner,
+            population=data.population,
+            turn_acquired=data.game_turn_acquired,
+            buildings=[
+                e.BuildingType(i)
+                for i, count in enumerate(data.num_real_building)
+                if count + data.num_free_building[i] > 0
+            ],
+            religions=[
+                e.ReligionType(i)
+                for i, present in enumerate(data.has_religion)
+                if present
+            ],
+            corporations=[
+                e.CorporationType(i)
+                for i, present in enumerate(data.has_corporation)
+                if present
+            ],
+            production_queue=[
+                ProductionOrder.from_struct(order, data) for order in data.order_queue
+            ],
+            base_production_per_turn=data.base_yield_rate[e.YieldType.YIELD_PRODUCTION],
+            gold_per_turn=gold / 100,
+            science_per_turn=science / 100,
+            culture_per_turn=culture / 100,
+            espionage_per_turn=espionage / 100,
+        )
 
 
 @attrs.define(slots=True)
@@ -30,6 +102,11 @@ class Civics:
     labor: e.CivicType = e.CivicType.CIVIC_TRIBALISM
     economy: e.CivicType = e.CivicType.CIVIC_DECENTRALIZATION
     religion: e.CivicType = e.CivicType.CIVIC_PAGANISM
+
+    @classmethod
+    def from_struct(cls, data: Any) -> Civics:
+        """Read the five vanilla civic options in their serialized order."""
+        return cls(*(e.CivicType[str(civic)] for civic in data))
 
 
 @attrs.define(slots=True)
@@ -53,7 +130,10 @@ class TradeDeal:
 
 @attrs.define(slots=True)
 class Player:
-    """Main class representing a player's state."""
+    """Current player state with replay-derived great-person/project history.
+
+    Gold per turn is net diplomatic payments, not total treasury income.
+    """
 
     idx: int
     name: str
@@ -73,6 +153,65 @@ class Player:
     civics: Civics = attrs.field(factory=Civics)
     trades: list[TradeDeal] = attrs.field(factory=list)
     projects: list[str] = attrs.field(factory=list)
+    alive: bool = False
+    ever_alive: bool = False
+    population: int = 0
+    land: int = 0
+    gold: int = 0
+    gold_per_turn: int = 0
+    golden_age_turns: int = 0
+    anarchy_turns: int = 0
+    capital_city_id: int = -1
+    current_era: e.EraType = e.EraType.NO_ERA
+    last_state_religion: e.ReligionType = e.ReligionType.NO_RELIGION
+    research_queue: list[e.TechType] = attrs.field(factory=list)
+    units: list[Unit] = attrs.field(factory=list)
+
+    @classmethod
+    def from_struct(cls, data: Any, settings: Any) -> Player:
+        """Combine a CvPlayer record with identity/score fields from the root."""
+        idx = data.id
+        return cls(
+            idx=idx,
+            name=settings.leader_names[idx],
+            desc=settings.civ_descriptions[idx],
+            short_desc=settings.civ_short_descriptions[idx],
+            adjective=settings.civ_adjectives[idx],
+            team=settings.teams[idx],
+            handicap=e.HandicapType[str(settings.handicaps[idx])],
+            leader=e.LeaderHeadType[str(settings.leaders[idx])],
+            civ=e.CivilizationType[str(settings.civs[idx])],
+            score=settings.ai_player_score[idx],
+            rank=settings.ai_player_rank[idx],
+            cities=[
+                City.from_struct(
+                    city,
+                    no_espionage=settings.game_options[
+                        e.GameOptionType.GAMEOPTION_NO_ESPIONAGE
+                    ],
+                )
+                for city in data.cities
+            ],
+            religion=(
+                e.ReligionType(data.last_state_religion)
+                if data.state_religion_count > 0
+                else e.ReligionType.NO_RELIGION
+            ),
+            civics=Civics.from_struct(data.civics),
+            alive=data.alive,
+            ever_alive=data.ever_alive,
+            population=data.total_population,
+            land=data.total_land,
+            gold=data.gold,
+            gold_per_turn=data.gold_per_turn,
+            golden_age_turns=data.golden_age_turns,
+            anarchy_turns=data.anarchy_turns,
+            capital_city_id=data.capital_city_id,
+            current_era=e.EraType(data.current_era),
+            last_state_religion=e.ReligionType(data.last_state_religion),
+            research_queue=[e.TechType[str(tech)] for tech in data.research_queue],
+            units=[Unit.from_struct(unit) for unit in data.units],
+        )
 
     def adopt_civic(self, new_civic: e.CivicType) -> None:
         """Correctly set the new civic."""
@@ -87,6 +226,16 @@ class Player:
             self.civics.economy = new_civic
         elif v >= 20:
             self.civics.religion = new_civic
+
+    @property
+    def capital_city(self) -> City | None:
+        """Resolve the saved capital ID, returning None for absent/stale IDs.
+
+        Eliminated players can retain an ID for a city they no longer own.
+        """
+        return next(
+            (city for city in self.cities if city.idx == self.capital_city_id), None
+        )
 
     def pop_city(self, city_name: str) -> City:
         """Remove `City` with `city_name` from cities List and return it."""
@@ -106,53 +255,6 @@ class Player:
 PlayerDict = dict[int, Player]
 
 
-def _match_empire_to_player(empire: str, players: PlayerDict) -> int:
-    """Given a Civ adjective, return the player idx of that Civ.
-
-    For example: 'Indian' -> CivilizationType.CIVILIZATION_INDIA
-
-    Should probably be reworked to pull from leaders.json in `contrib` but
-    works for now.
-    """
-    all_civs = [(en.name, en.value) for en in e.CivilizationType if en.value > -1]
-    # Mathc
-    empire = empire.upper()[:3]
-    for civ, n in all_civs:
-        stemmed = civ.split("CIVILIZATION_")[1][:3]
-        if stemmed == empire:
-            match = e.CivilizationType(n)
-            break
-    else:
-        match = None
-    for idx in players:
-        if players[idx].civ == match:
-            return idx
-    raise ValueError("Could match empire to player")
-
-
-def _init_players(data: Any) -> PlayerDict:
-    players = {}
-    for p_idx in range(len(data.civs)):
-        civ = data.civs[p_idx]
-        if civ == "NO_CIVILIZATION":
-            continue
-        player = Player(
-            p_idx,
-            name=data.leader_names[p_idx],
-            desc=data.civ_descriptions[p_idx],
-            short_desc=data.civ_short_descriptions[p_idx],
-            adjective=data.civ_adjectives[p_idx],
-            team=data.teams[p_idx],
-            handicap=e.HandicapType[str(data.handicaps[p_idx])],
-            leader=e.LeaderHeadType[str(data.leaders[p_idx])],
-            civ=e.CivilizationType[str(civ)],
-            score=data.ai_player_score[p_idx],
-            rank=data.ai_player_rank[p_idx],
-        )
-        players[p_idx] = player
-    return players
-
-
 def _set_player_trade_deals(deals: list, players: PlayerDict) -> PlayerDict:
     for deal in deals:
         trade_deal = TradeDeal(
@@ -166,119 +268,45 @@ def _set_player_trade_deals(deals: list, players: PlayerDict) -> PlayerDict:
     return players
 
 
-def _set_player_data(replay_messages: list, players: PlayerDict) -> PlayerDict:
-    """Set from replay messages.
+def _set_player_history(replay_messages: list, players: PlayerDict) -> None:
+    """Retain legacy English replay histories without reconstructing current state.
 
-    Read the replay messages and assign ownership of plots, cities, wonders
-    as well as player religion and civics
+    City completions are associated by coordinates and lifetime, never by name.
+    These strings are historical hints, not an authoritative building inventory.
     """
-    # local vars for tracking who currently owns cities and plots
-    cities: dict[str, int] = {}
-    plots: dict[str, int] = {}
-
-    def text_to_enum_name(text: str) -> str:
-        rm_leading = re.sub(".*color=[0-9]+,[0-9]+,[0-9]+,[0-9]+>", "", text)
-        rm_trailing = rm_leading.replace("</color>!", "")
-        return rm_trailing.replace(" ", "_").upper()
-
+    cities = {
+        (city.x, city.y): city for player in players.values() for city in player.cities
+    }
     for msg in replay_messages:
-        p_idx = msg.player
-
-        if msg.type == "CITY_FOUNDED":
-            city_name = msg.text.split(" is founded")[0]
-            city = City(city_name, msg.plot_x, msg.plot_y, msg.turn)
-            players[p_idx].cities.append(city)
-            cities[city_name] = p_idx
-
-        elif msg.type == "MAJOR_EVENT":
-            if "captured" in msg.text:
-                city_and_owner = msg.text.split(" was captured")[0]
-                city_name = city_and_owner.split("(")[0].strip()
-                prev_owner = cities[city_name]
-                city = players[prev_owner].pop_city(city_name)
-                players[p_idx].cities.append(city)
-                cities[city_name] = p_idx
-            elif "razed" in msg.text:
-                city_name = msg.text.split(" is razed")[0]
-                prev_owner = cities[city_name]
-                players[prev_owner].pop_city(city_name)
-                del cities[city_name]
-            elif "completes" in msg.text:
-                wonder = msg.text.split(" completes ")[-1]
-                if (msg.plot_x, msg.plot_y) == (-1, -1):  # global wonder (ie apollo)
-                    players[p_idx].projects.append(wonder)
-                    continue
-                city = players[p_idx].city_from_xy(msg.plot_x, msg.plot_y)
-                city.wonders.append(wonder)
-            elif "born" in msg.text:
-                gp = msg.text.split(" has been born")[0]
-                players[p_idx].great_people.append(gp)
-            elif "converts" in msg.text:
-                relig_text = text_to_enum_name(msg.text)
-                religion = e.ReligionType[f"RELIGION_{relig_text}"]
-                players[p_idx].religion = religion
-            elif "adopts" in msg.text:
-                civic_text = text_to_enum_name(msg.text)
-                civic = e.CivicType[f"CIVIC_{civic_text}"]
-                players[p_idx].adopt_civic(civic)
-
-            elif "revolts" in msg.text:
-                city_name = msg.text.split(" revolts")[0]
-                prev_owner = cities[city_name]
-                city = players[prev_owner].pop_city(city_name)
-                empire = msg.text.split("joins the ")[1].replace(" Empire!", "")
-                p_idx = _match_empire_to_player(empire, players)
-                players[p_idx].cities.append(city)
+        if msg.type != "MAJOR_EVENT" or msg.player not in players:
+            continue
+        player = players[msg.player]
+        if " completes " in msg.text:
+            name = msg.text.split(" completes ", 1)[1]
+            if (msg.plot_x, msg.plot_y) == (-1, -1):
+                player.projects.append(name)
             else:
-                # print(msg.player, msg.text)
-                pass
-
-        elif msg.type == "PLOT_OWNER_CHANGE":
-            plot_key = f"{msg.plot_x}-{msg.plot_y}"
-            try:
-                prev_owner = plots[plot_key]
-            except KeyError:
-                # First assignment
-                plots[plot_key] = p_idx
-                players[p_idx].owned_plots += 1
-                continue
-            # re-assignment
-            if p_idx > -1:
-                players[p_idx].owned_plots += 1
-                if prev_owner > -1:
-                    players[prev_owner].owned_plots -= 1
-            # owner lost plot but no new owner
-            elif p_idx == -1:
-                players[prev_owner].owned_plots -= 1
-            plots[plot_key] = p_idx
-
-    return players
-
-
-def _fix_potential_duplicate_cities(players: PlayerDict) -> PlayerDict:
-    """Hacky fix but works.
-
-    If capital founded but then map regenerated on turn 0 | 1 there will be
-    duplicate capital founding messages for the human player.
-    """
-    for p_idx in players:
-        cities = players[p_idx].cities
-
-        new_start_idx = 0
-        names = set()
-        for n, city in enumerate(cities):
-            if city.name in names:
-                new_start_idx = n
-            else:
-                names.add(city.name)
-        players[p_idx].cities = cities[new_start_idx:]
-    return players
+                city = cities.get((msg.plot_x, msg.plot_y))
+                if city is not None and msg.turn >= city.turn_founded:
+                    city.wonders.append(name)
+        elif " has been born" in msg.text:
+            player.great_people.append(msg.text.split(" has been born", 1)[0])
 
 
 def get_players(data: Any) -> PlayerDict:
-    """Return players dict with all values set."""
-    players = _init_players(data)
-    players = _set_player_data(data.replay_messages, players)
-    players = _set_player_trade_deals(data.deals, players)
-    players = _fix_potential_duplicate_cities(players)
-    return players
+    """Return configured civilizations, including eliminated players.
+
+    Identity and scores come from the root, current state from CvPlayer/CvCity/
+    CvUnit, and owned plot counts from CvPlot. Unused NO_CIVILIZATION slots are
+    omitted, preserving the existing player membership policy.
+    """
+    players = {
+        record.id: Player.from_struct(record, data)
+        for record in data.player_records
+        if data.civs[record.id] != "NO_CIVILIZATION"
+    }
+    owned_plots = Counter(plot.owner for plot in data.plots if plot.owner >= 0)
+    for idx, player in players.items():
+        player.owned_plots = owned_plots[idx]
+    _set_player_history(data.replay_messages, players)
+    return _set_player_trade_deals(data.deals, players)
